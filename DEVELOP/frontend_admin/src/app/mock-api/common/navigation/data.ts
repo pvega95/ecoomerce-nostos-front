@@ -3,9 +3,49 @@ import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
     {
+        id   : 'dashboards.analytics',
+        title: 'Analytics',
+        type : 'basic',
+        icon : 'heroicons_outline:chart-pie',
+        link : '/dashboards/analytics'
+    },
+    {
+        id   : 'order.id',
+        title: 'order',
+        type : 'basic',
+        icon : 'heroicons_outline:clipboard-list',
+        link : '/order'
+    },
+    {
+        id      : 'setting.id.0',
+        title   : 'setting',
+        icon    : 'heroicons_outline:cog',
+        type    : 'collapsable',
+        children: [
+            {
+                id      : 'setting.id.0.1',
+                title   : 'products',
+                type    : 'basic',
+                link : '/setting/products'
+            },
+            {
+                id      : 'setting.id.0.2',
+                title   : 'clients',
+                type    : 'basic',
+                link : '/setting/clients'
+            },
+            {
+                id      : 'setting.id.0.3',
+                title   : 'options',
+                type    : 'basic',
+                link : '/setting/options'
+            }
+        ]
+    },
+
+
+ /*    {
         id      : 'dashboards',
-        title   : 'Dashboards',
-        subtitle: 'Unique dashboard designs',
         type    : 'group',
         icon    : 'heroicons_outline:home',
         children: [
@@ -15,7 +55,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type : 'basic',
                 icon : 'heroicons_outline:clipboard-check',
                 link : '/dashboards/project'
-            },
+            }, 
             {
                 id   : 'dashboards.analytics',
                 title: 'Analytics',
@@ -24,7 +64,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link : '/dashboards/analytics'
             }
         ]
-    },
+    }, */
     {
         id      : 'apps',
         title   : 'Applications',

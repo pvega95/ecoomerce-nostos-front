@@ -51,8 +51,8 @@ export class LanguagesComponent implements OnInit, OnDestroy
 
         // Set the country iso codes for languages for flags
         this.flagCodes = {
-            'en': 'us',
-            'tr': 'tr'
+            'es':'pe',
+            'en': 'us'
         };
     }
 
@@ -144,6 +144,72 @@ export class LanguagesComponent implements OnInit, OnDestroy
 
                     // Set the title
                     analyticsDashboardItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+
+        const idOrderItem = this._fuseNavigationService.getItem('order.id', navigation);
+        if ( idOrderItem )
+        {
+            this._translocoService.selectTranslate('order').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idOrderItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idSettingItem = this._fuseNavigationService.getItem('setting.id.0', navigation);
+        if ( idSettingItem )
+        {
+            this._translocoService.selectTranslate('setting').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idSettingItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idProductsItem = this._fuseNavigationService.getItem('setting.id.0.1', navigation);
+        if ( idProductsItem )
+        {
+            this._translocoService.selectTranslate('products').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idProductsItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idClientsItem = this._fuseNavigationService.getItem('setting.id.0.2', navigation);
+        if ( idClientsItem )
+        {
+            this._translocoService.selectTranslate('clients').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idClientsItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idOptionsItem = this._fuseNavigationService.getItem('setting.id.0.3', navigation);
+        if ( idOptionsItem )
+        {
+            this._translocoService.selectTranslate('options').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idOptionsItem.title = translation;
 
                     // Refresh the navigation component
                     navComponent.refresh();

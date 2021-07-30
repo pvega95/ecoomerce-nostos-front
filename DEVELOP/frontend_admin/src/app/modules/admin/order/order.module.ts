@@ -11,16 +11,16 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
-import { AnalyticsComponent } from 'app/modules/admin/dashboards/analytics/analytics.component';
-import { analyticsRoutes } from 'app/modules/admin/dashboards/analytics/analytics.routing';
+import { orderRoutes } from 'app/modules/admin/order/order.routing';
+import { OrderComponent } from './order.component';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
     declarations: [
-        AnalyticsComponent
+        OrderComponent
     ],
     imports     : [
-        RouterModule.forChild(analyticsRoutes),
+        RouterModule.forChild(orderRoutes),
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,
@@ -35,6 +35,6 @@ import { TranslocoModule } from '@ngneat/transloco';
         SharedModule
     ]
 })
-export class AnalyticsModule
+export class OrderModule
 {
 }

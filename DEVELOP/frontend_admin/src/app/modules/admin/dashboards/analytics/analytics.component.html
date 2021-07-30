@@ -5,8 +5,11 @@
         <!-- Title and action buttons -->
         <div class="flex items-center justify-between w-full">
             <div>
-                <div class="text-3xl font-semibold tracking-tight leading-8">Analytics dashboard</div>
-                <div class="font-medium tracking-tight text-secondary">Monitor metrics, check reports and review performance</div>
+                <ng-container *transloco="let t">
+                    <div class="text-3xl font-semibold tracking-tight leading-8">{{t('dashboard')}}</div>
+                    <div class="font-medium tracking-tight text-secondary">{{t('dashboard-description')}}</div>
+                </ng-container>
+                
             </div>
             <div class="flex items-center ml-6">
                 <button

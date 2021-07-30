@@ -9,15 +9,15 @@ import { InitialDataResolver } from 'app/app.resolvers';
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
 
-    // Redirect empty path to '/dashboards/project'
-    {path: '', pathMatch : 'full', redirectTo: 'dashboards/project'},
+    // Redirect empty path to '/dashboards/analytics'
+    {path: '', pathMatch : 'full', redirectTo: 'dashboards/analytics'},
 
-    // Redirect signed in user to the '/dashboards/project'
+    // Redirect signed in user to the '/dashboards/analytics'
     //
     // After the user signs in, the sign in page will redirect the user to the 'signed-in-redirect'
     // path. Below is another redirection for that path to redirect the user to the desired
     // location. This is a small convenience to keep all main routes together here on this file.
-    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'dashboards/project'},
+    {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'dashboards/analytics'},
 
     // Auth routes for guests
     {
@@ -77,8 +77,16 @@ export const appRoutes: Route[] = [
 
             // Dashboards
             {path: 'dashboards', children: [
-                {path: 'project', loadChildren: () => import('app/modules/admin/dashboards/project/project.module').then(m => m.ProjectModule)},
+              //  {path: 'project', loadChildren: () => import('app/modules/admin/dashboards/project/project.module').then(m => m.ProjectModule)},
                 {path: 'analytics', loadChildren: () => import('app/modules/admin/dashboards/analytics/analytics.module').then(m => m.AnalyticsModule)},
+            ]},
+            {path: 'order', children: [
+                {path: '', loadChildren: () => import('app/modules/admin/order/order.module').then(m => m.OrderModule)}
+            ]},
+            {path: 'setting', children: [
+                {path: 'products', loadChildren: () => import('app/modules/admin/setting/products/products.module').then(m => m.ProductsModule)},
+                {path: 'clients', loadChildren: () => import('app/modules/admin/setting/clients/clients.module').then(m => m.ClientsModule)},
+                {path: 'options', loadChildren: () => import('app/modules/admin/setting/options/options.module').then(m => m.OptionsModule)}
             ]},
 
             // Apps
