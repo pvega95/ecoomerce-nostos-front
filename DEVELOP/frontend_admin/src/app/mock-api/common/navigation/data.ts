@@ -39,6 +39,12 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title   : 'options',
                 type    : 'basic',
                 link : '/setting/options'
+            },
+            {
+                id      : 'setting.id.0.4',
+                title   : 'categories',
+                type    : 'basic',
+                link : '/setting/categories'
             }
         ]
     },

@@ -215,5 +215,18 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     navComponent.refresh();
                 });
         }
+        const idCategoriesItem = this._fuseNavigationService.getItem('setting.id.0.4', navigation);
+        if ( idCategoriesItem )
+        {
+            this._translocoService.selectTranslate('categories').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idCategoriesItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
     }
 }
