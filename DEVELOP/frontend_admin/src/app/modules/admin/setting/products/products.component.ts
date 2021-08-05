@@ -1,6 +1,6 @@
 import { ProductsService } from './products.service';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -85,7 +85,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
             id               : [''],
             category         : [''],
             name             : ['', [Validators.required]],
-            description      : [''],
+            descriptions     : this._formBuilder.array([]),
             createdDate      : [''],
             updatedDate      : [''],
             tags             : [[]],
@@ -274,10 +274,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId)  || null;
         this.selectedProduct = productEncontrado;
+
         this.selectedProductForm.patchValue({
           id: productEncontrado._id,
           name: productEncontrado.name,
-          description: productEncontrado.descriptions[0],
+          descriptions: productEncontrado.descriptions.map(description =>{
+              return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
+          }),
           sku: productEncontrado.sky,
           barcode: '',
           stock: productEncontrado.stock,
@@ -307,6 +310,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             }); */
+    }
+    createDescriptionForm(description?: string){
+        return this._formBuilder.group({
+            description: description || ''
+        })
     }
     stringToDate(fechaInString: string): Date{
         let fecha = fechaInString.split('T')[0].split('-');
@@ -341,6 +349,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     closeDetails(): void
     {
         this.selectedProduct = null;
+        this.selectedProductForm.get('descriptions').setValue([this.createDescriptionForm()]);
+        this.selectedProductForm.reset();
+    
+        console.log('from', this.selectedProductForm.value)
     }
 
     /**

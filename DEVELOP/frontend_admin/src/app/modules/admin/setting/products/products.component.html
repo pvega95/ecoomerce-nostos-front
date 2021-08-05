@@ -23,7 +23,7 @@
                     matInput
                     [formControl]="searchInputControl"
                     [autocomplete]="'off'"
-                    [placeholder]="'Search products'">
+                    [placeholder]="'Buscar productos'">
             </mat-form-field>
             <!-- Add product button -->
             <button
@@ -32,7 +32,7 @@
                 [color]="'primary'"
                 (click)="createProduct()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Add</span>
+                <span class="ml-2 mr-1">Agregar nuevo producto</span>
             </button>
         </div>
     </div>
@@ -249,12 +249,33 @@
                                                 matInput
                                                 [formControlName]="'name'">
                                         </mat-form-field>
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Descripción</mat-label>
+                                         <ng-container *ngFor="let item of selectedProductForm.get('descriptions')['controls']; let i = index " formArrayName ="descriptions" > 
+                                           <mat-form-field class="w-full" [formGroupName]="i">
+                                                <mat-label>Descripción {{i+1}}</mat-label>
+                                                 <input
+                                                    matInput
+                                                    [formControlName]="'description'"> 
+                                            </mat-form-field> 
+                                         <!--    <div [formGroupName]="i">
+                                                <input formControlName="description" placeholder="Item description">
+                                              </div> -->
+
+                                        </ng-container> 
+                                        
+
+
+                                       <!--  <mat-form-field class="w-full">
+                                            <mat-label>Descripción </mat-label>
                                             <input
                                                 matInput
-                                                [formControlName]="'description'">
+                                                [formControlName]="'description1'">
                                         </mat-form-field>
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Descripción 2</mat-label>
+                                            <input
+                                                matInput
+                                                [formControlName]="'description2'">
+                                        </mat-form-field>  -->
                            
 
                                         <div class="flex">
