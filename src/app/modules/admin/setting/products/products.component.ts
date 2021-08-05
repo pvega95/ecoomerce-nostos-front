@@ -81,30 +81,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     {
       this.cargarLista();
         // Create the selected product form
-        this.selectedProductForm = this._formBuilder.group({
-            id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            descriptions     : this._formBuilder.array([]),
-            createdDate      : [''],
-            updatedDate      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
-            currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false]
-        });
+        this.initForm();
 
         // Get the brands
         this._inventoryService.brands$
@@ -185,6 +162,34 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
             )
             .subscribe();
     }
+
+    initForm() {
+        this.selectedProductForm = this._formBuilder.group({
+            id               : [''],
+            category         : [''],
+            name             : ['', [Validators.required]],
+            descriptions     : this._formBuilder.array([]),
+            createdDate      : [''],
+            updatedDate      : [''],
+            tags             : [[]],
+            sku              : [''],
+            barcode          : [''],
+            brand            : [''],
+            vendor           : [''],
+            stock            : [''],
+            reserved         : [''],
+            cost             : [''],
+            basePrice        : [''],
+            taxPercent       : [''],
+            price            : [''],
+            weight           : [''],
+            thumbnail        : [''],
+            images           : [[]],
+            currentImageIndex: [0], // Image index that is currently being viewed
+            active           : [false]
+        });
+    }
+
     async cargarLista(){
       let resp: any;
       // console.log('lista product', await this.productsService.listarProductos())
@@ -258,8 +263,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
      *
      * @param productId
      */
-    toggleDetails(productId: string): void
+    toggleDetails(productId: string, open: boolean): void
     {
+        console.log('selectedProduct', this.selectedProduct);
+
         // If the product is already selected...
         if (this.selectedProduct ) {
           if (this.selectedProduct._id === productId )
@@ -349,10 +356,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     closeDetails(): void
     {
         this.selectedProduct = null;
-        this.selectedProductForm.get('descriptions').setValue([this.createDescriptionForm()]);
-        this.selectedProductForm.reset();
-    
-        console.log('from', this.selectedProductForm.value)
+        this.initForm();
     }
 
     /**

@@ -152,7 +152,7 @@
                                         <button
                                             class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                             mat-stroked-button
-                                            (click)="toggleDetails(product._id)">
+                                            (click)="toggleDetails(product._id, selectedProduct?._id === product._id)">
                                             <mat-icon
                                                 class="icon-size-5"
                                                 [svgIcon]="selectedProduct?._id === product._id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
