@@ -10,6 +10,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
+import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 
 @Component({
     selector       : 'app-products',
@@ -61,6 +62,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
      * Constructor
      */
     constructor(
+        private fuseUtilsService: FuseUtilsService,
         private productsService: ProductsService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
@@ -294,61 +296,16 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
           images: productEncontrado.image,
           price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
           weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-          createdDate: this.formatDate(this.stringToDate(productEncontrado.createdAt)),
-          updatedDate: this.formatDate(this.stringToDate(productEncontrado.updatedAt))
+          createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
+          updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
           
         });
-
-       // this.stringToDate(productEncontrado.createdAt);
-
-
-        console.log('fecha', this.formatDate(this.stringToDate(productEncontrado.createdAt)));
-        
-
-    /*     this._inventoryService.getProductById(productId)
-            .subscribe((product) => {
-
-                // Set the selected product
-                this.selectedProduct = product;
-
-                // Fill the form
-                this.selectedProductForm.patchValue(product);
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }); */
     }
     createDescriptionForm(description?: string){
         return this._formBuilder.group({
             description: description || ''
         })
     }
-    stringToDate(fechaInString: string): Date{
-        let fecha = fechaInString.split('T')[0].split('-');
-        let anio = Number(fecha[0]);
-        let mes = Number(fecha[1]) - 1;
-        let dia = Number(fecha[2]);
-
-        return new Date(anio, mes, dia);
-    }
-
-    formatDate(date: Date): string {
-        let day
-        let month
-        let year
-        const d = new Date(date);
-        day = '' + d.getDate();
-        month = '' + (d.getMonth() + 1);
-        year = d.getFullYear();
-        if (month.length < 2) {
-        month = '0' + month;
-        }
-        if (day.length < 2) {
-        day = '0' + day;
-        }
-        //return [year, month, day].join('-');
-        return [day, month, year].join('/');
-  }
 
     /**
      * Close the details

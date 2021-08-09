@@ -8,6 +8,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
@@ -21,6 +23,8 @@ import { TranslocoModule } from '@ngneat/transloco';
     ],
     imports     : [
         RouterModule.forChild(clientsRoutes),
+        MatInputModule,
+        MatFormFieldModule,
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,
