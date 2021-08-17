@@ -23,7 +23,7 @@ export class FuseConfirmationService
             },
             cancel : {
                 show : true,
-                label: 'Cancel'
+                label: 'Cancelar'
             }
         },
         dismissible: false

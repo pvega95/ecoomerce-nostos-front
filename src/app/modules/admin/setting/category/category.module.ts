@@ -14,6 +14,8 @@ import { SharedModule } from 'app/shared/shared.module';
 import { categoryRoutes } from 'app/modules/admin/setting/category/category.routing';
 import { CategoryComponent } from './category.component';
 import { TranslocoModule } from '@ngneat/transloco';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
     declarations: [
@@ -21,6 +23,8 @@ import { TranslocoModule } from '@ngneat/transloco';
     ],
     imports     : [
         RouterModule.forChild(categoryRoutes),
+        MatFormFieldModule,
+        MatInputModule,
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,

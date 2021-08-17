@@ -11,6 +11,10 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
+import { CategoriesService } from '../category/category.service';
+
+
+const MAX_CANT_DESCRIPCIONES = 4;
 
 @Component({
     selector       : 'app-products',
@@ -43,9 +47,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     @ViewChild(MatSort) private _sort: MatSort;
 
     products: any[]=[];
+    countDescripcion: number = 1;
+    deshabilitarBotonAgregarDescripcion: boolean = false;
+    deshabilitarBotonQuitarDescripcion: boolean = false;
+    selected: number;
 
     brands: InventoryBrand[];
-    categories: InventoryCategory[];
+    categories: any[] = [];
     filteredTags: InventoryTag[];
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = true;
@@ -64,6 +72,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     constructor(
         private fuseUtilsService: FuseUtilsService,
         private productsService: ProductsService,
+        private categoriesService: CategoriesService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
@@ -81,7 +90,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
      */
     ngOnInit(): void
     {
-      this.cargarLista();
+      this.cargarListaProductos();
+      this.cargarCategorias();
         // Create the selected product form
         this.initForm();
 
@@ -124,7 +134,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
   
 
         // Get the tags
-        this._inventoryService.tags$
+ /*        this._inventoryService.tags$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((tags: InventoryTag[]) => {
 
@@ -134,7 +144,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
-            });
+            }); */
 
         // Get the vendors
         this._inventoryService.vendors$
@@ -192,7 +202,19 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         });
     }
 
-    async cargarLista(){
+async cargarCategorias(){
+        let resp: any;
+        resp = await this.categoriesService.listarCategorias();
+        if(resp.ok){
+            // Get the products
+            this.categories = resp.data;
+            this.isLoading = false;
+            console.log('lista categorias',resp.data);
+        }
+
+    }
+
+    async cargarListaProductos(){
       let resp: any;
       // console.log('lista product', await this.productsService.listarProductos())
       resp = await this.productsService.listarProductos();
@@ -200,7 +222,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         // Get the products
         this.products = resp.data;
         this.isLoading = false;
-        console.log('lista product',resp.data);
       }
      }
 
@@ -278,28 +299,57 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
               return;
           }
         }
+        this.initForm();
       
 
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId)  || null;
+       
         this.selectedProduct = productEncontrado;
+        if(productEncontrado._id){
+            this.countDescripcion = productEncontrado.descriptions.length;
+            this.verificarCantidadDescripciones();
+            this.selectedProductForm.patchValue({
+              id: productEncontrado._id,
+              name: productEncontrado.name,
+              descriptions: productEncontrado.descriptions.map(description =>{
+                  return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
+              }),
+              sku: productEncontrado.sky,
+              category: productEncontrado.category,
+              stock: productEncontrado.stock,
+              images: productEncontrado.image,
+              price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
+              weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
+              createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
+              updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
+              
+            });
 
-        this.selectedProductForm.patchValue({
-          id: productEncontrado._id,
-          name: productEncontrado.name,
-          descriptions: productEncontrado.descriptions.map(description =>{
-              return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-          }),
-          sku: productEncontrado.sky,
-          barcode: '',
-          stock: productEncontrado.stock,
-          images: productEncontrado.image,
-          price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
-          weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-          createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
-          updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
-          
-        });
+            this.selected = this.categories.findIndex(categoria => categoria._id === this.selectedProductForm.get('category').value)
+
+        }else{
+            let descriptions = ['']
+            this.selected = -1;
+            this.selectedProductForm.patchValue({
+                id: -1,
+                name: '',
+                descriptions:  descriptions.map(description =>{
+                    return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
+                }),
+                sku: '',
+                category: '',
+                stock: '',
+                images: '',
+                price: '',
+                weight: '',
+                createdDate: '',
+                updatedDate: ''
+                
+              });
+
+        }
+  
     }
     createDescriptionForm(description?: string){
         return this._formBuilder.group({
@@ -313,7 +363,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     closeDetails(): void
     {
         this.selectedProduct = null;
-        this.initForm();
     }
 
     /**
@@ -500,16 +549,21 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void
+     toggleProductCategory(category: any, index: number, change: MatCheckboxChange): void
     {
         if ( change.checked )
         {
-            this.addTagToProduct(tag);
+            this.selectedProductForm.patchValue({
+                category: category._id
+            });
+            this.selected = index;
         }
         else
         {
-            this.removeTagFromProduct(tag);
-        }
+            this.selectedProductForm.patchValue({
+                category: ''
+            });
+        } 
     }
 
     /**
@@ -525,9 +579,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * Create product
      */
-    createProduct(): void
+     agregarNuevoProducto(): void
     {
-        // Create the product
+        this.products.unshift({
+            name: 'Nuevo producto'
+        });
+        this.selected = -1;
+      /*   // Create the product
         this._inventoryService.createProduct().subscribe((newProduct) => {
 
             // Go to new product
@@ -538,7 +596,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
-        });
+        }); */
     }
 
     /**
@@ -560,6 +618,79 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         });
     }
 
+    crearNuevoProducto(): void{
+        this. sacarListaDescripcionesDesdeForm();
+        const body = {
+            sky: this.selectedProductForm.controls.sku.value,
+            name: this.selectedProductForm.controls.name.value,
+            price: this.selectedProductForm.controls.price.value,
+            weight: this.selectedProductForm.controls.weight.value,
+            descriptions: this.sacarListaDescripcionesDesdeForm(),
+            thumbnail: '',
+            image: [],
+            category: '',
+            options: '',
+            stock: this.selectedProductForm.controls.stock.value
+        }
+        console.log('body creanr producto nuevo',body)
+      //  this.productsService.crearProducto(body);
+    }
+    sacarListaDescripcionesDesdeForm(): string[]{
+        let cadena: string[] = [];
+        (this.selectedProductForm.get('descriptions') as FormArray).value.forEach(element => {
+            cadena.push(element.description)
+        });
+        return cadena;
+    }
+    agregarDescripcion(): void{
+        this.countDescripcion++;
+        if(this.verificarCantidadDescripciones()){
+            this.selectedProductForm.patchValue({
+                descriptions:  (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm())
+            });
+        }
+       // console.log('cantidad de descri', (this.selectedProductForm.get('descriptions') as FormArray).length)
+  
+        
+    }
+    quitarDescripcion(): void{
+        this.countDescripcion--;
+        if(this.verificarCantidadDescripciones()){
+            (this.selectedProductForm.get('descriptions') as FormArray).removeAt((this.selectedProductForm.get('descriptions') as FormArray).length - 1)
+        }
+        
+    }
+    verificarCantidadDescripciones(): boolean{
+        if( this.countDescripcion <= MAX_CANT_DESCRIPCIONES && this.countDescripcion >= 1){
+            this.deshabilitarBotonQuitarDescripcion = false;
+            if(this.countDescripcion === MAX_CANT_DESCRIPCIONES){
+                this.deshabilitarBotonAgregarDescripcion = true;
+            }else{
+                if(this.countDescripcion === 1){
+                    this.deshabilitarBotonQuitarDescripcion = true;
+                }
+                this.deshabilitarBotonAgregarDescripcion = false;
+            }
+            
+            return true;
+        }else{
+            if(this.countDescripcion > 4){
+                this.countDescripcion = MAX_CANT_DESCRIPCIONES;
+                this.deshabilitarBotonAgregarDescripcion = true;
+            }else{
+                if(this.countDescripcion < 1){
+                    this.countDescripcion = 1;
+                    this.deshabilitarBotonQuitarDescripcion = true;
+                }
+            }
+            
+            return false;
+        }
+    }
+    subirImagen(): void{
+
+    }
+
     /**
      * Delete the selected product using the form data
      */
@@ -567,11 +698,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     {
         // Open the confirmation dialog
         const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete product',
-            message: 'Are you sure you want to remove this product? This action cannot be undone!',
+            title  : 'Eliminar producto',
+            message: '¿Estás seguro(a) de eliminar este producto? Esta acción no puede deshacerse!',
             actions: {
                 confirm: {
-                    label: 'Delete'
+                    label: 'Eliminar'
                 }
             }
         });
