@@ -153,11 +153,12 @@ export class NgxDropzoneComponent {
     let height: number = 0;
     let result
     const reader = new FileReader();
-    reader.onload = (e: any) => {
-    result = this.getImageDimenstion(e.target.result);
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = async (e: any) => {
+    result = await this.getImageDimenstion(e.target.result);
     console.log('result', result.width, result.height)
     }
-    reader.readAsDataURL(event.target.files[0]);
+    
   //  console.log('width', result.width, 'height', result.height)
     /****************** */
 
@@ -167,7 +168,7 @@ export class NgxDropzoneComponent {
     // fix(#32): Prevent the default event behaviour which caused the change event to emit twice.
     this.preventDefault(event);
   }
-  async  getImageDimenstion(imgUrl): Promise<{width: any; height: any;}> {
+  async  getImageDimenstion(imgUrl): Promise<{width: number; height: number;}> {
     let width1: number = 0;
     let heigh2t: number = 0;
 
@@ -183,7 +184,7 @@ export class NgxDropzoneComponent {
   
     } })
 
-     //   console.log('height: '+ height);
+       // console.log('height: '+ height);
        //  console.log('width: '+width);
 
 
