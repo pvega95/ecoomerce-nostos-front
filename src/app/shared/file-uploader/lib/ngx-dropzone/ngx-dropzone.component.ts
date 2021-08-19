@@ -8,6 +8,8 @@ export interface NgxDropzoneChangeEvent {
   addedFiles: File[];
   rejectedFiles: RejectedFile[];
 }
+const GRUPO = 1;
+const UNIDAD = 2;
 
 @Component({
   selector: 'ngx-dropzone, [ngx-dropzone]',
@@ -135,7 +137,18 @@ export class NgxDropzoneComponent {
 
     this.preventDefault(event);
     this._isHovered = false;
-    this.handleFileDrop(event.dataTransfer.files);
+
+
+   this.handleFileDrop(event.dataTransfer.files);
+
+/*     this.sacarTamano(event, GRUPO).then((rs) => {
+      console.log('result rs', rs.event, rs.val.height, rs.val.width)  
+ 
+      if(true){
+        this.handleFileDrop(event.dataTransfer.files);
+  
+      }}) */
+
   }
 
   showFileSelector() {
@@ -144,30 +157,54 @@ export class NgxDropzoneComponent {
     }
   }
 
-  _onFilesSelected(event) {
-    const files: FileList = event.target.files;
-    this.handleFileDrop(files);
-    console.log('archivos', files)
-    /********************** */
+   _onFilesSelected(event) {
     let width: number = 0;
     let height: number = 0;
     let result
-    const reader = new FileReader();
-    reader.readAsDataURL(event.target.files[0]);
-    reader.onload = async (e: any) => {
-    result = await this.getImageDimenstion(e.target.result);
-    console.log('result', result.width, result.height)
+  
+  this.sacarTamano(event, UNIDAD).then((rs) => {
+    console.log('result rs', rs.event, rs.val.height, rs.val.width)  
+    const files: FileList = rs.event.target.files;
+    if(true){
+      this.handleFileDrop(files);
+      // Reset the native file input element to allow selecting the same file again
+      this._fileInput.nativeElement.value = '';
+
     }
-    
-  //  console.log('width', result.width, 'height', result.height)
-    /****************** */
 
-    // Reset the native file input element to allow selecting the same file again
-    this._fileInput.nativeElement.value = '';
 
+  });  
     // fix(#32): Prevent the default event behaviour which caused the change event to emit twice.
     this.preventDefault(event);
+    
   }
+  
+  async sacarTamano(event: any, tipo: number){
+    let result
+    const reader = new FileReader();
+    console.log('event', event)
+    if(tipo === UNIDAD){
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    if(tipo === GRUPO){
+      reader.readAsDataURL(event.dataTransfer.files[0]);
+    }
+    
+
+  const val = await new Promise <{width: number; height: number;}> ( resolve => {
+      reader.onload = async (e: any) => {
+      result = await this.getImageDimenstion(e.target.result);
+          resolve({
+            width: result.width,
+            height: result.height
+          })
+              }
+    });
+    return {event, val} ;
+  }
+
+
+
   async  getImageDimenstion(imgUrl): Promise<{width: number; height: number;}> {
     let width1: number = 0;
     let heigh2t: number = 0;
@@ -183,11 +220,6 @@ export class NgxDropzoneComponent {
          })
   
     } })
-
-       // console.log('height: '+ height);
-       //  console.log('width: '+width);
-
-
     return {width, height};
  }
 
@@ -211,3 +243,21 @@ export class NgxDropzoneComponent {
     event.stopPropagation();
   }
 }
+
+
+    /*
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+
+    const x = async ()=> {const val = await new Promise( resolve => {
+      reader.onload = async (e: any) => {
+      result = await this.getImageDimenstion(e.target.result);
+          resolve({
+            result
+          })
+              }
+    });
+    return val;
+  }
+
+  console.log('resultpp', x)   */
