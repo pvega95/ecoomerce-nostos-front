@@ -140,14 +140,14 @@ export class NgxDropzoneComponent {
 
 
    this.handleFileDrop(event.dataTransfer.files);
-
-/*     this.sacarTamano(event, GRUPO).then((rs) => {
+  console.log('drop', event )
+     this.sacarTamano(event, GRUPO).then((rs) => {
       console.log('result rs', rs.event, rs.val.height, rs.val.width)  
  
       if(true){
         this.handleFileDrop(event.dataTransfer.files);
   
-      }}) */
+      }}) 
 
   }
 
@@ -181,25 +181,52 @@ export class NgxDropzoneComponent {
   
   async sacarTamano(event: any, tipo: number){
     let result
+    let val
+    let fileList: any[] =[];
     const reader = new FileReader();
     console.log('event', event)
     if(tipo === UNIDAD){
       reader.readAsDataURL(event.target.files[0]);
+        val = await new Promise <{width: number; height: number;}> ( resolve => {
+        reader.onload = async (e: any) => {
+        result = await this.getImageDimenstion(e.target.result);
+            resolve({
+              width: result.width,
+              height: result.height
+            })
+                }
+      });
     }
     if(tipo === GRUPO){
-      reader.readAsDataURL(event.dataTransfer.files[0]);
-    }
-    
+     // reader.readAsDataURL(event.dataTransfer.files);
+     var img = new Image();
+     var _URL = window.URL || window.webkitURL;
+      let files = event.dataTransfer.items;
+      console.log('files.length', files.length)
+      let file
+     // for (let i = 0; i < files.length; i++) {
+       for(let x of files){
+         file = x.getAsFile();
 
-  const val = await new Promise <{width: number; height: number;}> ( resolve => {
-      reader.onload = async (e: any) => {
-      result = await this.getImageDimenstion(e.target.result);
-          resolve({
-            width: result.width,
-            height: result.height
-          })
-              }
-    });
+       let obj =  await new Promise ( resolve => {
+          let img = new Image(); 
+          img.src = _URL.createObjectURL(file);
+          img.onload =  (event) => {
+               let  loadedImage = event.currentTarget;
+               resolve({
+                width : loadedImage['width'],
+                height : loadedImage['height']
+               })
+        
+          } });
+          fileList.push(obj);
+
+      }
+    }
+     console.log('fileList', fileList)
+
+
+
     return {event, val} ;
   }
 
