@@ -39,6 +39,7 @@ export class NgxDropzoneComponent {
 
   /** Set the accepted file types. Defaults to '*'. */
   @Input() accept = '*';
+  @Input() ratio: string[];
 
   /** Disable any user interaction with the component. */
   @Input()
@@ -103,6 +104,7 @@ export class NgxDropzoneComponent {
   @Input('aria-labelledby') ariaLabelledby: string;
   @Input('aria-describedby') ariaDescribedBy: string;
 
+
   @HostBinding('class.ngx-dz-hovered')
   _isHovered = false;
 
@@ -142,9 +144,11 @@ export class NgxDropzoneComponent {
    this.handleFileDrop(event.dataTransfer.files);
   console.log('drop', event )
      this.sacarTamano(event, GRUPO).then((rs) => {
-      console.log('result rs', rs.event, rs.val.height, rs.val.width)  
+       console.log('result rs', rs)
+       
+    //  console.log('result rs', rs.event, rs.val.height, rs.val.width)  
  
-      if(true){
+      if(false){
         this.handleFileDrop(event.dataTransfer.files);
   
       }}) 
@@ -163,8 +167,9 @@ export class NgxDropzoneComponent {
     let result
   
   this.sacarTamano(event, UNIDAD).then((rs) => {
-    console.log('result rs', rs.event, rs.val.height, rs.val.width)  
+    console.log('result rs', rs)  
     const files: FileList = rs.event.target.files;
+    console.log('ratio', this.ratio)
     if(true){
       this.handleFileDrop(files);
       // Reset the native file input element to allow selecting the same file again
@@ -181,13 +186,13 @@ export class NgxDropzoneComponent {
   
   async sacarTamano(event: any, tipo: number){
     let result
-    let val
+    let val: any[]=[];
     let fileList: any[] =[];
     const reader = new FileReader();
     console.log('event', event)
     if(tipo === UNIDAD){
       reader.readAsDataURL(event.target.files[0]);
-        val = await new Promise <{width: number; height: number;}> ( resolve => {
+        val.push( await new Promise <{width: number; height: number;}> ( resolve => {
         reader.onload = async (e: any) => {
         result = await this.getImageDimenstion(e.target.result);
             resolve({
@@ -195,42 +200,42 @@ export class NgxDropzoneComponent {
               height: result.height
             })
                 }
-      });
+      }));
+  
     }
-    if(tipo === GRUPO){
-     // reader.readAsDataURL(event.dataTransfer.files);
-     var img = new Image();
+    if(tipo === GRUPO){// using from drag and drop
      var _URL = window.URL || window.webkitURL;
-      let files = event.dataTransfer.items;
+      let files: any[] = event.dataTransfer.items;
+      let lista: any[]=[];
+      let file: any;
       console.log('files.length', files.length)
-      let file
-     // for (let i = 0; i < files.length; i++) {
-       for(let x of files){
-         file = x.getAsFile();
-
-       let obj =  await new Promise ( resolve => {
-          let img = new Image(); 
-          img.src = _URL.createObjectURL(file);
-          img.onload =  (event) => {
-               let  loadedImage = event.currentTarget;
-               resolve({
-                width : loadedImage['width'],
-                height : loadedImage['height']
-               })
-        
-          } });
-          fileList.push(obj);
-
-      }
+      
+       for (const x of files){
+        file =  x.getAsFile();
+        console.log('file', file)
+        lista.push(this.getListImagesDimension(file))
+        }
+     val = await Promise.all(lista);    
     }
-     console.log('fileList', fileList)
 
-
-
-    return {event, val} ;
+  return {event, val} ;
   }
 
-
+  async getListImagesDimension(file ){
+    var _URL = window.URL || window.webkitURL;
+    let img = new Image(); 
+    return  new Promise ( resolve => {
+      img.src = _URL.createObjectURL(file);
+      img.onload =  (event) => {
+           let  loadedImage = event.currentTarget;
+           resolve({
+            width : loadedImage['width'],
+            height : loadedImage['height']
+           })
+    
+      } }  )   ;
+      
+  }
 
   async  getImageDimenstion(imgUrl): Promise<{width: number; height: number;}> {
     let width1: number = 0;
@@ -288,3 +293,26 @@ export class NgxDropzoneComponent {
   }
 
   console.log('resultpp', x)   */
+
+
+
+      //  for (let i = 0; i < files.length; i++) {
+     //   file = event.dataTransfer.items[i].getAsFile();
+
+      //  obj = await this.devuelveValor(file);
+
+        /*     await new Promise ( resolve => {
+              img.src = _URL.createObjectURL(file);
+              img.onload =  (event) => {
+                   let  loadedImage = event.currentTarget;
+                   resolve({
+                    width : loadedImage['width'],
+                    height : loadedImage['height']
+                   })
+            
+              } }  ).then((valor)=>{
+                obj = valor
+              }); */
+
+          //    fileList.push(obj);
+          //    console.log('obj', obj) 
