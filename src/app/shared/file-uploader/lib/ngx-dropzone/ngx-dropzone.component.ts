@@ -23,6 +23,7 @@ const UNIDAD = 2;
   providers: [NgxDropzoneService]
 })
 export class NgxDropzoneComponent {
+  public contImagesDenied: number = 0;
 
   constructor(
     @Self() private service: NgxDropzoneService
@@ -288,6 +289,8 @@ export class NgxDropzoneComponent {
      const ratioInput = imageDimension.height/imageDimension.width;
       if(ratio_vertical >= ratioInput && ratioInput >= ratio_horizontal){
         listFilesAllowed.items.add(files.item(index));
+        }else{
+          this.contImagesDenied++;
         }
     });
 

@@ -41,6 +41,19 @@ $dz-border: #717386;
 		z-index: 10;
 		margin: 10px auto;
 	}
+	::ng-deep ngx-dropzone-label-error {
+		margin-left: auto;
+		margin-right: auto;
+		left: 0;
+		right: 0;
+		position:absolute;
+		text-align: center;
+		z-index: 20;
+		margin: 10px auto;
+		margin-top: 12.5rem;
+		color: #fa3d1b
+	}
+	
 
 	& input {
 		width: 0.1px;
@@ -58,3 +71,4 @@ $dz-border: #717386;
 		}
 	}
 }
+
