@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxDropzoneLabelDirective } from './ngx-dropzone-label.directive';
+import { NgxDropzoneLabelErrorDirective } from './ngx-dropzone-label-error.directive';
 import { NgxDropzonePreviewComponent } from './ngx-dropzone-preview/ngx-dropzone-preview.component';
 import { NgxDropzoneComponent } from './ngx-dropzone/ngx-dropzone.component';
 import { NgxDropzoneImagePreviewComponent } from './ngx-dropzone-preview/ngx-dropzone-image-preview/ngx-dropzone-image-preview.component';
@@ -15,6 +16,7 @@ import { NgxDropzoneVideoPreviewComponent } from './ngx-dropzone-preview/ngx-dro
 		NgxDropzoneComponent,
 		NgxDropzoneLabelDirective,
 		NgxDropzonePreviewComponent,
+		NgxDropzoneLabelErrorDirective,
 		NgxDropzoneImagePreviewComponent,
 		NgxDropzoneRemoveBadgeComponent,
 		NgxDropzoneVideoPreviewComponent,
@@ -22,6 +24,7 @@ import { NgxDropzoneVideoPreviewComponent } from './ngx-dropzone-preview/ngx-dro
 	exports: [
 		NgxDropzoneComponent,
 		NgxDropzoneLabelDirective,
+		NgxDropzoneLabelErrorDirective,
 		NgxDropzonePreviewComponent,
 		NgxDropzoneImagePreviewComponent,
 		NgxDropzoneRemoveBadgeComponent,

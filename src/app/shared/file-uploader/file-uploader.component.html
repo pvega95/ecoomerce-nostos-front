@@ -4,6 +4,7 @@
 		<ngx-dropzone-image-preview *ngFor="let f of files" [file]="f" [removable]="true" (removed)="onRemove(f)" ngProjectAs="ngx-dropzone-preview" >
 			<ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
 		</ngx-dropzone-image-preview>
+		<ngx-dropzone-label-error>Error</ngx-dropzone-label-error>
 
 </div>
 
