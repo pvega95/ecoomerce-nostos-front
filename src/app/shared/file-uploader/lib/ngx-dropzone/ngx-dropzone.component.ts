@@ -8,6 +8,11 @@ export interface NgxDropzoneChangeEvent {
   addedFiles: File[];
   rejectedFiles: RejectedFile[];
 }
+export interface ImageDimension{
+  width: number;
+  height: number;
+}
+
 const GRUPO = 1;
 const UNIDAD = 2;
 
@@ -140,19 +145,12 @@ export class NgxDropzoneComponent {
     this.preventDefault(event);
     this._isHovered = false;
 
-
-   this.handleFileDrop(event.dataTransfer.files);
-  console.log('drop', event )
-     this.sacarTamano(event, GRUPO).then((rs) => {
-       console.log('result rs', rs)
-       
-    //  console.log('result rs', rs.event, rs.val.height, rs.val.width)  
- 
-      if(false){
-        this.handleFileDrop(event.dataTransfer.files);
-  
-      }}) 
-
+ let filesInput: FileList =  event.dataTransfer.files;
+     this.sacarTamano(event, GRUPO).then((rs) => {  
+       let filesAllowed: FileList;  
+       filesAllowed = this.VerificarRatioImagenes(filesInput, this.ratio, rs.val).files;
+       this.handleFileDrop(filesAllowed);
+    }); 
   }
 
   showFileSelector() {
@@ -167,16 +165,13 @@ export class NgxDropzoneComponent {
     let result
   
   this.sacarTamano(event, UNIDAD).then((rs) => {
-    console.log('result rs', rs)  
-    const files: FileList = rs.event.target.files;
-    console.log('ratio', this.ratio)
-    if(true){
-      this.handleFileDrop(files);
+    let filesInput: FileList = rs.event.target.files;
+    let filesAllowed: FileList; 
+    filesAllowed = this.VerificarRatioImagenes(filesInput, this.ratio, rs.val).files
+
+      this.handleFileDrop(filesAllowed);
       // Reset the native file input element to allow selecting the same file again
       this._fileInput.nativeElement.value = '';
-
-    }
-
 
   });  
     // fix(#32): Prevent the default event behaviour which caused the change event to emit twice.
@@ -186,10 +181,9 @@ export class NgxDropzoneComponent {
   
   async sacarTamano(event: any, tipo: number){
     let result
-    let val: any[]=[];
+    let val: ImageDimension[]=[];
     let fileList: any[] =[];
     const reader = new FileReader();
-    console.log('event', event)
     if(tipo === UNIDAD){
       reader.readAsDataURL(event.target.files[0]);
         val.push( await new Promise <{width: number; height: number;}> ( resolve => {
@@ -208,11 +202,9 @@ export class NgxDropzoneComponent {
       let files: any[] = event.dataTransfer.items;
       let lista: any[]=[];
       let file: any;
-      console.log('files.length', files.length)
       
        for (const x of files){
         file =  x.getAsFile();
-        console.log('file', file)
         lista.push(this.getListImagesDimension(file))
         }
      val = await Promise.all(lista);    
@@ -274,6 +266,36 @@ export class NgxDropzoneComponent {
     event.preventDefault();
     event.stopPropagation();
   }
+
+  VerificarRatioImagenes(files: FileList,ratio: string[], listImagesDimension: ImageDimension[]): DataTransfer{
+    let limit1_width: number = 1;
+    let limit1_height: number = 1;
+    let limit2_width: number = 1;
+    let limit2_height: number = 1;
+    let ratio_vertical: number = 1;
+    let ratio_horizontal: number = 1;
+    let listFilesAllowed = new DataTransfer();
+
+    limit1_width =  Number(ratio[0].split(':')[0]);
+    limit1_height = Number(ratio[0].split(':')[1]);
+    limit2_width =  Number(ratio[1].split(':')[0]);
+    limit2_height = Number(ratio[1].split(':')[1]);
+
+    ratio_vertical = limit1_height/limit1_width; // imagen vertical
+    ratio_horizontal = limit2_height/limit2_width; //imagen  horizontal
+
+    listImagesDimension.forEach((imageDimension, index) => {
+     const ratioInput = imageDimension.height/imageDimension.width;
+      if(ratio_vertical >= ratioInput && ratioInput >= ratio_horizontal){
+        listFilesAllowed.items.add(files.item(index));
+        }
+    });
+
+    return listFilesAllowed;
+
+  }
+
+
 }
 
 

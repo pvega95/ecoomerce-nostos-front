@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-file-uploader',
@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FileUploaderComponent implements OnInit {
   files: File[] = [];
+  @Input() ratio: string[] = ['1:2', '2:1']
   constructor() { }
 
   ngOnInit(): void {
