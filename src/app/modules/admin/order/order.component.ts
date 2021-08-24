@@ -67,5 +67,8 @@ export class OrderComponent implements OnInit {
       console.log('lista ordenes',resp.data);
     }
    }
+   openModal(){
+     
+   }
 
 }
