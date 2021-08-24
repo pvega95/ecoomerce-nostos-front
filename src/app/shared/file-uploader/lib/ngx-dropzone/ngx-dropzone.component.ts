@@ -7,6 +7,8 @@ export interface NgxDropzoneChangeEvent {
   source: NgxDropzoneComponent;
   addedFiles: File[];
   rejectedFiles: RejectedFile[];
+  contImagesDenied: number;
+  ratio: string[];
 }
 export interface ImageDimension{
   width: number;
@@ -250,15 +252,13 @@ export class NgxDropzoneComponent {
 
   private handleFileDrop(files: FileList) {
     const result = this.service.parseFileList(files, this.accept, this.maxFileSize, this.multiple);
-    console.log('los archivos', {
-      addedFiles: result.addedFiles,
-      rejectedFiles: result.rejectedFiles,
-      source: this
-    })
+
 
     this.change.next({
       addedFiles: result.addedFiles,
       rejectedFiles: result.rejectedFiles,
+      contImagesDenied: this.contImagesDenied,
+      ratio: this.ratio,
       source: this
     });
   }
@@ -289,6 +289,7 @@ export class NgxDropzoneComponent {
      const ratioInput = imageDimension.height/imageDimension.width;
       if(ratio_vertical >= ratioInput && ratioInput >= ratio_horizontal){
         listFilesAllowed.items.add(files.item(index));
+        this.contImagesDenied = 0;
         }else{
           this.contImagesDenied++;
         }
