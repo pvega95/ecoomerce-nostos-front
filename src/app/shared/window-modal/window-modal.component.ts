@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-window-modal',
@@ -7,9 +10,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WindowModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private _formBuilder: FormBuilder,
+    public dialogRef: MatDialogRef<WindowModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) { }
 
   ngOnInit(): void {
+  }
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+  imagenesCargadas(): void{
+    
   }
 
 }
