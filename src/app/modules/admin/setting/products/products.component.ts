@@ -12,8 +12,10 @@ import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduc
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 import { CategoriesService } from '../category/category.service';
+import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
-
+const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
 
 @Component({
@@ -51,6 +53,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     deshabilitarBotonAgregarDescripcion: boolean = false;
     deshabilitarBotonQuitarDescripcion: boolean = false;
     selected: number;
+    files: File[] = [];
 
     brands: InventoryBrand[];
     categories: any[] = [];
@@ -76,7 +79,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
-        private _inventoryService: InventoryService
+        private _inventoryService: InventoryService,
+        public dialog: MatDialog
     )
     {
     }
@@ -627,8 +631,8 @@ async cargarCategorias(){
             weight: this.selectedProductForm.controls.weight.value,
             descriptions: this.sacarListaDescripcionesDesdeForm(),
             thumbnail: '',
-            image: [],
-            category: '',
+            image: this.selectedProductForm.controls.images.value,
+            category: this.selectedProductForm.controls.category.value,
             options: '',
             stock: this.selectedProductForm.controls.stock.value
         }
@@ -687,8 +691,42 @@ async cargarCategorias(){
             return false;
         }
     }
-    subirImagen(): void{
+    openModalUploadImages(): void{
+        const dialogRef = this.dialog.open(WindowModalComponent, {
+            width: '42rem',
+            height: '23rem'
+          });
+      
+          dialogRef.afterClosed().subscribe( async result => {
+            let listImgs: string[] = [];
+            if(result){
+              if (this.selectedProductForm.controls.id.value === NEW_PRODUCT){
+                this.files = (result as File[]);
+                this.files.forEach(file => {
+                    this.fuseUtilsService.readImageFile(file)
+                    .then(img => setTimeout(() => {        
+                        listImgs.push(img as string)       
+                    }))
+                    .catch(err => console.error(err));
+                });
+               this.selectedProductForm.patchValue({
+                    images: listImgs
+                }); 
 
+              }
+
+            }else{
+              console.log('indefinido')
+            }
+      
+          });
+
+    }
+    removeImages(): void{
+        this.selectedProductForm.patchValue({
+            images: [],
+            currentImageIndex: 0
+        }); 
     }
 
     /**

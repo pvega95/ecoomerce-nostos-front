@@ -73,7 +73,7 @@ export class FuseUtilsService
     
         return new Date(anio, mes, dia);
       }
-       formatDate(date: Date): string {
+    formatDate(date: Date): string {
         let day
         let month
         let year
@@ -90,4 +90,27 @@ export class FuseUtilsService
         //return [year, month, day].join('-');
         return [day, month, year].join('/');
       }
+
+    async readImageFile(file: File): Promise<string | ArrayBuffer> {
+		return new Promise<string | ArrayBuffer>((resolve, reject) => {
+			const reader = new FileReader();
+
+			reader.onload = e => {
+				resolve((e.target as FileReader).result);
+			};
+
+			reader.onerror = e => {
+				console.error(`FileReader failed on file ${file.name}.`);
+				reject(e);
+			};
+
+			if (!file) {
+				return reject('No file to read. Please provide a file using the [file] Input property.');
+			}
+
+			reader.readAsDataURL(file);
+		});
+	}
+
+
 }

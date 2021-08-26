@@ -230,12 +230,21 @@
                                                     [svgIcon]="'heroicons_solid:arrow-narrow-right'"></mat-icon>
                                             </button>
                                         </div>
-                                        <div>
+                                        <div *ngIf="selectedProductForm.get('images').value.length" class="flex items-center my-2 whitespace-nowrap">
+                                            <button class="w-full "
+                                                class="-ml-4"
+                                                mat-button
+                                                [color]="'warn'"
+                                                (click)="removeImages()">
+                                                Retirar imagenes
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center mt-1 whitespace-nowrap">
                                             <button class="w-full "
                                                 [disabled]="false"
                                                 mat-flat-button
                                                 [color]="'primary'"
-                                                (click)="subirImagen()">
+                                                (click)="openModalUploadImages()">
                                                 Subir imagen
                                             </button>
                                         </div>

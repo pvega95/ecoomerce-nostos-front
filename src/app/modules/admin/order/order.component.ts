@@ -11,9 +11,6 @@ import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduc
 import { OrdersService } from './order.service';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
-import { WindowModalComponent } from '../../../shared/window-modal/window-modal.component';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-
 
 @Component({
   selector: 'app-order',
@@ -49,7 +46,6 @@ export class OrderComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
-    public dialog: MatDialog,
     private fuseUtilsService: FuseUtilsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _fuseConfirmationService: FuseConfirmationService,
@@ -65,23 +61,12 @@ export class OrderComponent implements OnInit {
     let resp: any;
     resp = await this.ordersService.listarOrdenes();
     if(resp.ok){
-      // Get the orders
+      // Get the ordersn
       this.orders = resp.data;
       this.isLoading = false;
       console.log('lista ordenes',resp.data);
     }
    }
-   openModal(){
-    const dialogRef = this.dialog.open(WindowModalComponent, {
-      width: '42rem',
-      height: '23rem'
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
-
-    });
-     
-   }
 
 }

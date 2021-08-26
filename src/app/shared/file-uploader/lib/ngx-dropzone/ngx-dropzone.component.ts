@@ -15,8 +15,8 @@ export interface ImageDimension{
   height: number;
 }
 
-const GRUPO = 1;
-const UNIDAD = 2;
+const ARRASTRE = 1;
+const EXPLORADOR = 2;
 
 @Component({
   selector: 'ngx-dropzone, [ngx-dropzone]',
@@ -149,7 +149,7 @@ export class NgxDropzoneComponent {
     this._isHovered = false;
 
  let filesInput: FileList =  event.dataTransfer.files;
-     this.sacarTamano(event, GRUPO).then((rs) => {  
+     this.sacarTamano(event, ARRASTRE).then((rs) => {  
        let filesAllowed: FileList;  
        filesAllowed = this.VerificarRatioImagenes(filesInput, this.ratio, rs.val).files;
        this.handleFileDrop(filesAllowed);
@@ -167,7 +167,7 @@ export class NgxDropzoneComponent {
     let height: number = 0;
     let result
   
-  this.sacarTamano(event, UNIDAD).then((rs) => {
+  this.sacarTamano(event, EXPLORADOR).then((rs) => {
     let filesInput: FileList = rs.event.target.files;
     let filesAllowed: FileList; 
     filesAllowed = this.VerificarRatioImagenes(filesInput, this.ratio, rs.val).files
@@ -185,22 +185,26 @@ export class NgxDropzoneComponent {
   async sacarTamano(event: any, tipo: number){
     let result
     let val: ImageDimension[]=[];
-    let fileList: any[] =[];
     const reader = new FileReader();
-    if(tipo === UNIDAD){
-      reader.readAsDataURL(event.target.files[0]);
-        val.push( await new Promise <{width: number; height: number;}> ( resolve => {
-        reader.onload = async (e: any) => {
-        result = await this.getImageDimenstion(e.target.result);
-            resolve({
-              width: result.width,
-              height: result.height
-            })
-                }
-      }));
+    
+    if(tipo === EXPLORADOR){
+      let files: any[] = event.target.files;
+      for (const file of files){
+          reader.readAsDataURL(file);
+            val.push( await new Promise <{width: number; height: number;}> ( resolve => {
+            reader.onload = async (e: any) => {
+            result = await this.getImageDimenstion(e.target.result);
+                resolve({
+                  width: result.width,
+                  height: result.height
+                })
+                    }
+                }));
+         }
   
     }
-    if(tipo === GRUPO){// using from drag and drop
+
+    if(tipo === ARRASTRE){// using from drag and drop
      var _URL = window.URL || window.webkitURL;
       let files: any[] = event.dataTransfer.items;
       let lista: any[]=[];
