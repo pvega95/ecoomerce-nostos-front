@@ -74,7 +74,7 @@ export class OrderComponent implements OnInit {
    openModal(){
     const dialogRef = this.dialog.open(WindowModalComponent, {
       width: '42rem',
-      height: '22rem'
+      height: '23rem'
     });
 
     dialogRef.afterClosed().subscribe(result => {

@@ -9,6 +9,8 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
   styleUrls: ['./window-modal.component.scss']
 })
 export class WindowModalComponent implements OnInit {
+  public existListFile: boolean = false;
+  public listFiles: File[] = [];
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -19,10 +21,21 @@ export class WindowModalComponent implements OnInit {
   ngOnInit(): void {
   }
   onNoClick(): void {
-    this.dialogRef.close();
+    this.listFiles = [];
+    this.dialogRef.close(this.listFiles);
   }
   imagenesCargadas(): void{
-    
+    this.dialogRef.close(this.listFiles);
+  }
+  getFilesLoades(files: File[]):void{
+     console.log('files', files)
+     if(files.length > 0){
+       this.existListFile = true;
+       this.listFiles = files;
+     }else{
+      this.existListFile = false;
+      this.listFiles = [];
+     }
   }
 
 }
