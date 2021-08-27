@@ -8,8 +8,6 @@ import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 import { CategoriesService } from '../category/category.service';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
@@ -55,18 +53,18 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     selected: number;
     files: File[] = [];
 
-    brands: InventoryBrand[];
+
     categories: any[] = [];
-    filteredTags: InventoryTag[];
+
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = true;
-    pagination: InventoryPagination;
+
     searchInputControl: FormControl = new FormControl();
     selectedProduct: any = null;
     selectedProductForm: FormGroup;
-    tags: InventoryTag[];
+
     tagsEditMode: boolean = false;
-    vendors: InventoryVendor[];
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -79,7 +77,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
-        private _inventoryService: InventoryService,
         public dialog: MatDialog
     )
     {
@@ -99,42 +96,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         // Create the selected product form
         this.initForm();
 
-        // Get the brands
-        this._inventoryService.brands$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((brands: InventoryBrand[]) => {
-
-                // Update the brands
-                this.brands = brands;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the categories
-        this._inventoryService.categories$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((categories: InventoryCategory[]) => {
-
-                // Update the categories
-                this.categories = categories;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the pagination
-        this._inventoryService.pagination$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((pagination: InventoryPagination) => {
-
-                // Update the pagination
-                this.pagination = pagination;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
   
 
         // Get the tags
@@ -150,33 +111,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             }); */
 
-        // Get the vendors
-        this._inventoryService.vendors$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((vendors: InventoryVendor[]) => {
 
-                // Update the vendors
-                this.vendors = vendors;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Subscribe to search input field value changes
-        this.searchInputControl.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(300),
-                switchMap((query) => {
-                    this.closeDetails();
-                    this.isLoading = true;
-                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
-                }),
-                map(() => {
-                    this.isLoading = false;
-                })
-            )
-            .subscribe();
     }
 
     initForm() {
@@ -257,17 +192,7 @@ async cargarCategorias(){
                     this.closeDetails();
                 });
 
-            // Get products if sort or page changes
-            merge(this._sort.sortChange, this._paginator.page).pipe(
-                switchMap(() => {
-                    this.closeDetails();
-                    this.isLoading = true;
-                    return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
-                }),
-                map(() => {
-                    this.isLoading = false;
-                })
-            ).subscribe();
+  
         }
     }
 
@@ -413,7 +338,7 @@ async cargarCategorias(){
         const value = event.target.value.toLowerCase();
 
         // Filter the tags
-        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));
+       
     }
 
     /**
@@ -423,40 +348,7 @@ async cargarCategorias(){
      */
     filterTagsInputKeyDown(event): void
     {
-        // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
-            return;
-        }
-
-        // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
-            // Create the tag
-            this.createTag(event.target.value);
-
-            // Clear the input
-            event.target.value = '';
-
-            // Return
-            return;
-        }
-
-        // If there is a tag...
-        const tag = this.filteredTags[0];
-        const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id);
-
-        // If the found tag is already applied to the product...
-        if ( isTagApplied )
-        {
-            // Remove the tag from the product
-            this.removeTagFromProduct(tag);
-        }
-        else
-        {
-            // Otherwise add the tag to the product
-            this.addTagToProduct(tag);
-        }
+  
     }
 
     /**
@@ -466,17 +358,7 @@ async cargarCategorias(){
      */
     createTag(title: string): void
     {
-        const tag = {
-            title
-        };
-
-        // Create tag on the server
-        this._inventoryService.createTag(tag)
-            .subscribe((response) => {
-
-                // Add the tag to the product
-                this.addTagToProduct(response);
-            });
+ 
     }
 
     /**
@@ -485,18 +367,12 @@ async cargarCategorias(){
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: InventoryTag, event): void
+    updateTagTitle(tag, event): void
     {
         // Update the title on the tag
         tag.title = event.target.value;
 
-        // Update the tag on the server
-        this._inventoryService.updateTag(tag.id, tag)
-            .pipe(debounceTime(300))
-            .subscribe();
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -504,13 +380,9 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    deleteTag(tag: InventoryTag): void
+    deleteTag(tag): void
     {
-        // Delete the tag from the server
-        this._inventoryService.deleteTag(tag.id).subscribe();
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
     }
 
     /**
@@ -518,7 +390,7 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    addTagToProduct(tag: InventoryTag): void
+    addTagToProduct(tag): void
     {
         // Add the tag
         this.selectedProduct.tags.unshift(tag.id);
@@ -535,7 +407,7 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    removeTagFromProduct(tag: InventoryTag): void
+    removeTagFromProduct(tag): void
     {
         // Remove the tag
         this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1);
@@ -577,7 +449,7 @@ async cargarCategorias(){
      */
     shouldShowCreateTagButton(inputValue: string): boolean
     {
-        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
+        return false;
     }
 
     /**
@@ -614,12 +486,7 @@ async cargarCategorias(){
         // Remove the currentImageIndex field
         delete product.currentImageIndex;
 
-        // Update the product on the server
-        this._inventoryService.updateProduct(product.id, product).subscribe(() => {
-
-            // Show a success message
-            this.showFlashMessage('success');
-        });
+  
     }
 
     crearNuevoProducto(): void{
@@ -755,12 +622,7 @@ async cargarCategorias(){
                 // Get the product object
                 const product = this.selectedProductForm.getRawValue();
 
-                // Delete the product on the server
-                this._inventoryService.deleteProduct(product.id).subscribe(() => {
-
-                    // Close the details
-                    this.closeDetails();
-                });
+          
             }
         });
     }

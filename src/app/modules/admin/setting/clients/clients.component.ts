@@ -8,8 +8,6 @@ import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 
 
@@ -45,17 +43,13 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   public clients: any[]=[];
   public isLoading: boolean = true;
 
-  brands: InventoryBrand[];
-  categories: InventoryCategory[];
-  filteredTags: InventoryTag[];
+
   flashMessage: 'success' | 'error' | null = null;
-  pagination: InventoryPagination;
+
   searchInputControl: FormControl = new FormControl();
   selectedClient: any = null;
   selectedClientForm: FormGroup;
-  tags: InventoryTag[];
   tagsEditMode: boolean = false;
-  vendors: InventoryVendor[];
 
 
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -65,8 +59,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     private fuseUtilsService: FuseUtilsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _fuseConfirmationService: FuseConfirmationService,
-    private _formBuilder: FormBuilder,
-    private _inventoryService: InventoryService
+    private _formBuilder: FormBuilder
     ) { }
 
   ngOnInit(): void {
@@ -175,11 +168,11 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
               const product = this.selectedClientForm.getRawValue();
 
               // Delete the product on the server
-              this._inventoryService.deleteProduct(product.id).subscribe(() => {
+         /*      this._inventoryService.deleteProduct(product.id).subscribe(() => {
 
                   // Close the details
                   this.closeDetails();
-              });
+              }); */
           }
       });
   }
@@ -192,12 +185,12 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       // Remove the currentImageIndex field
       delete product.currentImageIndex;
 
-      // Update the product on the server
+/*       // Update the product on the server
       this._inventoryService.updateProduct(product.id, product).subscribe(() => {
 
           // Show a success message
           this.showFlashMessage('success');
-      });
+      }); */
   }
   showFlashMessage(type: 'success' | 'error'): void
   {
@@ -249,7 +242,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
                });
 
            // Get products if sort or page changes
-           merge(this._sort.sortChange, this._paginator.page).pipe(
+     /*       merge(this._sort.sortChange, this._paginator.page).pipe(
                switchMap(() => {
                    this.closeDetails();
                    this.isLoading = true;
@@ -258,7 +251,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
                map(() => {
                    this.isLoading = false;
                })
-           ).subscribe();
+           ).subscribe(); */
        }
    }
    ngOnDestroy(): void

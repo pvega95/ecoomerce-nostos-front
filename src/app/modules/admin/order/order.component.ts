@@ -7,9 +7,7 @@ import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { OrdersService } from './order.service';
-import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
 
 @Component({
@@ -49,8 +47,7 @@ export class OrderComponent implements OnInit {
     private fuseUtilsService: FuseUtilsService,
     private _changeDetectorRef: ChangeDetectorRef,
     private _fuseConfirmationService: FuseConfirmationService,
-    private _formBuilder: FormBuilder,
-    private _inventoryService: InventoryService
+    private _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
