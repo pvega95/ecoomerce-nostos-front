@@ -7,12 +7,12 @@
             </div>
 
             <!-- Title -->
-            <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Sign in</div>
+            <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Sistema Admin</div>
             <div class="flex items-baseline mt-0.5 font-medium">
-                <div>Don't have an account?</div>
+                <div>¿No tienes una cuenta?</div>
                 <a
                     class="ml-1 text-primary-500 hover:underline"
-                    [routerLink]="['/sign-up']">Sign up
+                    [routerLink]="['/sign-up']">Registrese
                 </a>
             </div>
 
@@ -35,22 +35,22 @@
 
                 <!-- Email field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Email address</mat-label>
+                    <mat-label>Correo electrónico</mat-label>
                     <input
                         id="email"
                         matInput
                         [formControlName]="'email'">
                     <mat-error *ngIf="signInForm.get('email').hasError('required')">
-                        Email address is required
+                        Email es obligatorio
                     </mat-error>
                     <mat-error *ngIf="signInForm.get('email').hasError('email')">
-                        Please enter a valid email address
+                       Por favor escriba un email válido
                     </mat-error>
                 </mat-form-field>
 
                 <!-- Password field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Password</mat-label>
+                    <mat-label>Contraseña</mat-label>
                     <input
                         id="password"
                         matInput
@@ -72,7 +72,7 @@
                             [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
                     </button>
                     <mat-error>
-                        Password is required
+                        Contraseña es obligatoria
                     </mat-error>
                 </mat-form-field>
 
@@ -81,11 +81,11 @@
                     <mat-checkbox
                         [color]="'primary'"
                         [formControlName]="'rememberMe'">
-                        Remember me
+                        Recordarme
                     </mat-checkbox>
                     <a
                         class="text-md font-medium text-primary-500 hover:underline"
-                        [routerLink]="['/forgot-password']">Forgot password?
+                        [routerLink]="['/forgot-password']">¿Olvidaste tu contraseña?
                     </a>
                 </div>
 
@@ -97,7 +97,7 @@
                     [disabled]="signInForm.disabled"
                     (click)="signIn()">
                     <span *ngIf="!signInForm.disabled">
-                        Sign in
+                        Acceder al sistema
                     </span>
                     <mat-progress-spinner
                         *ngIf="signInForm.disabled"
@@ -106,14 +106,14 @@
                 </button>
 
                 <!-- Separator -->
-                <div class="flex items-center mt-8">
+            <!--     <div class="flex items-center mt-8">
                     <div class="flex-auto mt-px border-t"></div>
-                    <div class="mx-2 text-secondary">Or continue with</div>
+                    <div class="mx-2 text-secondary">O continue con</div>
                     <div class="flex-auto mt-px border-t"></div>
-                </div>
+                </div> -->
 
                 <!-- Single sign-on buttons -->
-                <div class="flex items-center mt-8 space-x-4">
+              <!--   <div class="flex items-center mt-8 space-x-4">
                     <button
                         class="flex-auto"
                         type="button"
@@ -138,7 +138,7 @@
                             class="icon-size-5"
                             [svgIcon]="'feather:github'"></mat-icon>
                     </button>
-                </div>
+                </div> -->
             </form>
         </div>
     </div>
@@ -166,8 +166,8 @@
         <!-- Content -->
         <div class="z-10 relative w-full max-w-2xl">
             <div class="text-7xl font-bold leading-none text-gray-100">
-                <div>Welcome to</div>
-                <div>our community</div>
+                <div>Bienvenid@ a</div>
+                <div>nuestra comunidad</div>
             </div>
             <div class="mt-6 text-lg tracking-tight leading-6 text-gray-400">
                 Fuse helps developers to build organized and well coded dashboards full of beautiful and rich modules.

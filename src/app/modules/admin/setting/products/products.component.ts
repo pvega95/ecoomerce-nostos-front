@@ -244,10 +244,10 @@ async cargarCategorias(){
               descriptions: productEncontrado.descriptions.map(description =>{
                   return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
               }),
-              sku: productEncontrado.sky,
+              sku: productEncontrado.sku,
               category: productEncontrado.category,
               stock: productEncontrado.stock,
-              images: productEncontrado.image,
+              images: this.loadListImages(productEncontrado.images),
               price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
               weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
               createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
@@ -280,6 +280,18 @@ async cargarCategorias(){
         }
   
     }
+
+    loadListImages(listObjImages: any[]): string[]{
+     let listImages: string[] = [];
+     if(listObjImages.length > 0){
+        listObjImages.forEach(obj => {
+            listImages.push(obj.imageURL);
+        });
+     }
+     return listImages;
+    }
+
+
     createDescriptionForm(description?: string){
         return this._formBuilder.group({
             description: description || ''
@@ -492,7 +504,7 @@ async cargarCategorias(){
     crearNuevoProducto(): void{
         this. sacarListaDescripcionesDesdeForm();
         const body = {
-            sky: this.selectedProductForm.controls.sku.value,
+            sku: this.selectedProductForm.controls.sku.value,
             name: this.selectedProductForm.controls.name.value,
             price: this.selectedProductForm.controls.price.value,
             weight: this.selectedProductForm.controls.weight.value,
