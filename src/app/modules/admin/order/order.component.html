@@ -1,25 +1,50 @@
-<div class="flex flex-col flex-auto w-full">
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
 
-    <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
-
-        <!-- Title and action buttons -->
-        <div class="flex items-center justify-between w-full">
-            <div>
-                <ng-container *transloco="let t">
-                    <div class="text-3xl font-semibold tracking-tight leading-8">{{t('order-list')}}</div>
-                    <div class="font-medium tracking-tight text-secondary">{{t('order-list-description')}}</div>
-                </ng-container>
-                <!-- mi comentario v2 -->
-                
-            </div>
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div
+            class="absolute inset-x-0 bottom-0"
+            *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <ng-container *transloco="let t">
+            <div class="text-4xl font-extrabold tracking-tight">{{t('order-list')}}</div>
+        </ng-container>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- Search -->
+            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript min-w-50">
+                <mat-icon
+                    matPrefix
+                    [svgIcon]="'heroicons_outline:search'"></mat-icon>
+                <input
+                    matInput
+                    [formControl]="searchInputControl"
+                    [autocomplete]="'off'"
+                    [placeholder]="'Buscar órdenes'">
+            </mat-form-field>
+            <!-- Add product button -->
+            <button
+                class="ml-4"
+                mat-flat-button
+                [color]="'primary'"
+                    > <!--  (click)="agregarNuevoProducto()" -->
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Agre</span>
+            </button>
         </div>
     </div>
+</div>
 
-    <div class="px-3">
+
+
+<!--     <div class="px-3">
 
 
  <app-file-uploader></app-file-uploader> 
-    </div>
-</div>
+    </div> -->
+
 
 

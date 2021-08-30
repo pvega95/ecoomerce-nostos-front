@@ -14,6 +14,8 @@ import { SharedModule } from 'app/shared/shared.module';
 import { orderRoutes } from 'app/modules/admin/order/order.routing';
 import { OrderComponent } from './order.component';
 import { TranslocoModule } from '@ngneat/transloco';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
     declarations: [
@@ -21,6 +23,8 @@ import { TranslocoModule } from '@ngneat/transloco';
     ],
     imports     : [
         RouterModule.forChild(orderRoutes),
+        MatFormFieldModule,
+        MatInputModule,
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,

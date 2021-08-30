@@ -41,6 +41,7 @@ export class OrderComponent implements OnInit {
   @ViewChild(MatSort) private _sort: MatSort;
   public orders: any[]=[];
   public isLoading: boolean = true;
+  searchInputControl: FormControl = new FormControl();
 
   constructor(
     private ordersService: OrdersService,
