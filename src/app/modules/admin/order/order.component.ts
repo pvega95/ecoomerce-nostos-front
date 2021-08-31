@@ -9,30 +9,14 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { OrdersService } from './order.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
+import { StatusOrder } from '../../../enums/status.enum';
+import { stringify } from 'crypto-js/enc-base64';
+
 
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
-  styles: [
-               /* language=SCSS */
-               `
-               .inventory-grid {
-                   grid-template-columns: 48px auto 40px;
-    
-                   @screen sm {
-                       grid-template-columns: 48px auto 112px 72px;
-                   }
-    
-                   @screen md {
-                       grid-template-columns: 14rem 14rem 6rem 12rem 8rem;
-                   }
-    
-                   @screen lg {
-                       grid-template-columns: 14rem 14rem 6rem 12rem 8rem;
-                   }
-               }
-           `
-  ],
+  styleUrls: [ './order.component.scss'],
   animations     : fuseAnimations
 })
 export class OrderComponent implements OnInit {
@@ -40,7 +24,12 @@ export class OrderComponent implements OnInit {
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
   public orders: any[]=[];
+  public products: any[]=[];
   public isLoading: boolean = true;
+  selectedOrder: any = null;
+  selectedOrderForm: FormGroup;
+  selected: number;
+
   searchInputControl: FormControl = new FormControl();
 
   constructor(
@@ -53,6 +42,7 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista();
+     console.log('asd', StatusOrder.Creado)
   }
 
   async cargarLista(){
@@ -65,6 +55,108 @@ export class OrderComponent implements OnInit {
       console.log('lista ordenes',resp.data);
     }
    }
+   loadColorState(status: any): string{
+    let styleColor: string = '';
+    switch (status) {
+      case StatusOrder.Creado:{
+        styleColor = 'colorStadoCreado';
+        break;
+      }
+      case StatusOrder.Cancelado:{
+        styleColor = 'colorStadoCancelado';
+        break;
+      }
+        
+      default:
+        break;
+    }
+
+
+    return styleColor;
+   }
+
+   toggleDetails(orderId: string, open: boolean): void
+   {
+       console.log('selectedOrder', this.selectedOrder);
+
+       // If the order is already selected...
+       if (this.selectedOrder ) {
+         if (this.selectedOrder._id === orderId )
+         {
+             // Close the details
+             this.closeDetails();
+             return;
+         }
+       }
+       this.initForm();
+     
+
+       // Get the order by id
+       const orderEncontrado = this.orders.find(item => item._id === orderId)  || null;
+      
+       this.selectedOrder = orderEncontrado;
+       if(orderEncontrado._id){
+         this.products = [];
+           this.selectedOrderForm.patchValue({
+             id: orderEncontrado._id,
+             name: orderEncontrado.name,
+             sku: orderEncontrado.sku,
+             category: orderEncontrado.category
+             
+           });
+           this.products = orderEncontrado.products;
+
+       }else{
+           let descriptions = ['']
+           this.selected = -1;
+           this.selectedOrderForm.patchValue({
+               id: -1,
+               name: '',
+               sku: '',
+               category: '',
+               stock: '',
+               images: '',
+               price: '',
+               weight: ''
+               
+             });
+
+       }
+ 
+   }
+   initForm() {
+    this.selectedOrderForm = this._formBuilder.group({
+        id               : [''],
+        category         : [''],
+        name             : ['', [Validators.required]],
+        descriptions     : this._formBuilder.array([]),
+        createdDate      : [''],
+        updatedDate      : [''],
+        tags             : [[]],
+        sku              : [''],
+        barcode          : [''],
+        brand            : [''],
+        vendor           : [''],
+        stock            : [''],
+        reserved         : [''],
+        cost             : [''],
+        basePrice        : [''],
+        taxPercent       : [''],
+        price            : [''],
+        weight           : [''],
+        thumbnail        : [''],
+        images           : [[]],
+        currentImageIndex: [0], // Image index that is currently being viewed
+        active           : [false]
+    });
+}
+   closeDetails(): void
+   {
+       this.selectedOrder = null;
+   }
+   formatoFecha(fecha: string): string{
+    return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
+  }
 
 
 }

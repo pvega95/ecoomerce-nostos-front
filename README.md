@@ -30,5 +30,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 info en este link
 https://tailwindcss.com/
 
+## documentacion y plantilla ejemplo
+http://angular-material.fusetheme.com/dashboards/project?v12.0.0=
+
 ## componentes
 utiliza angular material

@@ -145,7 +145,7 @@ async cargarCategorias(){
         let resp: any;
         resp = await this.categoriesService.listarCategorias();
         if(resp.ok){
-            // Get the products
+            // Get the categories
             this.categories = resp.data;
             this.isLoading = false;
             console.log('lista categorias',resp.data);
