@@ -258,6 +258,7 @@ async cargarCategorias(){
             this.selected = this.categories.findIndex(categoria => categoria._id === this.selectedProductForm.get('category').value)
 
         }else{
+            this.verificarCantidadDescripciones();
             let descriptions = ['']
             this.selected = -1;
             this.selectedProductForm.patchValue({
@@ -268,7 +269,7 @@ async cargarCategorias(){
                 }),
                 sku: '',
                 category: '',
-                stock: '',
+                stock: 99,
                 images: '',
                 price: '',
                 weight: '',
@@ -503,6 +504,7 @@ async cargarCategorias(){
 
     crearNuevoProducto(): void{
         this. sacarListaDescripcionesDesdeForm();
+        console.log('this.files', this.files)
         const body = {
             sku: this.selectedProductForm.controls.sku.value,
             name: this.selectedProductForm.controls.name.value,
@@ -510,14 +512,28 @@ async cargarCategorias(){
             weight: this.selectedProductForm.controls.weight.value,
             descriptions: this.sacarListaDescripcionesDesdeForm(),
             thumbnail: '',
-            image: this.selectedProductForm.controls.images.value,
+            images: this.files,
             category: this.selectedProductForm.controls.category.value,
-            options: '',
+            options: null,
             stock: this.selectedProductForm.controls.stock.value
         }
         console.log('body creanr producto nuevo',body)
-      //  this.productsService.crearProducto(body);
+        this.productsService.crearProducto(this.toFormData(body)).then((resp)=>{
+            console.log('resp', resp)
+
+        }); 
     }
+
+     toFormData<T>( formValue: T ) {
+        const formData = new FormData();
+      
+        for ( const key of Object.keys(formValue) ) {
+          const value = formValue[key];
+          formData.append(key, value);
+        }
+      
+        return formData;
+      }
     sacarListaDescripcionesDesdeForm(): string[]{
         let cadena: string[] = [];
         (this.selectedProductForm.get('descriptions') as FormArray).value.forEach(element => {
@@ -606,6 +622,7 @@ async cargarCategorias(){
             images: [],
             currentImageIndex: 0
         }); 
+        this.files = [];
     }
 
     /**
