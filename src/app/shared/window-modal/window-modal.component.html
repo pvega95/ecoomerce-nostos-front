@@ -1,32 +1,41 @@
-<div class="relative flex flex-col  -m-6">
-    <!-- boton X -->
-    <div class="absolute top-0 right-0 pt-1 pr-4">
-        <button
-            mat-icon-button
-            [matDialogClose]="undefined">
-            <mat-icon
-                class="text-secondary"
-                [svgIcon]="'heroicons_outline:x'"></mat-icon>
-        </button>
-    </div>
-    <!-- insertar imagen -->
-    <div class="row" style="margin-top: 1.4rem;">
-        <div >
-            <app-file-uploader  (filesLoaded)="getFilesLoades($event)" ></app-file-uploader>
-        </div> 
-        <div class="flex justify-center items-center my-2">
+<ng-container *ngIf="data.type === typeModal.imagesUploader">
+    <div class="relative flex flex-col  -m-6">
+            <!-- boton X -->
+            <div class="absolute top-0 right-0 pt-1 pr-4">
                 <button
-                    mat-flat-button
-                    [disabled]= "!existListFile"
-                    [color]="'primary'"
-                    (click)="imagenesCargadas()">
-                    Hecho
+                    mat-icon-button
+                    [matDialogClose]="undefined">
+                    <mat-icon
+                        class="text-secondary"
+                        [svgIcon]="'heroicons_outline:x'"></mat-icon>
                 </button>
-        </div>
+            </div>
+            <!-- insertar imagen -->
+            <div class="row" style="margin-top: 1.4rem;">
+                <div >
+                    <app-file-uploader  (filesLoaded)="getFilesLoades($event)" ></app-file-uploader>
+                </div> 
+                <div class="flex justify-center items-center my-2">
+                        <button
+                            mat-flat-button
+                            [disabled]= "!existListFile"
+                            [color]="'primary'"
+                            (click)="imagenesCargadas()">
+                            Hecho
+                        </button>
+                </div>
+            </div>
     </div>
-    
+</ng-container>
 
-</div>
+<ng-container *ngIf="data.type === typeModal.loading">
+    <mat-spinner></mat-spinner>
+</ng-container>
 
+<ng-container *ngIf="data.type === typeModal.success">
+    <div>
+        <p>exito</p>
 
+    </div>
 
+</ng-container>

@@ -492,6 +492,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const productForm = new Product(this.presenter.form.value);
         this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
             console.log('resp', resp)
+            this.dialog.closeAll();
 
         }); 
     }

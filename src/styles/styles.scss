@@ -2,3 +2,8 @@
 /*  @ Import/write your custom styles here.
 /*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
 /* ----------------------------------------------------------------------------------------------------- */
+    .transparent > mat-dialog-container {
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.0) !important;
+       }
+   
