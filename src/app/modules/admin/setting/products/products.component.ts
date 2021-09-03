@@ -12,6 +12,8 @@ import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.serv
 import { CategoriesService } from '../category/category.service';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Modal } from '../../../../enums/modal.enum';
+
 
 const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
@@ -518,8 +520,18 @@ async cargarCategorias(){
             stock: this.selectedProductForm.controls.stock.value
         }
         console.log('body creanr producto nuevo',body)
+
+        this.dialog.open(WindowModalComponent, {
+            data: {
+                    type: Modal.loading
+                },
+            panelClass : 'transparent',
+            disableClose: true
+          }); 
+
         this.productsService.crearProducto(this.toFormData(body)).then((resp)=>{
             console.log('resp', resp)
+            this.dialog.closeAll();
 
         }); 
     }
@@ -589,7 +601,11 @@ async cargarCategorias(){
     openModalUploadImages(): void{
         const dialogRef = this.dialog.open(WindowModalComponent, {
             width: '42rem',
-            height: '23rem'
+            height: '23rem',
+            data: 
+                {
+                    type: Modal.imagesUploader
+                }
           });
       
           dialogRef.afterClosed().subscribe( async result => {

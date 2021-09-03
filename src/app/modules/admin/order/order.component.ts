@@ -11,6 +11,9 @@ import { OrdersService } from './order.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
 import { StatusOrder } from '../../../enums/status.enum';
 import { stringify } from 'crypto-js/enc-base64';
+import { WindowModalComponent } from '../../../shared/window-modal/window-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Modal } from '../../../enums/modal.enum';
 
 
 @Component({
@@ -36,14 +39,28 @@ export class OrderComponent implements OnInit {
     private ordersService: OrdersService,
     private fuseUtilsService: FuseUtilsService,
     private _changeDetectorRef: ChangeDetectorRef,
+    public dialog: MatDialog,
     private _fuseConfirmationService: FuseConfirmationService,
     private _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    this.cargarLista();
-     console.log('asd', StatusOrder.Creado)
+    this.cargarLista(); 
+  this.dialog.open(WindowModalComponent, {
+      data: {
+              type: Modal.success
+          },
+      disableClose: true
+    }); 
+
+/*     setTimeout(()=>{  // 3 segundo se cierra modal
+      this.dialog.closeAll();
+  }, 3000); */
   }
+
+
+
+
 
   async cargarLista(){
     let resp: any;

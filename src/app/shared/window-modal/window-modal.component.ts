@@ -2,6 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Modal } from '../../enums/modal.enum';
+
 
 @Component({
   selector: 'app-window-modal',
@@ -10,15 +12,20 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 })
 export class WindowModalComponent implements OnInit {
   public existListFile: boolean = false;
+  public typeModal: any;
   public listFiles: File[] = [];
 
   constructor(
     private _formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<WindowModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.typeModal = Modal;
+   }
 
   ngOnInit(): void {
+   console.log('data', Modal.loading)
+
   }
   onNoClick(): void {
     this.listFiles = [];

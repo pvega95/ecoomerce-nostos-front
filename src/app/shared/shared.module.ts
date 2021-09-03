@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileUploaderModule } from './file-uploader/file-uploader.module';
 import { WindowModalComponent } from './window-modal/window-modal.component';
 
@@ -17,6 +18,7 @@ const COMPONENTS = [WindowModalComponent]
         MatIconModule,
         MatButtonModule,
         ReactiveFormsModule,
+        MatProgressSpinnerModule,
         FileUploaderModule
     ],
     exports: [
