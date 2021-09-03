@@ -37,7 +37,7 @@
         </div>
     </div>
     <div>
-        <p>{{this.selectedProductForm.value | json}}</p>
+        <p>{{this.presenter.form.value | json}}</p>
     </div>
 
     <!-- Main -->
@@ -192,7 +192,7 @@
                         <!-- Selected product form -->
                         <form
                             class="flex flex-col w-full"
-                            [formGroup]="selectedProductForm">
+                            [formGroup]="presenter.form">
 
                             <div class="flex flex-col sm:flex-row p-8">
 
@@ -200,10 +200,10 @@
                                 <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
                                     <div class="flex flex-col items-center">
                                         <div class="w-32 h-44 border rounded overflow-hidden">
-                                            <ng-container *ngIf="selectedProductForm.get('images').value.length; else noImage">
+                                            <ng-container *ngIf="presenter.form.get('images').value?.length; else noImage">
                                                 <img
                                                     class="w-full h-full object-cover"
-                                                    [src]="selectedProductForm.get('images').value[selectedProductForm.get('currentImageIndex').value]">
+                                                    [src]="filePaths[presenter.currentImageIdx]">
                                             </ng-container>
                                             <ng-template #noImage>
                                                 <span class="flex items-center min-h-20 text-lg font-semibold">SIN IMAGEN</span>
@@ -211,7 +211,7 @@
                                         </div>
                                         <div
                                             class="flex items-center mt-2 whitespace-nowrap"
-                                            *ngIf="selectedProductForm.get('images').value.length">
+                                            *ngIf="presenter.form.get('images').value?.length">
                                             <button
                                                 mat-icon-button
                                                 (click)="cycleImages(false)">
@@ -220,7 +220,7 @@
                                                     [svgIcon]="'heroicons_solid:arrow-narrow-left'"></mat-icon>
                                             </button>
                                             <span class="font-sm mx-2">
-                                                {{selectedProductForm.get('currentImageIndex').value + 1}} de {{selectedProductForm.get('images').value.length}}
+                                                {{ presenter.currentImageIdx + 1}} de {{presenter.form.get('images').value.length}}
                                             </span>
                                             <button
                                                 mat-icon-button
@@ -230,7 +230,7 @@
                                                     [svgIcon]="'heroicons_solid:arrow-narrow-right'"></mat-icon>
                                             </button>
                                         </div>
-                                        <div *ngIf="selectedProductForm.get('images').value.length" class="flex items-center my-2 whitespace-nowrap">
+                                        <div *ngIf="presenter.form.get('images').value?.length" class="flex items-center my-2 whitespace-nowrap">
                                             <button class="w-full "
                                                 class="-ml-4"
                                                 mat-button
@@ -262,17 +262,13 @@
                                                 matInput
                                                 [formControlName]="'name'">
                                         </mat-form-field>
-                                         <ng-container *ngFor="let item of selectedProductForm.get('descriptions')['controls']; let i = index " formArrayName ="descriptions" > 
-                                           <mat-form-field class="w-full" [formGroupName]="i">
+                                         <ng-container *ngFor="let item of presenter.descriptionsControls; let i = index " formArrayName ="descriptions" > 
+                                           <mat-form-field class="w-full">
                                                 <mat-label>Descripción {{i+1}}</mat-label>
                                                  <input
                                                     matInput
-                                                    [formControlName]="'description'"> 
+                                                    [formControl]="presenter.descriptionsControls[i]"> 
                                             </mat-form-field> 
-                                         <!--    <div [formGroupName]="i">
-                                                <input formControlName="description" placeholder="Item description">
-                                              </div> -->
-
                                         </ng-container> 
                                         <div class="flex mb-3">
                                             <button class="w-1/2 pr-2 mr-2"
@@ -292,13 +288,13 @@
                                         </div>
                            
                                         <div class="flex">
-                                            <mat-form-field *ngIf="selectedProductForm.get('createdDate').value !== '' " class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('createdDate')?.value !== '' " class="w-1/2 pr-2">
                                                 <mat-label>Fecha de creación</mat-label>
                                                 <input readonly
                                                     matInput
                                                     [formControlName]="'createdDate'">
                                             </mat-form-field>
-                                            <mat-form-field *ngIf="selectedProductForm.get('updatedDate').value !== '' "  class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('updatedDate')?.value !== '' "  class="w-1/2 pr-2">
                                                 <mat-label>Fecha de actualización</mat-label>
                                                 <input readonly
                                                     matInput
@@ -456,7 +452,7 @@
                                             <span class="ml-2">An error occurred, try again!</span>
                                         </ng-container>
                                     </div>
-                                    <ng-container *ngIf="selectedProductForm.get('id').value !== -1;else nuevoProducto" >
+                                    <ng-container *ngIf="presenter.form.get('id')?.value !== -1;else nuevoProducto" >
                                         <button
                                             mat-flat-button
                                             [color]="'primary'"

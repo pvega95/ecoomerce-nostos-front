@@ -12,14 +12,17 @@ import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.serv
 import { CategoriesService } from '../category/category.service';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ProductPresenter } from './products.presenter';
+import { isArray } from 'lodash-es';
+import { Product } from 'app/models/product';
 
 const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
 
 @Component({
-    selector       : 'app-products',
-    templateUrl    : './products.component.html',
-    styles         : [
+    selector: 'app-products',
+    templateUrl: './products.component.html',
+    styles: [
         /* language=SCSS */
         `
             .inventory-grid {
@@ -39,19 +42,20 @@ const MAX_CANT_DESCRIPCIONES = 4;
             }
         `
     ],
-    animations     : fuseAnimations
+    animations: fuseAnimations,
+    providers: [ProductPresenter],
 })
-export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
-{
+export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
-    products: any[]=[];
+    products: any[] = [];
     countDescripcion: number = 1;
     deshabilitarBotonAgregarDescripcion: boolean = false;
     deshabilitarBotonQuitarDescripcion: boolean = false;
     selected: number;
     files: File[] = [];
+    filePaths: String[] = [];
 
 
     categories: any[] = [];
@@ -77,9 +81,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
-        public dialog: MatDialog
-    )
-    {
+        public dialog: MatDialog,
+        public presenter: ProductPresenter
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -89,92 +93,89 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
-      this.cargarListaProductos();
-      this.cargarCategorias();
+    ngOnInit(): void {
+        this.cargarListaProductos();
+        this.cargarCategorias();
         // Create the selected product form
         this.initForm();
 
-  
+
 
         // Get the tags
- /*        this._inventoryService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: InventoryTag[]) => {
-
-                // Update the tags
-                this.tags = tags;
-                this.filteredTags = tags;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            }); */
+        /*        this._inventoryService.tags$
+                   .pipe(takeUntil(this._unsubscribeAll))
+                   .subscribe((tags: InventoryTag[]) => {
+       
+                       // Update the tags
+                       this.tags = tags;
+                       this.filteredTags = tags;
+       
+                       // Mark for check
+                       this._changeDetectorRef.markForCheck();
+                   }); */
 
 
     }
 
     initForm() {
         this.selectedProductForm = this._formBuilder.group({
-            id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            descriptions     : this._formBuilder.array([]),
-            createdDate      : [''],
-            updatedDate      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
+            id: [''],
+            category: [''],
+            name: ['', [Validators.required]],
+            descriptions: this._formBuilder.array([]),
+            createdDate: [''],
+            updatedDate: [''],
+            tags: [[]],
+            sku: [''],
+            barcode: [''],
+            brand: [''],
+            vendor: [''],
+            stock: [''],
+            reserved: [''],
+            cost: [''],
+            basePrice: [''],
+            taxPercent: [''],
+            price: [''],
+            weight: [''],
+            thumbnail: [''],
+            images: [[]],
             currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false]
+            active: [false]
         });
     }
 
-async cargarCategorias(){
+    async cargarCategorias() {
         let resp: any;
         resp = await this.categoriesService.listarCategorias();
-        if(resp.ok){
+        if (resp.ok) {
             // Get the categories
             this.categories = resp.data;
             this.isLoading = false;
-            console.log('lista categorias',resp.data);
+            console.log('lista categorias', resp.data);
         }
 
     }
 
-    async cargarListaProductos(){
-      let resp: any;
-      // console.log('lista product', await this.productsService.listarProductos())
-      resp = await this.productsService.listarProductos();
-      if(resp.ok){
-        // Get the products
-        this.products = resp.data;
-        this.isLoading = false;
-      }
-     }
+    async cargarListaProductos() {
+        let resp: any;
+        // console.log('lista product', await this.productsService.listarProductos())
+        resp = await this.productsService.listarProductos();
+        if (resp.ok) {
+            // Get the products
+            this.products = resp.data;
+            this.isLoading = false;
+        }
+    }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
-        if ( this._sort && this._paginator )
-        {
+    ngAfterViewInit(): void {
+        if (this._sort && this._paginator) {
             // Set the initial sort
             this._sort.sort({
-                id          : 'name',
-                start       : 'asc',
+                id: 'name',
+                start: 'asc',
                 disableClear: true
             });
 
@@ -192,15 +193,14 @@ async cargarCategorias(){
                     this.closeDetails();
                 });
 
-  
+
         }
     }
 
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -215,56 +215,53 @@ async cargarCategorias(){
      *
      * @param productId
      */
-    toggleDetails(productId: string, open: boolean): void
-    {
-        console.log('selectedProduct', this.selectedProduct);
+    toggleDetails(productId: string, open: boolean): void {
 
         // If the product is already selected...
-        if (this.selectedProduct ) {
-          if (this.selectedProduct._id === productId )
-          {
-              // Close the details
-              this.closeDetails();
-              return;
-          }
+        if (this.selectedProduct) {
+            if (this.selectedProduct._id === productId) {
+                // Close the details
+                this.closeDetails();
+                return;
+            }
         }
         this.initForm();
-      
+
 
         // Get the product by id
-        const productEncontrado = this.products.find(item => item._id === productId)  || null;
-       
+        const productEncontrado = this.products.find(item => item._id === productId) || null;
+
         this.selectedProduct = productEncontrado;
-        if(productEncontrado._id){
+        if (productEncontrado._id) {
             this.countDescripcion = productEncontrado.descriptions.length;
             this.verificarCantidadDescripciones();
             this.selectedProductForm.patchValue({
-              id: productEncontrado._id,
-              name: productEncontrado.name,
-              descriptions: productEncontrado.descriptions.map(description =>{
-                  return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-              }),
-              sku: productEncontrado.sku,
-              category: productEncontrado.category,
-              stock: productEncontrado.stock,
-              images: this.loadListImages(productEncontrado.images),
-              price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
-              weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-              createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
-              updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
-              
+                id: productEncontrado._id,
+                name: productEncontrado.name,
+                descriptions: productEncontrado.descriptions.map(description => {
+                    return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
+                }),
+                sku: productEncontrado.sku,
+                category: productEncontrado.category,
+                stock: productEncontrado.stock,
+                images: this.loadListImages(productEncontrado.images),
+                price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
+                weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
+                createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
+                updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
+
             });
 
             this.selected = this.categories.findIndex(categoria => categoria._id === this.selectedProductForm.get('category').value)
 
-        }else{
+        } else {
             this.verificarCantidadDescripciones();
             let descriptions = ['']
             this.selected = -1;
             this.selectedProductForm.patchValue({
                 id: -1,
                 name: '',
-                descriptions:  descriptions.map(description =>{
+                descriptions: descriptions.map(description => {
                     return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
                 }),
                 sku: '',
@@ -275,25 +272,25 @@ async cargarCategorias(){
                 weight: '',
                 createdDate: '',
                 updatedDate: ''
-                
-              });
+
+            });
 
         }
-  
+
     }
 
-    loadListImages(listObjImages: any[]): string[]{
-     let listImages: string[] = [];
-     if(listObjImages.length > 0){
-        listObjImages.forEach(obj => {
-            listImages.push(obj.imageURL);
-        });
-     }
-     return listImages;
+    loadListImages(listObjImages: any[]): string[] {
+        let listImages: string[] = [];
+        if (listObjImages.length > 0) {
+            listObjImages.forEach(obj => {
+                listImages.push(obj.imageURL);
+            });
+        }
+        return listImages;
     }
 
 
-    createDescriptionForm(description?: string){
+    createDescriptionForm(description?: string) {
         return this._formBuilder.group({
             description: description || ''
         })
@@ -302,41 +299,41 @@ async cargarCategorias(){
     /**
      * Close the details
      */
-    closeDetails(): void
-    {
+    closeDetails(): void {
         this.selectedProduct = null;
     }
 
     /**
      * Cycle through images of selected product
      */
-    cycleImages(forward: boolean = true): void
-    {
+    cycleImages(forward: boolean = true): void {
         // Get the image count and current image index
-        const count = this.selectedProductForm.get('images').value.length;
-        const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
+        // const count = this.selectedProductForm.get('images').value.length;
+        // const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
+        const count = this.presenter.form.get('images').value.length;
+        const currentIndex = this.presenter.form.get('currentImageIndex').value;
 
         // Calculate the next and previous index
         const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1;
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
 
         // If cycling forward...
-        if ( forward )
-        {
-            this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
+        if (forward) {
+            // this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
+            this.presenter.form.get('currentImageIndex').setValue(nextIndex);
         }
         // If cycling backwards...
-        else
-        {
-            this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
+        else {
+            // this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
+            this.presenter.form.get('currentImageIndex').setValue(prevIndex);
+
         }
     }
 
     /**
      * Toggle the tags edit mode
      */
-    toggleTagsEditMode(): void
-    {
+    toggleTagsEditMode(): void {
         this.tagsEditMode = !this.tagsEditMode;
     }
 
@@ -345,13 +342,12 @@ async cargarCategorias(){
      *
      * @param event
      */
-    filterTags(event): void
-    {
+    filterTags(event): void {
         // Get the value
         const value = event.target.value.toLowerCase();
 
         // Filter the tags
-       
+
     }
 
     /**
@@ -359,9 +355,8 @@ async cargarCategorias(){
      *
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
-  
+    filterTagsInputKeyDown(event): void {
+
     }
 
     /**
@@ -369,9 +364,8 @@ async cargarCategorias(){
      *
      * @param title
      */
-    createTag(title: string): void
-    {
- 
+    createTag(title: string): void {
+
     }
 
     /**
@@ -380,8 +374,7 @@ async cargarCategorias(){
      * @param tag
      * @param event
      */
-    updateTagTitle(tag, event): void
-    {
+    updateTagTitle(tag, event): void {
         // Update the title on the tag
         tag.title = event.target.value;
 
@@ -393,8 +386,7 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    deleteTag(tag): void
-    {
+    deleteTag(tag): void {
 
     }
 
@@ -403,8 +395,7 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    addTagToProduct(tag): void
-    {
+    addTagToProduct(tag): void {
         // Add the tag
         this.selectedProduct.tags.unshift(tag.id);
 
@@ -420,8 +411,7 @@ async cargarCategorias(){
      *
      * @param tag
      */
-    removeTagFromProduct(tag): void
-    {
+    removeTagFromProduct(tag): void {
         // Remove the tag
         this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1);
 
@@ -438,21 +428,19 @@ async cargarCategorias(){
      * @param tag
      * @param change
      */
-     toggleProductCategory(category: any, index: number, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
-            this.selectedProductForm.patchValue({
+    toggleProductCategory(category: any, index: number, change: MatCheckboxChange): void {
+        console.log(change);
+        if (change.checked) {
+            this.presenter.form.patchValue({
                 category: category._id
             });
             this.selected = index;
         }
-        else
-        {
-            this.selectedProductForm.patchValue({
+        else {
+            this.presenter.form.patchValue({
                 category: ''
             });
-        } 
+        }
     }
 
     /**
@@ -460,179 +448,181 @@ async cargarCategorias(){
      *
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
+    shouldShowCreateTagButton(inputValue: string): boolean {
         return false;
     }
 
     /**
      * Create product
      */
-     agregarNuevoProducto(): void
-    {
+    agregarNuevoProducto(): void {
         this.products.unshift({
             name: 'Nuevo producto'
         });
         this.selected = -1;
-      /*   // Create the product
-        this._inventoryService.createProduct().subscribe((newProduct) => {
-
-            // Go to new product
-            this.selectedProduct = newProduct;
-
-            // Fill the form
-            this.selectedProductForm.patchValue(newProduct);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        }); */
+        /*   // Create the product
+          this._inventoryService.createProduct().subscribe((newProduct) => {
+  
+              // Go to new product
+              this.selectedProduct = newProduct;
+  
+              // Fill the form
+              this.selectedProductForm.patchValue(newProduct);
+  
+              // Mark for check
+              this._changeDetectorRef.markForCheck();
+          }); */
     }
 
     /**
      * Update the selected product using the form data
      */
-    updateSelectedProduct(): void
-    {
+    updateSelectedProduct(): void {
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
         // Remove the currentImageIndex field
         delete product.currentImageIndex;
 
-  
+
     }
 
-    crearNuevoProducto(): void{
-        this. sacarListaDescripcionesDesdeForm();
-        console.log('this.files', this.files)
-        const body = {
-            sku: this.selectedProductForm.controls.sku.value,
-            name: this.selectedProductForm.controls.name.value,
-            price: this.selectedProductForm.controls.price.value,
-            weight: this.selectedProductForm.controls.weight.value,
-            descriptions: this.sacarListaDescripcionesDesdeForm(),
-            thumbnail: '',
-            images: this.files,
-            category: this.selectedProductForm.controls.category.value,
-            options: null,
-            stock: this.selectedProductForm.controls.stock.value
-        }
-        console.log('body creanr producto nuevo',body)
-        this.productsService.crearProducto(this.toFormData(body)).then((resp)=>{
+    crearNuevoProducto(): void {
+        console.log('presenter', this.presenter.form.value);
+        const productForm = new Product(this.presenter.form.value);
+        this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
             console.log('resp', resp)
 
         }); 
     }
 
-     toFormData<T>( formValue: T ) {
+    toFormData<T>(formValue: T) {
         const formData = new FormData();
-      
-        for ( const key of Object.keys(formValue) ) {
-          const value = formValue[key];
-          formData.append(key, value);
+
+        for (const key of Object.keys(formValue)) {
+            if (key === 'images' || key === 'descriptions' && isArray(formValue[key])) {
+                for (const f of formValue[key]) {
+                    formData.append(key, f);
+                }
+            } else {
+                const value = formValue[key];
+                formData.append(key, value);
+            }
         }
-      
+
         return formData;
-      }
-    sacarListaDescripcionesDesdeForm(): string[]{
+    }
+
+    sacarListaDescripcionesDesdeForm(): string[] {
         let cadena: string[] = [];
         (this.selectedProductForm.get('descriptions') as FormArray).value.forEach(element => {
             cadena.push(element.description)
         });
         return cadena;
     }
-    agregarDescripcion(): void{
+    agregarDescripcion(): void {
         this.countDescripcion++;
-        if(this.verificarCantidadDescripciones()){
+        if (this.verificarCantidadDescripciones()) {
             this.selectedProductForm.patchValue({
-                descriptions:  (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm())
+                descriptions: (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm())
             });
         }
-       // console.log('cantidad de descri', (this.selectedProductForm.get('descriptions') as FormArray).length)
-  
-        
+        this.presenter.addDescriptionControl();
+        console.log('descriptions', this.selectedProductForm.get('descriptions').value);
+
+
     }
-    quitarDescripcion(): void{
+    quitarDescripcion(): void {
         this.countDescripcion--;
-        if(this.verificarCantidadDescripciones()){
+        if (this.verificarCantidadDescripciones()) {
             (this.selectedProductForm.get('descriptions') as FormArray).removeAt((this.selectedProductForm.get('descriptions') as FormArray).length - 1)
         }
-        
+
     }
-    verificarCantidadDescripciones(): boolean{
-        if( this.countDescripcion <= MAX_CANT_DESCRIPCIONES && this.countDescripcion >= 1){
+    verificarCantidadDescripciones(): boolean {
+        if (this.countDescripcion <= MAX_CANT_DESCRIPCIONES && this.countDescripcion >= 1) {
             this.deshabilitarBotonQuitarDescripcion = false;
-            if(this.countDescripcion === MAX_CANT_DESCRIPCIONES){
+            if (this.countDescripcion === MAX_CANT_DESCRIPCIONES) {
                 this.deshabilitarBotonAgregarDescripcion = true;
-            }else{
-                if(this.countDescripcion === 1){
+            } else {
+                if (this.countDescripcion === 1) {
                     this.deshabilitarBotonQuitarDescripcion = true;
                 }
                 this.deshabilitarBotonAgregarDescripcion = false;
             }
-            
+
             return true;
-        }else{
-            if(this.countDescripcion > 4){
+        } else {
+            if (this.countDescripcion > 4) {
                 this.countDescripcion = MAX_CANT_DESCRIPCIONES;
                 this.deshabilitarBotonAgregarDescripcion = true;
-            }else{
-                if(this.countDescripcion < 1){
+            } else {
+                if (this.countDescripcion < 1) {
                     this.countDescripcion = 1;
                     this.deshabilitarBotonQuitarDescripcion = true;
                 }
             }
-            
+
             return false;
         }
     }
-    openModalUploadImages(): void{
+    openModalUploadImages(): void {
         const dialogRef = this.dialog.open(WindowModalComponent, {
             width: '42rem',
             height: '23rem'
-          });
-      
-          dialogRef.afterClosed().subscribe( async result => {
+        });
+
+        dialogRef.afterClosed().subscribe(async result => {
+            console.log('result', result);
             let listImgs: string[] = [];
-            if(result){
-              if (this.selectedProductForm.controls.id.value === NEW_PRODUCT){
-                this.files = (result as File[]);
-                this.files.forEach(file => {
+            if (result) {
+                this.presenter.addImages(result);
+                result.forEach(file => {
                     this.fuseUtilsService.readImageFile(file)
-                    .then(img => setTimeout(() => {        
-                        listImgs.push(img as string)       
-                    }))
-                    .catch(err => console.error(err));
+                        .then((img: string) => setTimeout(() => {
+                            this.filePaths.push(img)
+                        }))
+                        .catch(err => console.error(err));
                 });
-               this.selectedProductForm.patchValue({
-                    images: listImgs
-                }); 
 
-              }
+                //   if (this.selectedProductForm.controls.id.value === NEW_PRODUCT){
+                //     this.files = (result as File[]);
+                //     this.files.forEach(file => {
+                // this.fuseUtilsService.readImageFile(file)
+                //         .then(img => setTimeout(() => {        
+                //             listImgs.push(img as string)       
+                //         }))
+                //         .catch(err => console.error(err));
+                //     });
+                //    this.selectedProductForm.patchValue({
+                //         images: listImgs
+                //     }); 
 
-            }else{
-              console.log('indefinido')
+                //   }
+
+            } else {
+                console.log('indefinido')
             }
-      
-          });
+
+        });
 
     }
-    removeImages(): void{
+
+    removeImages(): void {
         this.selectedProductForm.patchValue({
             images: [],
             currentImageIndex: 0
-        }); 
+        });
         this.files = [];
     }
 
     /**
      * Delete the selected product using the form data
      */
-    deleteSelectedProduct(): void
-    {
+    deleteSelectedProduct(): void {
         // Open the confirmation dialog
         const confirmation = this._fuseConfirmationService.open({
-            title  : 'Eliminar producto',
+            title: 'Eliminar producto',
             message: '¿Estás seguro(a) de eliminar este producto? Esta acción no puede deshacerse!',
             actions: {
                 confirm: {
@@ -645,13 +635,12 @@ async cargarCategorias(){
         confirmation.afterClosed().subscribe((result) => {
 
             // If the confirm button pressed...
-            if ( result === 'confirmed' )
-            {
+            if (result === 'confirmed') {
 
                 // Get the product object
                 const product = this.selectedProductForm.getRawValue();
 
-          
+
             }
         });
     }
@@ -659,8 +648,7 @@ async cargarCategorias(){
     /**
      * Show flash message
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
+    showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
 
@@ -683,8 +671,7 @@ async cargarCategorias(){
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 }
