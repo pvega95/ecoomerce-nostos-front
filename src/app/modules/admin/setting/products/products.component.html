@@ -288,13 +288,13 @@
                                         </div>
                            
                                         <div class="flex">
-                                            <mat-form-field *ngIf="presenter.form.get('createdDate')?.value !== '' " class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('createdDate')?.value !== null " class="w-1/2 pr-2">
                                                 <mat-label>Fecha de creación</mat-label>
                                                 <input readonly
                                                     matInput
                                                     [formControlName]="'createdDate'">
                                             </mat-form-field>
-                                            <mat-form-field *ngIf="presenter.form.get('updatedDate')?.value !== '' "  class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('updatedDate')?.value !== null "  class="w-1/2 pr-2">
                                                 <mat-label>Fecha de actualización</mat-label>
                                                 <input readonly
                                                     matInput

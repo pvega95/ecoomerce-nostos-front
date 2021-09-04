@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProductPresenter } from './products.presenter';
 import { isArray } from 'lodash-es';
 import { Product } from 'app/models/product';
+import { Modal } from '../../../../enums/modal.enum';
 
 const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
@@ -164,6 +165,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             // Get the products
             this.products = resp.data;
             this.isLoading = false;
+            console.log(' this.products ',  this.products )
         }
     }
 
@@ -258,7 +260,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.verificarCantidadDescripciones();
             let descriptions = ['']
             this.selected = -1;
-            this.selectedProductForm.patchValue({
+         /*    this.selectedProductForm.patchValue({
                 id: -1,
                 name: '',
                 descriptions: descriptions.map(description => {
@@ -273,7 +275,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 createdDate: '',
                 updatedDate: ''
 
-            });
+            }); */
+
+            this.presenter.addDescriptionControl();
 
         }
 
@@ -524,19 +528,21 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     agregarDescripcion(): void {
         this.countDescripcion++;
         if (this.verificarCantidadDescripciones()) {
-            this.selectedProductForm.patchValue({
+            this.presenter.addDescriptionControl();
+     /*     this.selectedProductForm.patchValue({
                 descriptions: (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm())
-            });
-        }
-        this.presenter.addDescriptionControl();
-        console.log('descriptions', this.selectedProductForm.get('descriptions').value);
+            }); */
+        } 
+       
+     //   console.log('descriptions', this.selectedProductForm.get('descriptions').value);
 
 
     }
     quitarDescripcion(): void {
         this.countDescripcion--;
         if (this.verificarCantidadDescripciones()) {
-            (this.selectedProductForm.get('descriptions') as FormArray).removeAt((this.selectedProductForm.get('descriptions') as FormArray).length - 1)
+            this.presenter.removeDescriptionControl();
+           // (this.selectedProductForm.get('descriptions') as FormArray).removeAt((this.selectedProductForm.get('descriptions') as FormArray).length - 1)
         }
 
     }
@@ -570,7 +576,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     openModalUploadImages(): void {
         const dialogRef = this.dialog.open(WindowModalComponent, {
             width: '42rem',
-            height: '23rem'
+            height: '23rem',
+            data: {
+                type: Modal.imagesUploader
+            },
+        disableClose: true
         });
 
         dialogRef.afterClosed().subscribe(async result => {
