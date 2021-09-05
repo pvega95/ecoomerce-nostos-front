@@ -74,7 +74,7 @@ export class ProductPresenter {
     }
 
     createDescriptionForm(): FormControl {
-        return new FormControl();
+        return new FormControl('');
     }
 
     createImageForm(): FormControl {
@@ -84,6 +84,9 @@ export class ProductPresenter {
     addDescriptionControl() {
         const formDescription = this.createDescriptionForm();
         this.descriptionsForm.push(formDescription);
+    }
+    removeDescriptionControl() {
+        this.descriptionsForm.removeAt(this.descriptionsForm.length -1);
     }
 
     createDescriptionBase() {
