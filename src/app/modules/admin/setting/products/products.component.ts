@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProductPresenter } from './products.presenter';
 import { isArray } from 'lodash-es';
 import { Product } from 'app/models/product';
+import { Modal } from 'app/enums/modal.enum';
 
 const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
@@ -570,7 +571,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     openModalUploadImages(): void {
         const dialogRef = this.dialog.open(WindowModalComponent, {
             width: '42rem',
-            height: '23rem'
+            height: '23rem',
+            data: {
+                type: Modal.imagesUploader
+            },
         });
 
         dialogRef.afterClosed().subscribe(async result => {
