@@ -89,7 +89,7 @@
                                                 class="w-8"
                                                 *ngIf="product.thumbnail"
                                                 [alt]="'Product thumbnail image'"
-                                                [src]="product.image">
+                                                [src]="product.images[0].imageURL">
                                             <div
                                                 class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase"
                                                 *ngIf="!product.thumbnail">
@@ -268,7 +268,6 @@
                                                  <input
                                                     matInput
                                                     [formControl]="presenter.descriptionsControls[i]"> 
-                                                    <p>{{presenter.descriptionsControls[i].value | json}}</p>
                                             </mat-form-field> 
                                         </ng-container> 
                                         <div class="flex mb-3">

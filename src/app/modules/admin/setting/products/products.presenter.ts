@@ -73,16 +73,16 @@ export class ProductPresenter {
         this.currentImageIndex = new FormControl(0);
     }
 
-    createDescriptionForm(): FormControl {
-        return new FormControl();
+    createDescriptionForm(val?: string): FormControl {
+        return new FormControl(val || '');
     }
 
     createImageForm(): FormControl {
         return new FormControl();
     }
 
-    addDescriptionControl() {
-        const formDescription = this.createDescriptionForm();
+    addDescriptionControl(val?: string) {
+        const formDescription = this.createDescriptionForm(val);
         this.descriptionsForm.push(formDescription);
     }
     removeDescriptionControl() {
@@ -101,9 +101,11 @@ export class ProductPresenter {
         });
     }
 
-    addImageControl(image) {
+    addImageControl(image?: File) {
         const imageProduct = this.createImageForm();
-        imageProduct.patchValue(image);
+        if (image) {
+            imageProduct.patchValue(image);
+        }
         this.images.insert(0, imageProduct);
         // const existProduct = this.images.controls.findIndex((x) => x.value === image);
         // if (existProduct > -1) {
@@ -114,6 +116,15 @@ export class ProductPresenter {
         //   imageProduct.patchValue(image);
         //   this.images.insert(0, imageProduct);
         // }   
+    }
+    loadListImages(listObjImages: any[]): string[] {
+        let listImages: string[] = [];
+        if (listObjImages.length > 0) {
+            listObjImages.forEach(obj => {
+                listImages.push(obj.imageURL);
+            });
+        }
+        return listImages;
     }
 
     addImages(files: File[]){

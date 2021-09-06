@@ -119,6 +119,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     initForm() {
+        
         this.selectedProductForm = this._formBuilder.group({
             id: [''],
             category: [''],
@@ -227,8 +228,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 return;
             }
         }
-        this.initForm();
-
+        //this.initForm();
+        this.presenter.createForm();
+        this.filePaths = [];
 
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId) || null;
@@ -237,32 +239,23 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (productEncontrado._id) {
             this.countDescripcion = productEncontrado.descriptions.length;
             this.verificarCantidadDescripciones();
-            this.selectedProductForm.patchValue({
-                id: productEncontrado._id,
-                name: productEncontrado.name,
-                descriptions: productEncontrado.descriptions.map(description => {
-                    return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-                }),
-                sku: productEncontrado.sku,
-                category: productEncontrado.category,
-                stock: productEncontrado.stock,
-                images: this.loadListImages(productEncontrado.images),
-                price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
-                weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-                createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
-                updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
-
+     
+            productEncontrado.descriptions.map(description => {
+                return this.presenter.addDescriptionControl(description);
+            
             });
+            this.presenter.loadListImages(productEncontrado.images).forEach(urlImage => {
+                this.filePaths.push(urlImage);
+                this.presenter.addImageControl();
+            });
+
             this.presenter.form.patchValue({
                 id: productEncontrado._id,
-               // images: this.images,
                 sku: productEncontrado.sku,
                 name: productEncontrado.name,
                 price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
                 weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-                descriptions:  productEncontrado.descriptions.map(description => {
-                    return (this.presenter.form.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-                }),
+             
                 thumbnail: productEncontrado.thumbnail,
                 category: productEncontrado.category,
               //  options: this.options,
@@ -272,12 +265,26 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                // currentImageIndex: this.currentImageIndex
             });
 
-            this.selected = this.categories.findIndex(categoria => categoria._id === this.selectedProductForm.get('category').value)
+            this.selected = this.categories.findIndex(categoria => categoria._id === this.presenter.form.get('category').value)
 
         } else {
             this.verificarCantidadDescripciones();
             let descriptions = ['']
             this.selected = -1;
+            this.presenter.form.patchValue({
+                id: -1,
+                sku: '',
+                name: '',
+                price: '',
+                weight: '',
+                thumbnail: null,
+                category: '',
+              //  options: this.options,
+                stock: 99,
+                createdDate: null,
+                updatedDate: null
+               // currentImageIndex: this.currentImageIndex
+            });
          /*    this.selectedProductForm.patchValue({
                 id: -1,
                 name: '',
@@ -301,22 +308,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    loadListImages(listObjImages: any[]): string[] {
-        let listImages: string[] = [];
-        if (listObjImages.length > 0) {
-            listObjImages.forEach(obj => {
-                listImages.push(obj.imageURL);
-            });
-        }
-        return listImages;
-    }
 
 
-    createDescriptionForm(description?: string) {
-        return this._formBuilder.group({
-            description: description || ''
-        })
-    }
 
     /**
      * Close the details
@@ -479,7 +472,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     agregarNuevoProducto(): void {
         this.products.unshift({
-            name: 'Nuevo producto'
+            name: 'Nuevo producto',
+            thumbnail: null
         });
         this.selected = -1;
         /*   // Create the product
