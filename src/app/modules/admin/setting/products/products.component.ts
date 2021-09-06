@@ -253,6 +253,24 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
 
             });
+            this.presenter.form.patchValue({
+                id: productEncontrado._id,
+               // images: this.images,
+                sku: productEncontrado.sku,
+                name: productEncontrado.name,
+                price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
+                weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
+                descriptions:  productEncontrado.descriptions.map(description => {
+                    return (this.presenter.form.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
+                }),
+                thumbnail: productEncontrado.thumbnail,
+                category: productEncontrado.category,
+              //  options: this.options,
+                stock: productEncontrado.stock,
+                createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
+                updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
+               // currentImageIndex: this.currentImageIndex
+            });
 
             this.selected = this.categories.findIndex(categoria => categoria._id === this.selectedProductForm.get('category').value)
 

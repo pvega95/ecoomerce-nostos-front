@@ -74,7 +74,7 @@ export class ProductPresenter {
     }
 
     createDescriptionForm(): FormControl {
-        return new FormControl('');
+        return new FormControl();
     }
 
     createImageForm(): FormControl {
