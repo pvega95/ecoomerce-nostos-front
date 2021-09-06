@@ -27,6 +27,7 @@ export class OrderComponent implements OnInit {
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
   public orders: any[]=[];
+  public statusOrders: any[]=[];
   public products: any[]=[];
   public isLoading: boolean = true;
   selectedOrder: any = null;
@@ -46,32 +47,35 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista(); 
-  this.dialog.open(WindowModalComponent, {
+/*   this.dialog.open(WindowModalComponent, {
       data: {
               type: Modal.success
           },
       disableClose: true
-    }); 
+    });  */
 
 /*     setTimeout(()=>{  // 3 segundo se cierra modal
       this.dialog.closeAll();
   }, 3000); */
   }
 
-
-
-
-
   async cargarLista(){
-    let resp: any;
-    resp = await this.ordersService.listarOrdenes();
-    if(resp.ok){
+    let resp1: any;
+    let resp2: any;
+
+    resp1 = await this.ordersService.listarOrdenes();
+    resp2 = await this.ordersService.listarEstadosOrdenes();
+
+    if(resp1.ok && resp2.ok){
       // Get the ordersn
-      this.orders = resp.data;
+      this.orders = resp1.data;
+      this.statusOrders = resp2.data;
       this.isLoading = false;
-      console.log('lista ordenes',resp.data);
+      console.log('lista ordenes',resp1.data, this.statusOrders);
     }
    }
+
+
    loadColorState(status: any): string{
     let styleColor: string = '';
     switch (status) {

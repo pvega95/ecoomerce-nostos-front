@@ -54,7 +54,17 @@
                                 [mat-sort-header]="'status'">
                                 Estado de orden
                             </div>
-                            <div [mat-sort-header]="'name'">Monto</div>
+                            <div
+                                class="hidden md:block"
+                                [mat-sort-header]="'name'">
+                                Nombre
+                            </div>
+                            <div
+                                class="hidden md:block"
+                                [mat-sort-header]="'lastname'">
+                                Apellidos
+                            </div>
+                            <div [mat-sort-header]="'mount'">Monto</div>
                             <div
                                 class="hidden lg:block"
                                 [mat-sort-header]="'createdAt'">
@@ -73,14 +83,21 @@
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
                                     <!-- status -->
                                     <div class="hidden md:block truncate">
-                                        <span class="p-2" [ngClass]="loadColorState(order.order_status)" >
-                                            {{order.order_status}}
+                                        <span class="p-2" [ngClass]="loadColorState(order.order_status.name)" >
+                                            {{order.order_status.name}}
                                         </span>
                                     </div>
-
+                                    <!-- Cliente nombre -->
+                                    <div class="truncate">
+                                         {{order.customer_id.full_name.name}}
+                                    </div>
+                                    <!-- Cliente apellidos -->
+                                    <div class="truncate">
+                                        {{order.customer_id.full_name.lastName}}
+                                    </div>
                                     <!-- Monto -->
                                     <div class="truncate">
-                                      S/.  {{order.ammount}}
+                                      S/.  {{order.ammount | number:'1.2-2'}}
                                     </div>
                                     <!-- creation date  -->
                                     <div class="truncate">
@@ -131,15 +148,13 @@
                 <div class="shadow-lg overflow-hidden">
                     <div class="flex border-b">
                         <!-- Selected product form -->
-                        <div
-                            class="flex flex-col w-full"    >
+                        <div  class="flex flex-col w-full" >
 
                             <div class="flex flex-col sm:flex-row p-8">
 
                                 <div *ngFor="let product of products" class="flex flex-auto flex-wrap">
                                     <!-- Name, SKU & etc. -->
-                                    <div class="flex flex-col w-full lg:w-2/4 sm:pl-8">
-
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
 
                                         <!-- Name -->
                                    <!--      <mat-form-field class="w-full">
@@ -148,10 +163,20 @@
                                                 matInput
                                                 [formControlName]="'name'">
                                         </mat-form-field> -->
-                                        <p>SKU</p>
+                                        <p>SKU: abc</p>
                                         <br/>
-                                        <p>{{product.sku}}</p>
+                                        <!-- p>{{product.sku}}</p> -->
+                                     
      
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>cantidad: 01</p>
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>precio: 3000</p>
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>total: S/. 3000</p>
                                     </div>
 
                                     <!-- Cost, Base price, Tax & Price -->
