@@ -51,7 +51,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort) private _sort: MatSort;
 
     products: any[] = [];
-    countDescripcion: number = 1;
+    countDescripcion: number = 0;
     deshabilitarBotonAgregarDescripcion: boolean = false;
     deshabilitarBotonQuitarDescripcion: boolean = false;
     selected: number;
@@ -234,6 +234,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const productEncontrado = this.products.find(item => item._id === productId) || null;
         productEncontrado.currentImageIndex = 0;
         this.selectedProduct = productEncontrado;
+        this.verificarCantidadDescripciones();
         if (productEncontrado._id) {
             this.presenter.loadProductForm(productEncontrado);
             const { images } = productEncontrado;
@@ -498,12 +499,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
     verificarCantidadDescripciones(): boolean {
-        if (this.countDescripcion <= MAX_CANT_DESCRIPCIONES && this.countDescripcion >= 1) {
+        if (this.countDescripcion <= MAX_CANT_DESCRIPCIONES && this.countDescripcion >= 0) {
             this.deshabilitarBotonQuitarDescripcion = false;
             if (this.countDescripcion === MAX_CANT_DESCRIPCIONES) {
                 this.deshabilitarBotonAgregarDescripcion = true;
             } else {
-                if (this.countDescripcion === 1) {
+                if (this.countDescripcion === 0) {
                     this.deshabilitarBotonQuitarDescripcion = true;
                 }
                 this.deshabilitarBotonAgregarDescripcion = false;
@@ -516,7 +517,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.deshabilitarBotonAgregarDescripcion = true;
             } else {
                 if (this.countDescripcion < 1) {
-                    this.countDescripcion = 1;
+                    this.countDescripcion = 0;
                     this.deshabilitarBotonQuitarDescripcion = true;
                 }
             }

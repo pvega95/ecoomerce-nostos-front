@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 
 @Injectable()
 export class ProductPresenter {
@@ -19,7 +20,7 @@ export class ProductPresenter {
     id: FormControl;
     currentImageIndex: FormControl;
 
-    constructor(protected fb: FormBuilder) {
+    constructor(protected fb: FormBuilder, private fuseUtilsService: FuseUtilsService,) {
         console.log('ProductPresenter');
         this.createValidators();
         this.createForm();
@@ -123,6 +124,9 @@ export class ProductPresenter {
 
     loadProductForm(product){
         const { descriptions, images } = product;
+        product.createdAt = this.formatoFecha(product.createdAt);
+        product.updatedAt = this.formatoFecha(product.updatedAt);
+
         this.form.patchValue(product);
         if(descriptions.length > 0) {
             descriptions.map(desc => this.addDescriptionControl(desc))
@@ -131,6 +135,10 @@ export class ProductPresenter {
             images.map(img => this.addImageControl())
         }
     }
+
+    formatoFecha(fecha: string): string{
+        return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
+      }
 
     resetProductForm(){
         this.form.reset();
