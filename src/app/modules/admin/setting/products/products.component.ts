@@ -219,91 +219,30 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param productId
      */
     toggleDetails(productId: string, open: boolean): void {
-
+        this.filePaths = [];
         // If the product is already selected...
         if (this.selectedProduct) {
             if (this.selectedProduct._id === productId) {
                 // Close the details
+                this.presenter.resetProductForm();
                 this.closeDetails();
                 return;
             }
         }
-        //this.initForm();
-        this.presenter.createForm();
-        this.filePaths = [];
 
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId) || null;
-
+        productEncontrado.currentImageIndex = 0;
         this.selectedProduct = productEncontrado;
         if (productEncontrado._id) {
-            this.countDescripcion = productEncontrado.descriptions.length;
-            this.verificarCantidadDescripciones();
-     
-            productEncontrado.descriptions.map(description => {
-                return this.presenter.addDescriptionControl(description);
-            
-            });
-            this.presenter.loadListImages(productEncontrado.images).forEach(urlImage => {
-                this.filePaths.push(urlImage);
-                this.presenter.addImageControl();
-            });
-
-            this.presenter.form.patchValue({
-                id: productEncontrado._id,
-                sku: productEncontrado.sku,
-                name: productEncontrado.name,
-                price: (Math.round(productEncontrado.price * 100) / 100).toFixed(2),
-                weight: (Math.round(productEncontrado.weight * 100) / 100).toFixed(2),
-             
-                thumbnail: productEncontrado.thumbnail,
-                category: productEncontrado.category,
-              //  options: this.options,
-                stock: productEncontrado.stock,
-                createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.createdAt)),
-                updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(productEncontrado.updatedAt))
-               // currentImageIndex: this.currentImageIndex
-            });
-
-            this.selected = this.categories.findIndex(categoria => categoria._id === this.presenter.form.get('category').value)
+            this.presenter.loadProductForm(productEncontrado);
+            const { images } = productEncontrado;
+            if (images.length > 0) {
+                images.map(img => this.filePaths.push(img.imageURL))
+            }
 
         } else {
-            this.verificarCantidadDescripciones();
-            let descriptions = ['']
-            this.selected = -1;
-            this.presenter.form.patchValue({
-                id: -1,
-                sku: '',
-                name: '',
-                price: '',
-                weight: '',
-                thumbnail: null,
-                category: '',
-              //  options: this.options,
-                stock: 99,
-                createdDate: null,
-                updatedDate: null
-               // currentImageIndex: this.currentImageIndex
-            });
-         /*    this.selectedProductForm.patchValue({
-                id: -1,
-                name: '',
-                descriptions: descriptions.map(description => {
-                    return (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-                }),
-                sku: '',
-                category: '',
-                stock: 99,
-                images: '',
-                price: '',
-                weight: '',
-                createdDate: '',
-                updatedDate: ''
-
-            }); */
-
-            this.presenter.addDescriptionControl();
-
+            this.presenter.resetProductForm();
         }
 
     }
@@ -597,7 +536,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe(async result => {
             console.log('result', result);
-            let listImgs: string[] = [];
             if (result) {
                 this.presenter.addImages(result);
                 result.forEach(file => {

@@ -14,8 +14,8 @@ export class ProductPresenter {
     category: FormControl;
     options: FormControl;
     stock: FormControl;
-    createdDate: FormControl;
-    updatedDate: FormControl;
+    createdAt: FormControl;
+    updatedAt: FormControl;
     id: FormControl;
     currentImageIndex: FormControl;
 
@@ -50,8 +50,8 @@ export class ProductPresenter {
             category: this.category,
             options: this.options,
             stock: this.stock,
-            createdDate: this.createdDate,
-            updatedDate: this.updatedDate,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
             currentImageIndex: this.currentImageIndex
         });
     }
@@ -68,8 +68,8 @@ export class ProductPresenter {
         this.category = new FormControl();
         this.options = new FormControl();
         this.stock = new FormControl(99);
-        this.createdDate = new FormControl();
-        this.updatedDate = new FormControl();
+        this.createdAt = new FormControl();
+        this.updatedAt = new FormControl();
         this.currentImageIndex = new FormControl(0);
     }
 
@@ -87,18 +87,6 @@ export class ProductPresenter {
     }
     removeDescriptionControl() {
         this.descriptionsForm.removeAt(this.descriptionsForm.length -1);
-    }
-
-    createDescriptionBase() {
-        return {
-            name: null
-        }
-    }
-
-    createQuestionForm(): FormGroup {
-        return this.fb.group({
-            name: new FormControl(),
-        });
     }
 
     addImageControl(image?: File) {
@@ -132,4 +120,28 @@ export class ProductPresenter {
             this.addImageControl(file);
           }
     }
+
+    loadProductForm(product){
+        const { descriptions, images } = product;
+        this.form.patchValue(product);
+        if(descriptions.length > 0) {
+            descriptions.map(desc => this.addDescriptionControl(desc))
+        }
+        if(images.length > 0) {
+            images.map(img => this.addImageControl())
+        }
+    }
+
+    resetProductForm(){
+        this.form.reset();
+        this.stock.setValue(99);
+        this.clearFormArray(this.images);
+        this.clearFormArray(this.descriptions);
+    }
+
+    clearFormArray(formArray: FormArray) {
+        while (formArray.length !== 0) {
+          formArray.removeAt(0)
+        }
+      }
 }

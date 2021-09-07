@@ -288,17 +288,17 @@
                                         </div>
                            
                                         <div class="flex">
-                                            <mat-form-field *ngIf="presenter.form.get('createdDate')?.value !== null " class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('createdAt')?.value !== null " class="w-1/2 pr-2">
                                                 <mat-label>Fecha de creación</mat-label>
                                                 <input readonly
                                                     matInput
-                                                    [formControlName]="'createdDate'">
+                                                    [formControlName]="'createdAt'">
                                             </mat-form-field>
-                                            <mat-form-field *ngIf="presenter.form.get('updatedDate')?.value !== null "  class="w-1/2 pr-2">
+                                            <mat-form-field *ngIf="presenter.form.get('updatedAt')?.value !== null "  class="w-1/2 pr-2">
                                                 <mat-label>Fecha de actualización</mat-label>
                                                 <input readonly
                                                     matInput
-                                                    [formControlName]="'updatedDate'">
+                                                    [formControlName]="'updatedAt'">
                                             </mat-form-field>
                                         </div>
      
@@ -381,7 +381,7 @@
                                                         <mat-checkbox
                                                             class="flex items-center h-10 min-h-10 px-4"
                                                             [color]="'primary'"
-                                                            [checked]="selected === i"
+                                                            [checked]="presenter.form.get('category')?.value === category._id"
                                                             (change)="toggleProductCategory(category,i, $event)">
                                                             {{category.name}}
                                                         </mat-checkbox>
@@ -452,7 +452,7 @@
                                             <span class="ml-2">An error occurred, try again!</span>
                                         </ng-container>
                                     </div>
-                                    <ng-container *ngIf="presenter.form.get('id')?.value !== -1;else nuevoProducto" >
+                                    <ng-container *ngIf="presenter.form.get('id')?.value !== null;else nuevoProducto" >
                                         <button
                                             mat-flat-button
                                             [color]="'primary'"
