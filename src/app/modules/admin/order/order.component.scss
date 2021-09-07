@@ -6,11 +6,11 @@
     }
 
     @screen md {
-        grid-template-columns: 14rem 7rem 12rem 12rem 8rem;
+        grid-template-columns: 7rem 7rem 8rem 5rem 9rem 12rem 5rem;
     }
 
     @screen lg {
-        grid-template-columns: 14rem 7rem 12rem 12rem 8rem;
+        grid-template-columns:  7rem 7rem 8rem 5rem 9rem 12rem 5rem;
     }
 }
 
@@ -20,7 +20,7 @@
     border-radius: 2rem;
 }
 .colorStadoCancelado{
-    background-color: red;
+    background-color: #6d6d6d;
     color: white;
     border-radius: 2rem;
 }

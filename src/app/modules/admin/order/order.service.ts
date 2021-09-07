@@ -16,4 +16,9 @@ export class OrdersService {
     const  data  = (await this.http.get(url).toPromise()) as any;
     return data ;
   }
+  async listarEstadosOrdenes(): Promise<any> {
+    const url = `${OrdersService.BASE_URL}/order-management/status`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
 }
