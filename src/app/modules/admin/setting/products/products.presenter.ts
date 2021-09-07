@@ -135,6 +135,7 @@ export class ProductPresenter {
     resetProductForm(){
         this.form.reset();
         this.stock.setValue(99);
+        this.currentImageIndex.setValue(0);
         this.clearFormArray(this.images);
         this.clearFormArray(this.descriptions);
     }
