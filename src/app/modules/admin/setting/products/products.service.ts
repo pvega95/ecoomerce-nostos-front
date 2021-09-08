@@ -32,6 +32,12 @@ export class ProductsService {
     return data ;
   }
 
+  async actualizarProducto(body: any): Promise<any> {
+    const url = `${ProductsService.BASE_URL}/product-management`;
+    const  data  = (await this.http.put(url, body).toPromise()) as any;
+    return data ;
+  }
+
 /*   createProduct(): Observable<any>
   {
       return this.products$.pipe(

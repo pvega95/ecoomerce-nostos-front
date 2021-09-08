@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Modal } from '../../../enums/modal.enum';
 
 
+
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
@@ -26,10 +27,13 @@ export class OrderComponent implements OnInit {
 
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
-  public orders: any[]=[];
-  public statusOrders: any[]=[];
-  public products: any[]=[];
-  public isLoading: boolean = true;
+  public orders: any[];
+  public statusOrders: any[];
+  public products: any[];
+  public isLoading: boolean;
+  public orderStatusSelected: string;
+  public flashMessage: boolean;
+  public seeMessage: boolean = false;
   selectedOrder: any = null;
   selectedOrderForm: FormGroup;
   selected: number;
@@ -62,6 +66,11 @@ export class OrderComponent implements OnInit {
   async cargarLista(){
     let resp1: any;
     let resp2: any;
+
+    this.products = [];
+    this.orders = [];
+    this.statusOrders = [];
+    this.isLoading = true;
 
     resp1 = await this.ordersService.listarOrdenes();
     resp2 = await this.ordersService.listarEstadosOrdenes();
@@ -110,8 +119,8 @@ export class OrderComponent implements OnInit {
          }
        }
        this.initForm();
-     
-
+       this.seeMessage = false;
+    
        // Get the order by id
        const orderEncontrado = this.orders.find(item => item._id === orderId)  || null;
       
@@ -126,6 +135,7 @@ export class OrderComponent implements OnInit {
              
            });
            this.products = orderEncontrado.products;
+           this.orderStatusSelected = orderEncontrado.order_status._id;
 
        }else{
            let descriptions = ['']
@@ -145,6 +155,30 @@ export class OrderComponent implements OnInit {
        }
  
    }
+ async  updateselectedOrder(idOrder: string): Promise<void>{
+   let resp;
+   const body = {
+      order_status:  this.orderStatusSelected
+    }
+    this.isLoading = true;
+    resp = await this.ordersService.editarEstadoOrden(idOrder, body);
+    this.seeMessage = true;
+    this.flashMessage = resp.success;
+    if (resp.success) {
+      this.isLoading = false;
+    }
+    setTimeout(()=>{  // 3 segundo se cierra modal
+      this.seeMessage = false;
+      }, 2000);
+
+      setTimeout(()=>{  
+        this.cargarLista();
+        this.closeDetails();
+        }, 1000);
+
+   }
+
+
    initForm() {
     this.selectedOrderForm = this._formBuilder.group({
         id               : [''],

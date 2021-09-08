@@ -17,6 +17,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
     declarations: [
@@ -25,6 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
     imports     : [
         RouterModule.forChild(orderRoutes),
         MatFormFieldModule,
+        MatProgressSpinnerModule,
         MatSelectModule,
         MatInputModule,
         TranslocoModule,

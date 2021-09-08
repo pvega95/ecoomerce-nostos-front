@@ -36,9 +36,9 @@
             </button>
         </div>
     </div>
-    <div>
+<!--     <div>
         <p>{{this.presenter.form.value | json}}</p>
-    </div>
+    </div> -->
 
     <!-- Main -->
     <div class="flex flex-auto overflow-hidden">
@@ -438,27 +438,37 @@
                                 <div class="flex items-center">
                                     <div
                                         class="flex items-center mr-4"
-                                        *ngIf="flashMessage">
-                                        <ng-container *ngIf="flashMessage === 'success'">
+                                        *ngIf="seeMessage">
+                                        <ng-container *ngIf="flashMessage">
                                             <mat-icon
                                                 class="text-green-500"
                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Product updated</span>
+                                            <span class="ml-2">Se actualizo el producto</span>
                                         </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
+                                        <ng-container *ngIf="!flashMessage">
                                             <mat-icon
                                                 class="text-red-500"
                                                 [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
+                                            <span class="ml-2">Ocurrio un error</span>
                                         </ng-container>
                                     </div>
                                     <ng-container *ngIf="presenter.form.get('id')?.value !== null;else nuevoProducto" >
-                                        <button
-                                            mat-flat-button
-                                            [color]="'primary'"
-                                            (click)="updateSelectedProduct()">
-                                            Actualizar
-                                        </button>
+                                        <div class="w-full max-w-80 sm:w-30 mx-auto sm:mx-0">
+                                            <button
+                                                class="fuse-mat-button-large w-full "
+                                                mat-flat-button
+                                                [color]="'primary'"
+                                                [disabled]="isLoading"
+                                                (click)="updateSelectedProduct()">
+                                                <span *ngIf="!isLoading">
+                                                    Actualizar
+                                                </span>
+                                                <mat-progress-spinner
+                                                *ngIf="isLoading"
+                                                [diameter]="22"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
+                                            </button>
+                                        </div>
                                     </ng-container>
                                     <ng-template #nuevoProducto>
                                         <button

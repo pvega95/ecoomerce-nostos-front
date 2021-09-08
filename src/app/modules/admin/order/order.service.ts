@@ -21,4 +21,9 @@ export class OrdersService {
     const  data  = (await this.http.get(url).toPromise()) as any;
     return data ;
   }
+  async editarEstadoOrden(idOrder: string, body: any): Promise<any> {
+    const url = `${OrdersService.BASE_URL}/order-management/${idOrder}`;
+    const  data  = (await this.http.put(url, body).toPromise()) as any;
+    return data ;
+  }
 }

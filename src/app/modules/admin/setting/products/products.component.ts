@@ -50,18 +50,18 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
-    products: any[] = [];
+    products: any[];
+    categories: any[];
     countDescripcion: number = 0;
     deshabilitarBotonAgregarDescripcion: boolean = false;
     deshabilitarBotonQuitarDescripcion: boolean = false;
     selected: number;
     files: File[] = [];
     filePaths: String[] = [];
+    public flashMessage: boolean;
+    public seeMessage: boolean = false;
 
-
-    categories: any[] = [];
-
-    flashMessage: 'success' | 'error' | null = null;
+    
     isLoading: boolean = true;
 
     searchInputControl: FormControl = new FormControl();
@@ -146,20 +146,22 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    async cargarCategorias() {
+    async cargarCategorias(): Promise<void> {
         let resp: any;
+        this.categories = [];
         resp = await this.categoriesService.listarCategorias();
         if (resp.ok) {
             // Get the categories
             this.categories = resp.data;
             this.isLoading = false;
-            console.log('lista categorias', resp.data);
+           // console.log('lista categorias', resp.data);
         }
 
     }
 
-    async cargarListaProductos() {
+    async cargarListaProductos(): Promise<void> {
         let resp: any;
+        this.products = [];
         // console.log('lista product', await this.productsService.listarProductos())
         resp = await this.productsService.listarProductos();
         if (resp.ok) {
@@ -229,6 +231,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 return;
             }
         }
+        this.seeMessage = false;
 
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId) || null;
@@ -433,12 +436,32 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * Update the selected product using the form data
      */
-    updateSelectedProduct(): void {
+    async updateSelectedProduct(): Promise<void> {
+        let resp;
         // Get the product object
         const product = this.selectedProductForm.getRawValue();
 
         // Remove the currentImageIndex field
         delete product.currentImageIndex;
+        this.isLoading = true;
+        resp = await this.productsService.actualizarProducto(product);
+        console.log('resp', resp)
+
+        this.seeMessage = true;
+        this.flashMessage = resp.ok;
+     
+          this.isLoading = false;
+        
+        setTimeout(()=>{  // 3 segundo se cierra modal
+          this.seeMessage = false;
+          }, 2000);
+    
+          setTimeout(()=>{  
+            this.cargarListaProductos();
+            this.cargarCategorias();
+            this.closeDetails();
+            }, 1000); 
+
 
 
     }
@@ -607,25 +630,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    /**
-     * Show flash message
-     */
-    showFlashMessage(type: 'success' | 'error'): void {
-        // Show the message
-        this.flashMessage = type;
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-
-        // Hide it after 3 seconds
-        setTimeout(() => {
-
-            this.flashMessage = null;
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        }, 3000);
-    }
 
     /**
      * Track by function for ngFor loops
