@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
 import { OptionsService } from './options.service';
-
+import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Modal } from '../../../../enums/modal.enum';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 
 @Component({
@@ -40,10 +42,25 @@ export class OptionsComponent implements OnInit {
     private fuseUtilsService: FuseUtilsService,
     private optionsService: OptionsService,
     private _formBuilder: FormBuilder,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.cargarListaOpciones();
+
+/*   this.dialog.open(WindowModalComponent, {
+      data: {
+              type: Modal.success
+          },
+      disableClose: true,
+      //panelClass: 'transparent'  // va junto con loading
+    });   */
+
+/*    setTimeout(()=>{  // 3 segundo se cierra modal
+      this.dialog.closeAll();
+  }, 3000);  */
+
+
   }
   async cargarListaOpciones(){
     let resp: any;
