@@ -48,13 +48,13 @@ export class OptionsComponent implements OnInit {
   ngOnInit(): void {
     this.cargarListaOpciones();
 
-/*   this.dialog.open(WindowModalComponent, {
+  this.dialog.open(WindowModalComponent, {
       data: {
               type: Modal.success
           },
       disableClose: true,
       //panelClass: 'transparent'  // va junto con loading
-    });   */
+    });   
 
 /*    setTimeout(()=>{  // 3 segundo se cierra modal
       this.dialog.closeAll();
