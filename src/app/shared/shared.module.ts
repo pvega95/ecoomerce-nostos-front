@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileUploaderModule } from './file-uploader/file-uploader.module';
 import { WindowModalComponent } from './window-modal/window-modal.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const COMPONENTS = [WindowModalComponent]
 
@@ -14,6 +15,7 @@ const COMPONENTS = [WindowModalComponent]
     imports: [
         CommonModule,
         FormsModule,
+        MatProgressBarModule,
         MatDialogModule,
         MatIconModule,
         MatButtonModule,

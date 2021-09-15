@@ -104,6 +104,17 @@ export class OrderComponent implements OnInit {
 
     return styleColor;
    }
+   addNewOrder(): void {
+    const dialogRef = this.dialog.open(WindowModalComponent, {
+      width: '42rem',
+      height: '23rem',
+      data: {
+          type: Modal.newOrder
+        },
+    disableClose: true
+    });
+
+   }
 
    toggleDetails(orderId: string, open: boolean): void
    {
