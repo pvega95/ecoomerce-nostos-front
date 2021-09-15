@@ -8,12 +8,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileUploaderModule } from './file-uploader/file-uploader.module';
 import { WindowModalComponent } from './window-modal/window-modal.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { SelectSearchComponent } from './select-search/select-search.component';
 
-const COMPONENTS = [WindowModalComponent]
+const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
 
 @NgModule({
     imports: [
         CommonModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        NgxMatSelectSearchModule,
         FormsModule,
         MatProgressBarModule,
         MatDialogModule,

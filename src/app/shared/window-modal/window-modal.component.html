@@ -62,8 +62,14 @@
 
                         <form class="flex flex-col w-full"
                             [formGroup]="orderForm">
+                            <div class="flex flex-col w-90">
+                                <app-select-search *ngIf="clients.length > 0" [listObj] = "listObjClient" 
+                                    [placeholder]="'cliente'" [placeholderLabel]="'Buscar cliente'" 
+                                    [noEntriesFoundLabel]="'cliente no encontrado'" (objSelectedOut)="objSelected($event)"  >
+                                </app-select-search>
+                            </div>
     
-                        asd
+                       
     
                         </form>
                     </div>
