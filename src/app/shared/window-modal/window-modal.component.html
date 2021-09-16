@@ -52,39 +52,66 @@
                 </button>
             </div>
             <!-- body -->
-            <div class="mt-9 px-5">
-                <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 ">
+            <div class="mt-4 px-5">
+                <div class="text-2xl font-extrabold tracking-tight text-center">
+                    <span>Nueva orden</span> 
+                </div>
+                <div   class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-1 px-6 md:px-6 ">
                     <div class="absolute inset-x-0 top-1 px-9"
-                        *ngIf="isLoading">
+                        *ngIf="isLoading"> 
                         <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
                     </div>
-                    <div class="flex flex-auto overflow-hidden">
-
-                        <form class="flex  w-full"
-                            [formGroup]="orderForm">
+                    <cdk-virtual-scroll-viewport  itemSize="10"  class="w-full  example-viewport " [formGroup]="orderForm">
+                        <div class="relative flex sm:flex-row flex-0 mx-3">  <!-- flex flex-auto overflow-hidden -->
                             <div class=" w-3/5">
                                 <app-select-search *ngIf="clients.length > 0" [listObj] = "listObjClient" 
                                     [placeholder]="'cliente'" [placeholderLabel]="'Buscar cliente'" 
-                                    [noEntriesFoundLabel]="'cliente no encontrado'" (objSelectedOut)="objSelected($event)" 
+                                    [noEntriesFoundLabel]="'cliente no encontrado'" (objSelectedOut)="objClientSelected($event)" 
                                     (listObjAvailable)="listClientAvailable($event)"
-                                     >
+                                    >
                                 </app-select-search> 
-                                <!-- <div> asd</div> -->
                             </div>
                             <div *ngIf="!clientAvailableSearch" class=" w-2/5"> <!--  -->
                                 <button class="  ml-3"
-                                    
                                     mat-flat-button
                                     [color]="'primary'"
                                     (click)="goToClient()">
                                     Agregar nuevo cliente
                                 </button>
-
                             </div>
-    
-                        </form>
-                    </div>
+                        </div>
+                        <div *ngFor="let item of productsControls; let i = index " formArrayName ="products" class="relative flex  sm:flex-row flex-0 mx-3">
+                            <div class=" w-3/5">
+                                <app-select-search *ngIf="products.length > 0" [listObj] = "listObjProduct" 
+                                    [placeholder]="'producto'" [placeholderLabel]="'Buscar producto'" 
+                                    [noEntriesFoundLabel]="'producto no encontrado'" (objSelectedOut)="objProductSelected($event, i)" 
+                                    (listObjAvailable)="listProductAvailable($event)"
+                                    >
+                                </app-select-search> 
+                            </div>
+                            <div  class=" w-2/5"> <!--  -->
+                                <mat-form-field class="mx-3 ">
+                                    <input
+                                        matInput
+                                        type="number"
+                                        placeholder="Cantidad"
+                                        [formControl]="productsControls[i].controls.quantity">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-wrap sm:flex-row flex-0 justify-center">
+                            <button class="  mx-3"
+                                mat-flat-button
+                                [color]="'primary'"
+                                (click)="addProduct()">
+                                Agregar más productos
+                            </button>                       
+                        </div>
+                    </cdk-virtual-scroll-viewport>
                 </div>
+                <div class="relative flex sm:flex-row flex-0 mx-6 mt-4">
+                    <p class="text-2xl font-extrabold tracking-tight">Total: S/. {{total | number:'1.2-2'}} </p>
+                </div>                 
                
             </div>
     </div>

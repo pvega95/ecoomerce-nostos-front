@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { Modal } from '../../enums/modal.enum';
@@ -25,8 +25,10 @@ export class WindowModalComponent implements OnInit {
   public clients: any[];
   public isLoading: boolean = true;
   public listObjClient: Select[];
+  public listObjProduct: Select[];
   public clientAvailableSearch: boolean = true;
   public productAvailableSearch: boolean = true;
+  public total: number = 0;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -53,6 +55,7 @@ async  loadData(): Promise<void>{
   this.products = [];
   this.clients = [];
   this.listObjClient = [];
+  this.listObjProduct = [];
   resp1 = await this.productsService.listarProductos();
   resp2 = await this.clientsService.listarClientes();
 
@@ -68,20 +71,51 @@ async  loadData(): Promise<void>{
             label: element.fullName
           })
         });
-        
       }
+      if (this.products.length > 0) {
+        this.products.forEach(element => {
+          this.listObjProduct.push({
+            id: element.id,
+            label: element.name
+          })
+        });
+      }
+      this.addProduct();
       console.log(' this.products ',  this.products, this.clients )
     }
   }
-  objSelected(obj: Select){
-    console.log('salidaaa', obj)
+  objClientSelected(objClient: Select){
+    console.log('salidaaa', objClient)
+  }
+  objProductSelected(objProduct: Select, i: number){
+    this.productsControls[i].patchValue({
+      product: objProduct
+    });
   }
 
   initForm(): void{
     this.orderForm = this._formBuilder.group({
       clientSelected: new FormControl('', Validators.required),
-      
+      products: new FormArray([]),
+      quantity: new FormControl('', Validators.required),
     });
+  }
+  get productsForm(){
+    return this.orderForm.get('products') as FormArray;
+  }
+  addProduct(): void{
+    console.log('se agrego rpdocuto')
+    const formProduct = this.createProductForm();
+    this.productsForm.push(formProduct);
+  }
+  createProductForm(): FormGroup{
+    return new FormGroup({
+      product: new FormControl(),
+      quantity: new FormControl(1)
+    });
+  }
+  get productsControls(){
+    return this.productsForm.controls as FormGroup[];
   }
 
   formatClient(clientRaw){
@@ -128,10 +162,14 @@ async  loadData(): Promise<void>{
 listClientAvailable(val: boolean): void{
 this.clientAvailableSearch = val;
 }
+listProductAvailable(val: boolean): void{
+  this.productAvailableSearch = val;
+  }
 goToClient(): void{
   this.router.navigate(['setting/clients']);
   this.dialogRef.close();
 }
+
 
 
 

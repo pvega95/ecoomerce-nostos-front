@@ -10,8 +10,11 @@ import { WindowModalComponent } from './window-modal/window-modal.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SelectSearchComponent } from './select-search/select-search.component';
+import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
 
@@ -20,6 +23,9 @@ const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
         CommonModule,
         MatSelectModule,
         MatFormFieldModule,
+        MatInputModule,
+        
+        ScrollingModule,
         NgxMatSelectSearchModule,
         FormsModule,
         MatProgressBarModule,
