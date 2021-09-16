@@ -17,6 +17,7 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() noEntriesFoundLabel: string;
   @Input() placeholder: string;
   @Output() objSelectedOut = new EventEmitter<any>();
+  @Output() listObjAvailable = new EventEmitter<boolean>();
 
   public objSelected: FormControl = new FormControl();
   /** control for the MatSelect filter keyword */
@@ -84,9 +85,9 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit {
       this.listObj.filter(obj => obj.label.toLowerCase().indexOf(search) > -1)
     );
     if (this.listObj.filter(obj => obj.label.toLowerCase().indexOf(search) > -1).length == 0 ) {
-      console.log('no hay nada')
+      this.listObjAvailable.emit(false);
     }else{
-      console.log('coinicdencia')
+      this.listObjAvailable.emit(true);
     }
   }
   selectObj(objSelected){

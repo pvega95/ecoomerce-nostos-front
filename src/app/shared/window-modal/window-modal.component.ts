@@ -7,6 +7,7 @@ import { ProductsService } from '../../modules/admin/setting/products/products.s
 import { ClientsService } from '../../modules/admin/setting/clients/clients.service';
 import { MatSelect } from '@angular/material/select';
 import { Select } from 'app/models/select';
+import { Router } from '@angular/router';
 
 
 
@@ -24,12 +25,14 @@ export class WindowModalComponent implements OnInit {
   public clients: any[];
   public isLoading: boolean = true;
   public listObjClient: Select[];
-
+  public clientAvailableSearch: boolean = true;
+  public productAvailableSearch: boolean = true;
 
   constructor(
     private _formBuilder: FormBuilder,
     private productsService: ProductsService,
     private clientsService: ClientsService,
+    public router: Router,
     public dialogRef: MatDialogRef<WindowModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -122,8 +125,13 @@ async  loadData(): Promise<void>{
     });
     return lista;
 }
-
-
+listClientAvailable(val: boolean): void{
+this.clientAvailableSearch = val;
+}
+goToClient(): void{
+  this.router.navigate(['setting/clients']);
+  this.dialogRef.close();
+}
 
 
 

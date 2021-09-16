@@ -60,16 +60,27 @@
                     </div>
                     <div class="flex flex-auto overflow-hidden">
 
-                        <form class="flex flex-col w-full"
+                        <form class="flex  w-full"
                             [formGroup]="orderForm">
-                            <div class="flex flex-col w-90">
+                            <div class=" w-3/5">
                                 <app-select-search *ngIf="clients.length > 0" [listObj] = "listObjClient" 
                                     [placeholder]="'cliente'" [placeholderLabel]="'Buscar cliente'" 
-                                    [noEntriesFoundLabel]="'cliente no encontrado'" (objSelectedOut)="objSelected($event)"  >
-                                </app-select-search>
+                                    [noEntriesFoundLabel]="'cliente no encontrado'" (objSelectedOut)="objSelected($event)" 
+                                    (listObjAvailable)="listClientAvailable($event)"
+                                     >
+                                </app-select-search> 
+                                <!-- <div> asd</div> -->
                             </div>
-    
-                       
+                            <div *ngIf="!clientAvailableSearch" class=" w-2/5"> <!--  -->
+                                <button class="  ml-3"
+                                    
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    (click)="goToClient()">
+                                    Agregar nuevo cliente
+                                </button>
+
+                            </div>
     
                         </form>
                     </div>
