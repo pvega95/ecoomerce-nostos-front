@@ -29,6 +29,7 @@ export class WindowModalComponent implements OnInit {
   public clientAvailableSearch: boolean = true;
   public productAvailableSearch: boolean = true;
   public total: number = 0;
+  public disableRemoveProduct: boolean;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -43,6 +44,7 @@ export class WindowModalComponent implements OnInit {
 
   ngOnInit(): void {
    console.log('data', Modal.loading)
+   this.disableRemoveProduct = true;
    if (this.data.type === this.typeModal.newOrder) {
      this.loadData();     
    }
@@ -60,7 +62,7 @@ async  loadData(): Promise<void>{
   resp2 = await this.clientsService.listarClientes();
 
     if (resp1.ok && resp2.ok) {
-      // Get the products
+      // Get the products and clients
       this.products = this.formatProduct(resp1.data);  
       this.clients = this.formatClient(resp2.data);
       this.isLoading = false;
@@ -68,16 +70,25 @@ async  loadData(): Promise<void>{
         this.clients.forEach(element => {
           this.listObjClient.push({
             id: element.id,
-            label: element.fullName
-          })
+            label: element.fullName,
+            data: 
+                  {
+                    address: element.address
+                  }
+          });
         });
       }
       if (this.products.length > 0) {
         this.products.forEach(element => {
           this.listObjProduct.push({
             id: element.id,
-            label: element.name
-          })
+            label: element.name,
+            data: 
+                  {
+                    sku: element.sku,
+                    price: element.price
+                  }
+          });
         });
       }
       this.addProduct();
@@ -85,7 +96,9 @@ async  loadData(): Promise<void>{
     }
   }
   objClientSelected(objClient: Select){
-    console.log('salidaaa', objClient)
+    this.orderForm.patchValue({
+      clientSelected: objClient
+    });
   }
   objProductSelected(objProduct: Select, i: number){
     this.productsControls[i].patchValue({
@@ -97,7 +110,6 @@ async  loadData(): Promise<void>{
     this.orderForm = this._formBuilder.group({
       clientSelected: new FormControl('', Validators.required),
       products: new FormArray([]),
-      quantity: new FormControl('', Validators.required),
     });
   }
   get productsForm(){
@@ -107,10 +119,22 @@ async  loadData(): Promise<void>{
     console.log('se agrego rpdocuto')
     const formProduct = this.createProductForm();
     this.productsForm.push(formProduct);
+    this.verifyQuantityLot();
+  }
+  removeProduct(): void{
+    this.productsForm.removeAt(this.productsForm.length - 1);
+    this.verifyQuantityLot();
+  }
+  verifyQuantityLot(){
+    if (this.productsForm.length === 1) {
+      this.disableRemoveProduct = true;
+    }else{
+      this.disableRemoveProduct = false;
+    }
   }
   createProductForm(): FormGroup{
     return new FormGroup({
-      product: new FormControl(),
+      product: new FormControl('', Validators.required),
       quantity: new FormControl(1)
     });
   }
@@ -123,7 +147,8 @@ async  loadData(): Promise<void>{
     clientRaw.forEach(element => {
       lista.push({
         id: element.uid,
-        fullName: element.full_name.name + ' ' + element.full_name.lastName
+        fullName: element.full_name.name + ' ' + element.full_name.lastName,
+        address: element.billing_address[0]
       });
     });
     return lista;
@@ -170,9 +195,31 @@ goToClient(): void{
   this.dialogRef.close();
 }
 createNewOrder(): void{
+  let idClient: string;
+  let productsList: any[] = [];
+  idClient = this.orderForm.controls.clientSelected.value.id
+  console.log('client', this.orderForm.controls.clientSelected.value)
+  console.log('products', this.productsForm.value)
+  this.productsForm.value.forEach(productForm => {
+   // console.log(productForm.product.id, productForm.quantity)
+   productsList.push({
+      productId: productForm.product.id,
+      sku: productForm.product.data.sku,
+      quantity: productForm.quantity,
+      price: productForm.product.data.price
+    })
+  });
+  const body = {
+    customer_id: idClient,
+    ammount: 1,
+    address: "",
+    products: productsList
+  }
+  console.log('body', body)
 
 }
-
+/* clientSelected: new FormControl('', Validators.required),
+products: new FormArray([]), */
 
 
 }

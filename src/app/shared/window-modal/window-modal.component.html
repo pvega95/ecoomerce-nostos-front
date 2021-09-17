@@ -80,23 +80,28 @@
                                 </button>
                             </div>
                         </div>
-                        <div *ngFor="let item of productsControls; let i = index " formArrayName ="products" class="relative flex  sm:flex-row flex-0 mx-3">
-                            <div class=" w-3/5">
-                                <app-select-search *ngIf="products.length > 0" [listObj] = "listObjProduct" 
-                                    [placeholder]="'producto'" [placeholderLabel]="'Buscar producto'" 
-                                    [noEntriesFoundLabel]="'producto no encontrado'" (objSelectedOut)="objProductSelected($event, i)" 
-                                    (listObjAvailable)="listProductAvailable($event)"
-                                    >
-                                </app-select-search> 
+                        <div *ngFor="let item of productsControls; let i = index " formArrayName ="products" class="relative flex-row flex-0 ">
+                            <div class="relative flex-row flex-0 mx-3">
+                                <div class="w-full">
+                                    <app-select-search *ngIf="products.length > 0" [listObj] = "listObjProduct" 
+                                        [placeholder]="'producto'" [placeholderLabel]="'Buscar producto'" 
+                                        [noEntriesFoundLabel]="'producto no encontrado'" (objSelectedOut)="objProductSelected($event, i)" 
+                                        (listObjAvailable)="listProductAvailable($event)"
+                                        >
+                                    </app-select-search> 
+                                </div>
                             </div>
-                            <div  class=" w-2/5"> <!--  -->
-                                <mat-form-field class="mx-3 ">
-                                    <input
-                                        matInput
-                                        type="number"
-                                        placeholder="Cantidad"
-                                        [formControl]="productsControls[i].controls.quantity">
-                                </mat-form-field>
+                            <div  class="relative flex-row flex-0 mx-3"> <!--  -->
+                                <div class="w-full">
+                                    <mat-form-field appearance="outline" >
+                                        <mat-label>Cantidad</mat-label>
+                                        <input
+                                            matInput
+                                            type="number"
+                                            placeholder="Cantidad"
+                                            [formControl]="productsControls[i].controls.quantity">
+                                    </mat-form-field>
+                                </div>
                             </div>
                         </div>
                         <div class="relative flex flex-wrap sm:flex-row flex-0 justify-center">
@@ -105,10 +110,22 @@
                                 [color]="'primary'"
                                 (click)="addProduct()">
                                 Agregar más productos
-                            </button>                       
+                            </button>       
+                            <button class="  mx-3"
+                                [disabled] = "disableRemoveProduct"
+                                mat-flat-button
+                                [color]="'warn'"
+                                (click)="removeProduct()">
+                                Quitar producto
+                            </button>                   
                         </div>
                     </cdk-virtual-scroll-viewport>
                 </div>
+          <!--       <div class="relative flex sm:flex-row flex-0 mx-6 mt-2">
+                    {{orderForm.value | json }}
+                    <br>
+                    {{orderForm.invalid }}
+                </div> -->
                 <div class="relative flex sm:flex-row flex-0 mx-6 mt-2">
                     <div class="flex justify-between items-center w-full ">
                         <div>
@@ -117,6 +134,7 @@
                         <div>
 
                             <button class="  mx-3"
+                                [disabled]= "orderForm.invalid"
                                 mat-flat-button
                                 [color]="'primary'"
                                 (click)="createNewOrder()">
