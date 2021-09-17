@@ -109,8 +109,21 @@
                         </div>
                     </cdk-virtual-scroll-viewport>
                 </div>
-                <div class="relative flex sm:flex-row flex-0 mx-6 mt-4">
-                    <p class="text-2xl font-extrabold tracking-tight">Total: S/. {{total | number:'1.2-2'}} </p>
+                <div class="relative flex sm:flex-row flex-0 mx-6 mt-2">
+                    <div class="flex justify-between items-center w-full ">
+                        <div>
+                            <p class="text-2xl font-extrabold tracking-tight">Total: S/. {{total | number:'1.2-2'}} </p>
+                        </div>
+                        <div>
+
+                            <button class="  mx-3"
+                                mat-flat-button
+                                [color]="'primary'"
+                                (click)="createNewOrder()">
+                                Crear nueva orden
+                            </button>   
+                        </div>
+                    </div>
                 </div>                 
                
             </div>
