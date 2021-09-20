@@ -16,4 +16,9 @@ export class ClientsService {
     const  data  = (await this.http.get(url).toPromise()) as any;
     return data ;
   }
+  async consultaDireccionCliente(idUser: string): Promise<any> {
+    const url = `${ClientsService.BASE_URL}/ubigeo-management/address/${idUser}`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
 }

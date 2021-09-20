@@ -57,7 +57,7 @@
                     <span>Nueva orden</span> 
                 </div>
                 <div   class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-1 px-6 md:px-6 ">
-                    <div class="absolute inset-x-0 top-1 px-9"
+                    <div class="absolute inset-x-0 top-0 px-9"
                         *ngIf="isLoading"> 
                         <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
                     </div>
@@ -80,6 +80,25 @@
                                 </button>
                             </div>
                         </div>
+                        <div *ngIf="listObjAddressClient.length > 0; else messageAddress" class="relative flex-row flex-0 mx-3">
+                            <div class="w-full">
+                                <app-select-search  [listObj] = "listObjAddressClient" 
+                                    [placeholder]="'dirección'" [placeholderLabel]="'Buscar dirección'" 
+                                    [noEntriesFoundLabel]="'Dirección no encontrada'" (objSelectedOut)="objAddressSelected($event)" 
+                                    
+                                    >
+                                </app-select-search> 
+                            </div>
+                        </div>
+                        <ng-template   #messageAddress >
+                            <div *ngIf="isLoadingAddressClient " class="relative flex-row flex-0 mx-3 mb-2">
+                                <p>Cargando dirección cliente</p>
+                            </div>
+                            <div *ngIf="!isLoadingAddressClient && listObjAddressClient.length === 0 && this.orderForm.controls.clientSelected.value != null " class="relative flex-row flex-0 mx-3 mb-2">
+                                <p>No hay dirección cliente</p>
+                            </div>
+                        </ng-template>
+                        
                         <div *ngFor="let item of productsControls; let i = index " formArrayName ="products" class="relative flex-row flex-0 ">
                             <div class="relative flex-row flex-0 mx-3">
                                 <div class="w-full">
@@ -91,20 +110,36 @@
                                     </app-select-search> 
                                 </div>
                             </div>
-                            <div  class="relative flex-row flex-0 mx-3"> <!--  -->
-                                <div class="w-full">
-                                    <mat-form-field appearance="outline" >
-                                        <mat-label>Cantidad</mat-label>
-                                        <input
-                                            matInput
-                                            type="number"
-                                            placeholder="Cantidad"
-                                            [formControl]="productsControls[i].controls.quantity">
-                                    </mat-form-field>
-                                </div>
+                            <div  class="relative flex sm:flex-row flex-0  mx-3"> <!--  -->
+                               
+                                    <div class="w-3/12 mr-1">
+                                        <mat-form-field appearance="outline" style="width: 100%;" >
+                                            <mat-label>Precio</mat-label>
+                                            <span matPrefix>S/.</span>
+                                            <input
+                                                readonly
+                                                matInput
+                                                placeholder="Precio"
+                                                [formControl]="productsControls[i].controls.price">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="w-3/12 mx-1">
+                                        <mat-form-field appearance="outline" style="width: 100%;" >
+                                            <mat-label>Cantidad</mat-label>
+                                            <input
+                                                matInput
+                                                type="number"
+                                                placeholder="Cantidad"
+                                                [formControl]="productsControls[i].controls.quantity">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="w-6/12 mx-1 mt-6">
+                                        <p>Subtotal S/. {{this.productsControls[i].controls.quantity.value * this.productsControls[i].controls.price.value | number:'1.2-2'}} </p>
+                                    </div>
+                               
                             </div>
                         </div>
-                        <div class="relative flex flex-wrap sm:flex-row flex-0 justify-center">
+                        <div *ngIf="clients.length > 0" class="relative flex flex-wrap sm:flex-row flex-0 justify-center">
                             <button class="  mx-3"
                                 mat-flat-button
                                 [color]="'primary'"
@@ -142,7 +177,13 @@
                             </button>   
                         </div>
                     </div>
-                </div>                 
+                </div>  
+                <div *ngIf="success" class="relative flex sm:flex-row flex-0 mx-6 my-1 justify-center items-center">
+                    <mat-icon
+                    class="text-green-400 icon-size-5"
+                    [svgIcon]="'heroicons_solid:check'"></mat-icon>
+                    <p>Orden creada con éxito</p>
+                </div>               
                
             </div>
     </div>

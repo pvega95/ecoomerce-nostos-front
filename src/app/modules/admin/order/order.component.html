@@ -174,10 +174,10 @@
                                         <p>cantidad: {{product.quantity | number:'2.0'}}</p>
                                     </div>
                                     <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
-                                        <p>precio: S/. {{product.price}}</p>
+                                        <p>precio: S/. {{product.price | number:'1.2-2'}}</p>
                                     </div>
                                     <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
-                                        <p>total: S/. {{product.totalCost}}</p>
+                                        <p>total: S/. {{product.totalCost | number:'1.2-2'}}</p>
                                     </div>
 
                                     <!-- Cost, Base price, Tax & Price -->

@@ -5,6 +5,8 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 import { Modal } from '../../enums/modal.enum';
 import { ProductsService } from '../../modules/admin/setting/products/products.service';
 import { ClientsService } from '../../modules/admin/setting/clients/clients.service';
+import { OrdersService } from '../../modules/admin/order/order.service';
+
 import { MatSelect } from '@angular/material/select';
 import { Select } from 'app/models/select';
 import { Router } from '@angular/router';
@@ -23,8 +25,12 @@ export class WindowModalComponent implements OnInit {
   public orderForm: FormGroup;
   public products: any[];
   public clients: any[];
+  public addressClient: any[];
   public isLoading: boolean = true;
+  public success: boolean;
+  public isLoadingAddressClient: boolean = false;
   public listObjClient: Select[];
+  public listObjAddressClient: Select[];
   public listObjProduct: Select[];
   public clientAvailableSearch: boolean = true;
   public productAvailableSearch: boolean = true;
@@ -35,6 +41,7 @@ export class WindowModalComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private productsService: ProductsService,
     private clientsService: ClientsService,
+    private ordersService: OrdersService,
     public router: Router,
     public dialogRef: MatDialogRef<WindowModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -58,6 +65,8 @@ async  loadData(): Promise<void>{
   this.clients = [];
   this.listObjClient = [];
   this.listObjProduct = [];
+  this.listObjAddressClient = [];
+  this.success = false;
   resp1 = await this.productsService.listarProductos();
   resp2 = await this.clientsService.listarClientes();
 
@@ -81,7 +90,7 @@ async  loadData(): Promise<void>{
       if (this.products.length > 0) {
         this.products.forEach(element => {
           this.listObjProduct.push({
-            id: element.id,
+            id: element.id as string,
             label: element.name,
             data: 
                   {
@@ -92,30 +101,83 @@ async  loadData(): Promise<void>{
         });
       }
       this.addProduct();
-      console.log(' this.products ',  this.products, this.clients )
+      //console.log(' this.products ',  this.products, this.clients )
+
+     this.orderForm.valueChanges.subscribe(val => {
+      this.calculateTotalAmmount();
+     });
     }
   }
   objClientSelected(objClient: Select){
     this.orderForm.patchValue({
-      clientSelected: objClient
+      clientSelected: objClient.id as string
     });
+    this.consultAddressClient(objClient.id as string);
   }
+async  consultAddressClient(idClient: string){
+  let resp;
+  this.addressClient = [];
+  this.listObjAddressClient = [];
+  this.isLoadingAddressClient = true;
+   resp = await this.clientsService.consultaDireccionCliente(idClient);
+   console.log('direccion', resp)
+   if (resp.ok) {
+    this.isLoadingAddressClient = false;
+   this.addressClient = this.formatAddressClient(resp.data);
+    if (this.addressClient.length > 0) {
+        this.addressClient.forEach(element => {
+          this.listObjAddressClient.push({
+            id: element.id,
+            label: element.address
+          });
+        });
+    }
+   }
+  }
+  formatAddressClient(AddressClientRaw){
+    let list: any[] = [];
+    AddressClientRaw.forEach(element => {
+      list.push({
+        id: element._id,
+        address: element.address
+      });
+    });
+    return list;
+
+
+  }
+
   objProductSelected(objProduct: Select, i: number){
     this.productsControls[i].patchValue({
-      product: objProduct
+      product: objProduct,
+      price: objProduct.data.price.toFixed(2)
+     
     });
-    this.calculateTotalAmmount();
+   // console.log('precioo', objProduct.data.price.toFixed(2))
+   // this.calculateTotalAmmount();
   }
+  objAddressSelected(objProduct: Select){
+    this.orderForm.patchValue({
+      address: objProduct.id
+    });
+  }
+
   calculateTotalAmmount(): void{
+    let cal: number = 0;
     this.totalAmount = 0;
-    this.productsForm.value.forEach(productForm => {
-      this.totalAmount+= productForm.quantity * productForm.product.data.price;
+    this.productsForm.value.forEach((productForm, index) => {
+
+      if (productForm.product.data) {
+        cal = productForm.quantity * productForm.product.data.price;
+        this.totalAmount+= cal;
+      }
     });
   }
 
   initForm(): void{
     this.orderForm = this._formBuilder.group({
-      clientSelected: new FormControl('', Validators.required),
+      clientSelected: new FormControl(null, Validators.required),
+      address: new FormControl('', Validators.required),
       products: new FormArray([]),
     });
   }
@@ -127,12 +189,10 @@ async  loadData(): Promise<void>{
     const formProduct = this.createProductForm();
     this.productsForm.push(formProduct);
     this.verifyQuantityLot();
-    this.calculateTotalAmmount();
   }
   removeProduct(): void{
     this.productsForm.removeAt(this.productsForm.length - 1);
     this.verifyQuantityLot();
-    this.calculateTotalAmmount();
   }
   verifyQuantityLot(){
     if (this.productsForm.length === 1) {
@@ -144,7 +204,8 @@ async  loadData(): Promise<void>{
   createProductForm(): FormGroup{
     return new FormGroup({
       product: new FormControl('', Validators.required),
-      quantity: new FormControl(1)
+      price:  new FormControl(),
+      quantity: new FormControl(1, Validators.required)
     });
   }
   get productsControls(){
@@ -176,8 +237,7 @@ async  loadData(): Promise<void>{
     clientRaw.forEach(element => {
       lista.push({
         id: element.uid,
-        fullName: element.full_name.name + ' ' + element.full_name.lastName,
-        address: element.billing_address[0]
+        fullName: element.full_name.name + ' ' + element.full_name.lastName
       });
     });
     return lista;
@@ -205,11 +265,15 @@ goToClient(): void{
   this.router.navigate(['setting/clients']);
   this.dialogRef.close();
 }
-createNewOrder(): void{
+async createNewOrder(): Promise<void>{
   let idClient: string;
+  let address: string;
   let ammount: number = 0;
   let productsList: any[] = [];
-  idClient = this.orderForm.controls.clientSelected.value.id
+  let resp: any;
+
+  idClient = this.orderForm.controls.clientSelected.value
+  address = this.orderForm.controls.address.value
   console.log('client', this.orderForm.controls.clientSelected.value)
   console.log('products', this.productsForm.value)
   this.productsForm.value.forEach(productForm => {
@@ -226,10 +290,21 @@ createNewOrder(): void{
   const body = {
     customer_id: idClient,
     ammount,
-    address: "",
+    address,
     products: productsList
   }
   console.log('body', body)
+  this.isLoading = true;
+ resp = await this.ordersService.crearOrden(body);
+  if (resp.ok) {
+    this.isLoading = false;
+   // console.log('se ha reacdo nueva orden')
+   this.success = true;
+   setTimeout(()=>{  
+     this.dialogRef.close();
+    }, 1000);
+   
+  } 
 
 }
 /* clientSelected: new FormControl('', Validators.required),

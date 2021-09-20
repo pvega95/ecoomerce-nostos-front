@@ -107,11 +107,15 @@ export class OrderComponent implements OnInit {
    addNewOrder(): void {
     const dialogRef = this.dialog.open(WindowModalComponent, {
       width: '42rem',
-      height: '23rem',
+      height: '30rem',
       data: {
           type: Modal.newOrder
         },
     disableClose: true
+    });
+    dialogRef.afterClosed().subscribe( result => {
+        this.cargarLista();
+        this.closeDetails();
     });
 
    }
