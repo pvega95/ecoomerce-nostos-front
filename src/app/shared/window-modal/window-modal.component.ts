@@ -28,7 +28,7 @@ export class WindowModalComponent implements OnInit {
   public listObjProduct: Select[];
   public clientAvailableSearch: boolean = true;
   public productAvailableSearch: boolean = true;
-  public total: number = 0;
+  public totalAmount: number = 0;
   public disableRemoveProduct: boolean;
 
   constructor(
@@ -104,6 +104,13 @@ async  loadData(): Promise<void>{
     this.productsControls[i].patchValue({
       product: objProduct
     });
+    this.calculateTotalAmmount();
+  }
+  calculateTotalAmmount(): void{
+    this.totalAmount = 0;
+    this.productsForm.value.forEach(productForm => {
+      this.totalAmount+= productForm.quantity * productForm.product.data.price;
+    });
   }
 
   initForm(): void{
@@ -120,10 +127,12 @@ async  loadData(): Promise<void>{
     const formProduct = this.createProductForm();
     this.productsForm.push(formProduct);
     this.verifyQuantityLot();
+    this.calculateTotalAmmount();
   }
   removeProduct(): void{
     this.productsForm.removeAt(this.productsForm.length - 1);
     this.verifyQuantityLot();
+    this.calculateTotalAmmount();
   }
   verifyQuantityLot(){
     if (this.productsForm.length === 1) {
@@ -142,18 +151,6 @@ async  loadData(): Promise<void>{
     return this.productsForm.controls as FormGroup[];
   }
 
-  formatClient(clientRaw){
-    let lista:any[] = [];
-    clientRaw.forEach(element => {
-      lista.push({
-        id: element.uid,
-        fullName: element.full_name.name + ' ' + element.full_name.lastName,
-        address: element.billing_address[0]
-      });
-    });
-    return lista;
-  }
-
   onNoClick(): void {
     this.listFiles = [];
     this.dialogRef.close(this.listFiles);
@@ -170,6 +167,20 @@ async  loadData(): Promise<void>{
       this.existListFile = false;
       this.listFiles = [];
      }
+  }
+
+
+
+  formatClient(clientRaw){
+    let lista:any[] = [];
+    clientRaw.forEach(element => {
+      lista.push({
+        id: element.uid,
+        fullName: element.full_name.name + ' ' + element.full_name.lastName,
+        address: element.billing_address[0]
+      });
+    });
+    return lista;
   }
 
   formatProduct(productRaw) {
@@ -196,6 +207,7 @@ goToClient(): void{
 }
 createNewOrder(): void{
   let idClient: string;
+  let ammount: number = 0;
   let productsList: any[] = [];
   idClient = this.orderForm.controls.clientSelected.value.id
   console.log('client', this.orderForm.controls.clientSelected.value)
@@ -206,12 +218,14 @@ createNewOrder(): void{
       productId: productForm.product.id,
       sku: productForm.product.data.sku,
       quantity: productForm.quantity,
-      price: productForm.product.data.price
+      price: productForm.product.data.price,
+      totalCost:  productForm.quantity * productForm.product.data.price
     })
+    ammount+= productForm.quantity * productForm.product.data.price;
   });
   const body = {
     customer_id: idClient,
-    ammount: 1,
+    ammount,
     address: "",
     products: productsList
   }
