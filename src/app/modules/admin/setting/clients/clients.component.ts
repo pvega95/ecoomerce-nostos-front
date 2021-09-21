@@ -9,6 +9,7 @@ import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
+import { ClientPresenter } from './clients.presenter';
 
 
 @Component({
@@ -34,7 +35,8 @@ import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.serv
            }
        `
   ],
-  animations     : fuseAnimations
+  animations     : fuseAnimations,
+  providers: [ClientPresenter],
 })
 export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
@@ -55,6 +57,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
+    public clientPresenter: ClientPresenter,
     private clientsService: ClientsService,
     private fuseUtilsService: FuseUtilsService,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -109,6 +112,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
          if (this.selectedClient.uid === clientId )
          {
              // Close the details
+             this.clientPresenter.resetClientForm();
              this.closeDetails();
              return;
          }
@@ -118,6 +122,12 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        // Get the client by id
        const clienteEncontrado = this.clients.find(item => item.uid === clientId)  || null;
        this.selectedClient = clienteEncontrado;
+
+       if (clienteEncontrado.uid) {
+           this.clientPresenter.loadClientForm(clienteEncontrado);
+       } else {
+           this.clientPresenter.resetClientForm();
+       }
 
        this.selectedClientForm.patchValue({
          id: clienteEncontrado.uid,
@@ -133,7 +143,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
          updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(clienteEncontrado.updatedAt))
          
        });
-
+       console.log('presneter client', this.clientPresenter.form.value)
        
 
       // this.stringToDate(clienteEncontrado.createdAt);
@@ -213,7 +223,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
    closeDetails(): void
    {
        this.selectedClient = null;
-       this.initForm();
+    //   this.initForm();
    }
 
    ngAfterViewInit(): void

@@ -16,6 +16,22 @@ export class ClientsService {
     const  data  = (await this.http.get(url).toPromise()) as any;
     return data ;
   }
+  async listarDepartamentos(): Promise<any> {
+    const url = `${ClientsService.BASE_URL}/ubigeo-management/departments`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
+  async listarProvincias(departmentId: string): Promise<any> {
+    const url = `${ClientsService.BASE_URL}/ubigeo-management/province/${departmentId}`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
+  async listarDistritos(provinceId: string): Promise<any> {
+    const url = `${ClientsService.BASE_URL}/ubigeo-management/distrito/${provinceId}`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
+
   async consultaDireccionCliente(idUser: string): Promise<any> {
     const url = `${ClientsService.BASE_URL}/ubigeo-management/address/${idUser}`;
     const  data  = (await this.http.get(url).toPromise()) as any;
