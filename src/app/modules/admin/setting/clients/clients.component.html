@@ -99,16 +99,16 @@
                                         <button
                                             class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                             mat-stroked-button
-                                            (click)="toggleDetails(client._id, selectedClient?._id === client._id)">
+                                            (click)="toggleDetails(client.uid, selectedClient?.uid === client.uid)">
                                             <mat-icon
                                                 class="icon-size-5"
-                                                [svgIcon]="selectedClient?._id === client._id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
+                                                [svgIcon]="selectedClient?.uid === client.uid ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="grid">
-                                    <ng-container *ngIf="selectedClient?._id === client._id">
-                                        <ng-container *ngTemplateOutlet="rowDetailsTemplate; context: {$implicit: product}"></ng-container>
+                                    <ng-container *ngIf="selectedClient?.uid === client.uid">
+                                        <ng-container *ngTemplateOutlet="rowDetailsTemplate; context: {$implicit: client}"></ng-container>
                                     </ng-container>
                                 </div>
                             </ng-container>

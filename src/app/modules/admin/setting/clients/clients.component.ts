@@ -96,7 +96,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       // Get the products
       this.clients = resp.data;
       this.isLoading = false;
-      console.log('lista product',resp.data);
+      console.log('lista clients',resp.data);
     }
    }
 
@@ -106,7 +106,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
 
        // If the product is already selected...
        if (this.selectedClient ) {
-         if (this.selectedClient._id === clientId )
+         if (this.selectedClient.uid === clientId )
          {
              // Close the details
              this.closeDetails();
@@ -116,11 +116,11 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
      
 
        // Get the client by id
-       const clienteEncontrado = this.clients.find(item => item._id === clientId)  || null;
+       const clienteEncontrado = this.clients.find(item => item.uid === clientId)  || null;
        this.selectedClient = clienteEncontrado;
 
        this.selectedClientForm.patchValue({
-         id: clienteEncontrado._id,
+         id: clienteEncontrado.uid,
          name: clienteEncontrado.full_name.name,
 
      /*     descriptions: clienteEncontrado.descriptions.map(description =>{
@@ -261,6 +261,14 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        this._unsubscribeAll.complete();
    }
    createClient(){
+    this.clients.unshift({
+        full_name: {
+            name: '',
+            lastName: ''
+        },
+        phone: '',
+        email: ''
+    });
 
    }
 
