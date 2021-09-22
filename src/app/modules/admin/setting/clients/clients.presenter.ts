@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { AddressClient } from "app/models/address-client";
 import { Select } from "app/models/select";
 import { ClientsService } from './clients.service';
 
@@ -17,8 +18,14 @@ export class ClientPresenter {
     phone: FormControl;
     createdAt: FormControl;
     updatedAt: FormControl;
-public provinces: any[];
-public listObjProvince: Select[];
+
+    public addressClient: AddressClient[];
+    public departments: any[];
+    public provinces: any[];
+    public districts: any[];
+    public listObjDepartment: Select[];
+    public listObjProvince: Select[];
+    public listObjDistrict: Select[];
 
     constructor(
         protected fb: FormBuilder, 
@@ -33,24 +40,22 @@ public listObjProvince: Select[];
       let resp1;
       let resp2;
       let resp3;
-      this.provinces = [];
+      this.departments = [];
+ 
+      this.listObjDepartment = [];
       this.listObjProvince = [];
+      this.listObjDistrict = [];
+      this.addressClient = [];
 
       resp1 = await this.clientsService.listarDepartamentos();
       resp2 = await this.clientsService.listarProvincias('07');
       resp3 = await this.clientsService.listarDistritos('0701');
     if (resp1.ok) {
         console.log('depart', resp1)
-        this.provinces = resp1.data;
-        this.provinces.forEach(province => {
-            this.listObjProvince.push({
-                id: province.id as string,
-                label: province.name
-            });
-        });
+        this.departments = resp1.data;
+        this.listObjDepartment = this.formatOptions(this.departments);
     }
-    console.log('provicia', resp2)
-    console.log('distrito', resp3)
+
 
 
     }
@@ -77,7 +82,24 @@ public listObjProvince: Select[];
             updatedAt: this.updatedAt
         });
     }
+async loadAddressClient(client): Promise<void>{
+        this.addressClient = [];
+        let resp;
+        resp = await this.clientsService.consultaDireccionCliente(client.uid);
+        if (resp.ok) {
+            resp.data.forEach(address => {
+                this.addressClient.push(address);
+            });
+        }
+        
+        console.log('addressClient', this.addressClient)
+    }
     loadClientForm(client){
+        this.resetClientForm();
+        this.loadAddressClient(client);
+        this.provinces = [];
+        this.districts = [];
+    
         const { billing_address } = client;
 
         this.form.patchValue({
@@ -92,6 +114,7 @@ public listObjProvince: Select[];
         if(billing_address.length > 0) {
             billing_address.map(b_address => this.addAddressControl(b_address));
         } 
+       
     }
     createAddressForm(val?: string): FormControl {
         return new FormControl(val || '');
@@ -119,9 +142,39 @@ public listObjProvince: Select[];
           formArray.removeAt(0)
         }
       }
-    objProvinceSelected(event, index: number){
+    objDistrictSelected(event, index: number){
+
+    }
+async objProvinceSelected(event, index: number){
+        let resp: any;
+        resp = await this.clientsService.listarDistritos(event.id);   
+        if (resp.ok) {
+            this.districts = resp.data;
+            this.listObjDistrict = this.formatOptions(this.districts);
+        }
 
       }
+async objDepartmentSelected(event, index: number){
+       let resp: any;
+        resp = await this.clientsService.listarProvincias(event.id);   
+        if (resp.ok) {
+            this.provinces = resp.data;
+            this.listObjProvince = this.formatOptions(this.provinces);
+        }
+    }
+
+    formatOptions(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw.id as string,
+                label: objRaw.name
+            })
+        });
+    return listObj;
+    }
+
+
     formatoFecha(fecha: string): string{
     return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
     }

@@ -176,24 +176,37 @@
                                         </mat-form-field>
                                     </div> 
                                 </div>
-                                <div class="relative flex flex-0"
+                                <div class="relative flex-row flex-0"
                                    *ngFor="let item of clientPresenter.billingAddressesControls; let i = index " formArrayName ="billing_address" > 
+                                   <div class="relative flex flex-0 w-full">
+                                       <p>Dirección {{i+1}}</p>
+                                   </div>
                             <!--         <mat-form-field class="w-full pr-2">
                                              <mat-label>Dirección {{i+1}}</mat-label>
                                               <input
                                                  matInput
                                                  [formControl]="clientPresenter.billingAddressesControls[i]"> 
                                          </mat-form-field>  -->
-                                         <div class="w-3/12">
-                                                <p class="mb-2"><strong> Correo electrónico</strong></p>
-                                                    <app-select-search *ngIf="clientPresenter.provinces.length > 0" [listObj] = "clientPresenter.listObjProvince" 
-                                                        [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "'07'"
-                                                        [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)" 
-                                                    
-                                                        > <!--  (listObjAvailable)="listProductAvailable($event)" -->
-                                                    </app-select-search>                        
-                                            
+                                    <div class="relative flex flex-0 w-full">
+                                         <div class="w-3/12 pr-2" >
+                                            <app-select-search *ngIf="clientPresenter.departments.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Departamento'" [listObj] = "clientPresenter.listObjDepartment" 
+                                                [placeholder]="'departamento'" [placeholderLabel]="'Buscar departamento'" [id]= "clientPresenter.addressClient[i].department"
+                                                [noEntriesFoundLabel]="'departamento no encontrado'" (objSelectedOut)="clientPresenter.objDepartmentSelected($event, i)"  > 
+                                            </app-select-search>                        
                                         </div>
+                                        <div class="w-3/12 pr-2">
+                                            <app-select-search *ngIf="clientPresenter.provinces.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Provincia'" [listObj] = "clientPresenter.listObjProvince" 
+                                                [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "clientPresenter.addressClient[i].province"
+                                                [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)"   > 
+                                            </app-select-search>                        
+                                        </div>
+                                        <div class="w-3/12 pr-2">
+                                            <app-select-search *ngIf="clientPresenter.districts.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Distrito'" [listObj] = "clientPresenter.listObjDistrict" 
+                                                [placeholder]="'distrito'" [placeholderLabel]="'Buscar distrito'" [id]= "clientPresenter.addressClient[i].district"
+                                                [noEntriesFoundLabel]="'distrito no encontrado'" (objSelectedOut)="clientPresenter.objDistrictSelected($event, i)"   > 
+                                            </app-select-search>                        
+                                        </div>
+                                    </div>
                                  
                                 </div>
                                 <div class="relative flex flex-0">

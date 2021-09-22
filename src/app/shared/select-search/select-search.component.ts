@@ -13,6 +13,7 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
   
   @Input() listObj: any[];
   @Input() id: any;
+  @Input() labelTop: string = null;
   @Input() placeholderLabel: string;
   @Input() noEntriesFoundLabel: string;
   @Input() placeholder: string;
@@ -32,7 +33,7 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
   constructor() { }
 
   ngOnInit(): void {
-
+    
     // carga lista de clientes
     this.filteredObjs.next(this.listObj.slice());
     // listen for search field value changes
@@ -44,7 +45,7 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
   }
 
   ngAfterViewInit() {
-    this.setInitialValue();
+   // this.setInitialValue();
   }
   ngOnDestroy() {
     this._onDestroy.next();
@@ -53,26 +54,26 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
 
   
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
-    if(changes.value){
+/*     if(changes.value){
       this.objFilterCtrl.patchValue(changes.value.currentValue);
      // this.itemCategory = changes.value.currentValue;
-    }
-    console.log('this.listObj', this.listObj, this.id)
+    } */
+  //  console.log('this.listObj', this.listObj, this.id)
    // if (changes.data) {
       //this.banks = this.data; 
       
-      this.listObj.forEach((element, index) => {
+    this.listObj.forEach((element, index) => {
         if(element.id == this.id){
-          this.objFilterCtrl.setValue(this.listObj[index]);
+          this.objSelected.setValue(this.listObj[index]);
+          this.selectObj(this.objSelected);
         }
-      });
-      this.filteredObjs.next(this.listObj.slice());
+      }); 
+/*       this.filteredObjs.next(this.listObj.slice());
       this.objFilterCtrl.valueChanges
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {
           this.filterObjs();
-        });
+        });  */
   //  }
   }
 
