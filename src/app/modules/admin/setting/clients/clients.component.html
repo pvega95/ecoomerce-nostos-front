@@ -178,12 +178,22 @@
                                 </div>
                                 <div class="relative flex flex-0"
                                    *ngFor="let item of clientPresenter.billingAddressesControls; let i = index " formArrayName ="billing_address" > 
-                                        <mat-form-field class="w-full pr-2">
+                            <!--         <mat-form-field class="w-full pr-2">
                                              <mat-label>Dirección {{i+1}}</mat-label>
                                               <input
                                                  matInput
                                                  [formControl]="clientPresenter.billingAddressesControls[i]"> 
-                                         </mat-form-field> 
+                                         </mat-form-field>  -->
+                                         <div class="w-3/12">
+                                                <p class="mb-2"><strong> Correo electrónico</strong></p>
+                                                    <app-select-search *ngIf="clientPresenter.provinces.length > 0" [listObj] = "clientPresenter.listObjProvince" 
+                                                        [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "'07'"
+                                                        [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)" 
+                                                    
+                                                        > <!--  (listObjAvailable)="listProductAvailable($event)" -->
+                                                    </app-select-search>                        
+                                            
+                                        </div>
                                  
                                 </div>
                                 <div class="relative flex flex-0">

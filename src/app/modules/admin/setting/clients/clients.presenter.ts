@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { Select } from "app/models/select";
 import { ClientsService } from './clients.service';
 
 
@@ -16,6 +17,8 @@ export class ClientPresenter {
     phone: FormControl;
     createdAt: FormControl;
     updatedAt: FormControl;
+public provinces: any[];
+public listObjProvince: Select[];
 
     constructor(
         protected fb: FormBuilder, 
@@ -30,12 +33,21 @@ export class ClientPresenter {
       let resp1;
       let resp2;
       let resp3;
+      this.provinces = [];
+      this.listObjProvince = [];
 
       resp1 = await this.clientsService.listarDepartamentos();
       resp2 = await this.clientsService.listarProvincias('07');
       resp3 = await this.clientsService.listarDistritos('0701');
     if (resp1.ok) {
         console.log('depart', resp1)
+        this.provinces = resp1.data;
+        this.provinces.forEach(province => {
+            this.listObjProvince.push({
+                id: province.id as string,
+                label: province.name
+            });
+        });
     }
     console.log('provicia', resp2)
     console.log('distrito', resp3)
@@ -106,6 +118,9 @@ export class ClientPresenter {
         while (formArray.length !== 0) {
           formArray.removeAt(0)
         }
+      }
+    objProvinceSelected(event, index: number){
+
       }
     formatoFecha(fecha: string): string{
     return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))

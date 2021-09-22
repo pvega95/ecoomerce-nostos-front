@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { take, takeUntil } from 'rxjs/operators';
 import { ReplaySubject, Subject } from 'rxjs';
 import { MatSelect } from '@angular/material/select';
@@ -9,7 +9,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
   templateUrl: './select-search.component.html',
   styleUrls: ['./select-search.component.scss']
 })
-export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   
   @Input() listObj: any[];
   @Input() id: any;
@@ -52,6 +52,31 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
+    if(changes.value){
+      this.objFilterCtrl.patchValue(changes.value.currentValue);
+     // this.itemCategory = changes.value.currentValue;
+    }
+    console.log('this.listObj', this.listObj, this.id)
+   // if (changes.data) {
+      //this.banks = this.data; 
+      
+      this.listObj.forEach((element, index) => {
+        if(element.id == this.id){
+          this.objFilterCtrl.setValue(this.listObj[index]);
+        }
+      });
+      this.filteredObjs.next(this.listObj.slice());
+      this.objFilterCtrl.valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filterObjs();
+        });
+  //  }
+  }
+
+
   /**
    * Sets the initial value after the filteredObjs are loaded initially
    */
