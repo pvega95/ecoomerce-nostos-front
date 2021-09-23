@@ -176,10 +176,10 @@
                                         </mat-form-field>
                                     </div> 
                                 </div>
-                                <div class="relative flex-row flex-0"
+                                <div class="relative flex-row flex-0 border-b my-1"
                                    *ngFor="let item of clientPresenter.billingAddressesControls; let i = index " formArrayName ="billing_address" > 
                                    <div class="relative flex flex-0 w-full">
-                                       <p>Dirección {{i+1}}</p>
+                                       <p class="mb-2" style="color: blue; font-weight: bold;">Dirección {{i+1}}</p>
                                    </div>
                             <!--         <mat-form-field class="w-full pr-2">
                                              <mat-label>Dirección {{i+1}}</mat-label>
@@ -188,28 +188,59 @@
                                                  [formControl]="clientPresenter.billingAddressesControls[i]"> 
                                          </mat-form-field>  -->
                                     <div class="relative flex flex-0 w-full">
+                                        <!-- <p>{{clientPresenter.form.value | json}} </p> -->
                                          <div class="w-3/12 pr-2" >
-                                            <app-select-search *ngIf="clientPresenter.departments.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Departamento'" [listObj] = "clientPresenter.listObjDepartment" 
-                                                [placeholder]="'departamento'" [placeholderLabel]="'Buscar departamento'" [id]= "clientPresenter.addressClient[i].department"
+                                            <app-select-search *ngIf="clientPresenter.departments.length > 0 &&  clientPresenter.billingAddressesControls.length > 0" [labelTop]= "'Departamento'" [listObj] = "clientPresenter.listObjDepartment" 
+                                                [placeholder]="'departamento'" [placeholderLabel]="'Buscar departamento'" [id]= "clientPresenter.billingAddressesControls[i].get('department').value"
                                                 [noEntriesFoundLabel]="'departamento no encontrado'" (objSelectedOut)="clientPresenter.objDepartmentSelected($event, i)"  > 
                                             </app-select-search>                        
                                         </div>
-                                        <div class="w-3/12 pr-2">
-                                            <app-select-search *ngIf="clientPresenter.provinces.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Provincia'" [listObj] = "clientPresenter.listObjProvince" 
-                                                [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "clientPresenter.addressClient[i].province"
+                                        <div class="w-4/12 pr-2">
+                                            <app-select-search *ngIf="clientPresenter.billingAddressesControls[i].get('listObjProvince').value != '' " [labelTop]= "'Provincia'" [listObj] = "clientPresenter.billingAddressesControls[i].get('listObjProvince').value" 
+                                                [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "clientPresenter.billingAddressesControls[i].get('province').value"
                                                 [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)"   > 
                                             </app-select-search>                        
                                         </div>
-                                        <div class="w-3/12 pr-2">
-                                            <app-select-search *ngIf="clientPresenter.districts.length > 0 &&  clientPresenter.addressClient.length > 0" [labelTop]= "'Distrito'" [listObj] = "clientPresenter.listObjDistrict" 
-                                                [placeholder]="'distrito'" [placeholderLabel]="'Buscar distrito'" [id]= "clientPresenter.addressClient[i].district"
+                                        <div class="w-4/12 pr-2">
+                                            <app-select-search *ngIf="clientPresenter.billingAddressesControls[i].get('listObjDistrict').value != '' " [labelTop]= "'Distrito'" [listObj] = "clientPresenter.billingAddressesControls[i].get('listObjDistrict').value" 
+                                                [placeholder]="'distrito'" [placeholderLabel]="'Buscar distrito'" [id]= "clientPresenter.billingAddressesControls[i].get('district').value"
                                                 [noEntriesFoundLabel]="'distrito no encontrado'" (objSelectedOut)="clientPresenter.objDistrictSelected($event, i)"   > 
                                             </app-select-search>                        
                                         </div>
                                     </div>
+                                    <div class="relative flex flex-0 w-full">
+                                        <mat-form-field class="w-6/12 pr-2">
+                                            <mat-label>Dirección delivery</mat-label>
+                                             <input
+                                                matInput
+                                                [formControl]="clientPresenter.billingAddressesControls[i].get('address')"> 
+                                        </mat-form-field> 
+                                        <mat-form-field class="w-6/12 ">
+                                            <mat-label>Dirección delivery</mat-label>
+                                             <input
+                                                matInput
+                                                [formControl]="clientPresenter.billingAddressesControls[i].get('reference')"> 
+                                        </mat-form-field> 
+                                    </div>
                                  
                                 </div>
-                                <div class="relative flex flex-0">
+                                <div class="relative flex justify-center flex-0 my-2">
+                                    <button class="w-3/12 pr-2 mr-2"
+                                        [disabled]="false"
+                                        mat-flat-button
+                                        [color]="'primary'"
+                                        (click)="addAddress()">
+                                        Agregar dirección
+                                    </button>
+                                    <button class="w-3/12 pr-2 ml-2"
+                                        [disabled]="false"
+                                        mat-flat-button
+                                        [color]="'warn'"
+                                        (click)="removeAddress()">
+                                        Quitar dirección
+                                    </button>
+                                </div>
+                                <div class="relative flex flex-0 mt-2">
                                     <div class="w-3/12" >
                                         <mat-form-field class="pr-2" style="width: 100%;">
                                             <mat-label>Fecha de creación</mat-label>

@@ -11,15 +11,15 @@ export interface IAddressClient {
 }
 
 export class AddressClient {
-    _id: string;
-    customer: string;
+    _id?: string;
+    customer?: string;
     department: string;
     province: string;
     district: string;
     address: string;
     reference?: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     constructor(addressClient: IAddressClient){
         this._id  = addressClient._id || null;
         this.customer = addressClient.customer || null;

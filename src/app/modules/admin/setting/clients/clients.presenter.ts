@@ -29,6 +29,7 @@ export class ClientPresenter {
 
     constructor(
         protected fb: FormBuilder, 
+        protected formBuilder: FormBuilder,
         private fuseUtilsService: FuseUtilsService,
         private clientsService: ClientsService) {
         console.log('Client Presenter');
@@ -114,10 +115,21 @@ async loadAddressClient(client): Promise<void>{
         } 
        
     }
-    createAddressForm(val?: string): FormControl {
-        return new FormControl(val || '');
+    createAddressForm(val: AddressClient): FormGroup{
+        return  this.formBuilder.group({
+            department: new FormControl(val.department || ''),
+            province: new FormControl(val.province || ''),
+            district: new FormControl(val.district || ''),
+            address:  new FormControl(val.address || ''),
+            reference: new FormControl(val.reference || ''),
+            listObjProvince: new FormControl(''),
+            listObjDistrict: new FormControl(''),
+        });
+        
+        //new FormControl(val || '');
     }
-    addAddressControl(val?: string) {
+    addAddressControl(val: AddressClient) {
+        console.log('valll', val)
         const formAddress = this.createAddressForm(val);
         this.billingAddressForm.push(formAddress);
     }
@@ -134,6 +146,12 @@ async loadAddressClient(client): Promise<void>{
         this.form.reset();
         this.clearFormArray(this.billing_address);
     }
+    addAddress(){
+
+    }
+    removeAddress(){
+        
+    }
 
     clearFormArray(formArray: FormArray) {
         while (formArray.length !== 0) {
@@ -145,19 +163,32 @@ async loadAddressClient(client): Promise<void>{
     }
 async objProvinceSelected(event, index: number){
         let resp: any;
+        this.billingAddressesControls[index].patchValue({
+            listObjDistrict: ''
+            });
         resp = await this.clientsService.listarDistritos(event.id);   
         if (resp.ok) {
-            this.districts = resp.data;
-            this.listObjDistrict = this.formatOptions(this.districts);
+            const districts = resp.data;
+            const listObjDistrict = this.formatOptions(districts);
+            this.billingAddressesControls[index].patchValue({
+                listObjDistrict: listObjDistrict
+            });
         }
 
       }
 async objDepartmentSelected(event, index: number){
        let resp: any;
+       this.billingAddressesControls[index].patchValue({
+        listObjProvince: '',
+        listObjDistrict: ''
+        });
         resp = await this.clientsService.listarProvincias(event.id);   
         if (resp.ok) {
-            this.provinces = resp.data;
-            this.listObjProvince = this.formatOptions(this.provinces);
+            const provinces = resp.data;
+            const listObjProvince = this.formatOptions(provinces);
+            this.billingAddressesControls[index].patchValue({
+                listObjProvince: listObjProvince
+            });
         }
     }
 
