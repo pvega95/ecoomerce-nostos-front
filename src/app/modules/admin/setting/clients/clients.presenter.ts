@@ -48,8 +48,6 @@ export class ClientPresenter {
       this.addressClient = [];
 
       resp1 = await this.clientsService.listarDepartamentos();
-      resp2 = await this.clientsService.listarProvincias('07');
-      resp3 = await this.clientsService.listarDistritos('0701');
     if (resp1.ok) {
         console.log('depart', resp1)
         this.departments = resp1.data;
