@@ -115,23 +115,26 @@ async loadAddressClient(client): Promise<void>{
         } 
        
     }
-    createAddressForm(val: AddressClient): FormGroup{
+    createAddressForm(val?: AddressClient): FormGroup{
         return  this.formBuilder.group({
-            department: new FormControl(val.department || ''),
-            province: new FormControl(val.province || ''),
-            district: new FormControl(val.district || ''),
-            address:  new FormControl(val.address || ''),
-            reference: new FormControl(val.reference || ''),
+            department: new FormControl(val?.department || ''),
+            province: new FormControl(val?.province || ''),
+            district: new FormControl(val?.district || ''),
+            address:  new FormControl(val?.address || ''),
+            reference: new FormControl(val?.reference || ''),
             listObjProvince: new FormControl(''),
             listObjDistrict: new FormControl(''),
         });
         
         //new FormControl(val || '');
     }
-    addAddressControl(val: AddressClient) {
+    addAddressControl(val?: AddressClient) {
         console.log('valll', val)
         const formAddress = this.createAddressForm(val);
         this.billingAddressForm.push(formAddress);
+    }
+    removeAddressControl(){
+        this.billingAddressForm.removeAt(this.billingAddressForm.length - 1);
     }
 
     get billingAddressForm() {
@@ -147,10 +150,10 @@ async loadAddressClient(client): Promise<void>{
         this.clearFormArray(this.billing_address);
     }
     addAddress(){
-
+     this.addAddressControl();
     }
     removeAddress(){
-        
+     this.removeAddressControl();
     }
 
     clearFormArray(formArray: FormArray) {
