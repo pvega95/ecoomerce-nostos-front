@@ -128,21 +128,8 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        } else {
            this.clientPresenter.resetClientForm();
        }
+       this.clientPresenter.verifyLongArrayBillingAddressForm();
 
-       this.selectedClientForm.patchValue({
-         id: clienteEncontrado.uid,
-         name: clienteEncontrado.full_name.name,
-
-     /*     descriptions: clienteEncontrado.descriptions.map(description =>{
-             return (this.selectedClientForm.get('descriptions') as FormArray).push(this.createDescriptionForm(description));
-         }), */
-         lastName: clienteEncontrado.full_name.lastName,
-         email: clienteEncontrado.email,
-         phone: clienteEncontrado.phone,
-         createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(clienteEncontrado.createdAt)),
-         updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(clienteEncontrado.updatedAt))
-         
-       });
        console.log('presneter client', this.clientPresenter.form.value)
        
 
@@ -151,6 +138,13 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
 
    //    console.log('fecha', this.formatDate(this.stringToDate(clienteEncontrado.createdAt)));
        
+   }
+
+   updateSelectedClient(){
+
+   }
+   createNewClient(){
+
    }
 
 

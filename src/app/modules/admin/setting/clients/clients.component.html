@@ -36,6 +36,9 @@
             </button>
         </div>
     </div>
+    <div >
+        <P>{{clientPresenter.form.value | json}} </P>
+    </div>
 
     <!-- Main -->
     <div class="flex flex-auto overflow-hidden">
@@ -162,7 +165,8 @@
                                             <mat-label>Teléfono</mat-label>
                                             <input
                                                 matInput
-                                                type="number"
+                                                
+                                                [imask]="clientPresenter.maskForTelephone"
                                                 [formControlName]="'phone'">
                                         </mat-form-field>
                                     </div>
@@ -233,7 +237,7 @@
                                         Agregar dirección
                                     </button>
                                     <button class="w-3/12 pr-2 ml-2"
-                                        [disabled]="false"
+                                        [disabled]="clientPresenter.disableButtonRemoveBillingAddress"
                                         mat-flat-button
                                         [color]="'warn'"
                                         (click)="clientPresenter.removeAddress()">
@@ -296,12 +300,22 @@
                                             <span class="ml-2">An error occurred, try again!</span>
                                         </ng-container>
                                     </div>
-                                    <button
-                                        mat-flat-button
-                                        [color]="'primary'"
-                                        (click)="updateSelectedProduct()">
-                                        Actualizar
-                                    </button>
+                                    <ng-container *ngIf="clientPresenter.form.get('uid')?.value !== null;else nuevoCliente" >
+                                        <button
+                                            mat-flat-button
+                                            [color]="'primary'"
+                                            (click)="updateSelectedClient()">
+                                            Actualizar cliente
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #nuevoCliente>
+                                        <button
+                                            mat-flat-button
+                                            [color]="'primary'"
+                                            (click)="createNewClient()">
+                                            Crear nuevo cliente
+                                        </button>
+                                    </ng-template>
                                 </div>
                             </div>
 
