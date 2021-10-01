@@ -69,10 +69,10 @@ export class ClientPresenter {
     }
     private createValidators(): void {
         this.uid = new FormControl(-1);
-        this.name = new FormControl();
-        this.lastName = new FormControl();
+        this.name = new FormControl('', [ Validators.required, ]);
+        this.lastName = new FormControl('', [ Validators.required, ]);
         this.billing_address = new FormArray([]);
-        this.email = new FormControl('', Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}'  ),);
+        this.email = new FormControl('', [ Validators.required, Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}')],);
         this.phone = new FormControl('', [ Validators.required, Validators.minLength(9),  Validators.maxLength(9), Validators.pattern('[0-9]{9,9}') ],);
         this.createdAt = new FormControl();
         this.updatedAt = new FormControl();
@@ -129,8 +129,8 @@ async loadAddressClient(client): Promise<void>{
             department: new FormControl(val?.department || ''),
             province: new FormControl(val?.province || ''),
             district: new FormControl(val?.district || ''),
-            address:  new FormControl(val?.address || ''),
-            reference: new FormControl(val?.reference || ''),
+            address:  new FormControl(val?.address || '' , [ Validators.required,]),
+            reference: new FormControl(val?.reference || '' , [ Validators.required,]),
             listObjProvince: new FormControl(''),
             listObjDistrict: new FormControl(''),
         });
@@ -182,7 +182,9 @@ async loadAddressClient(client): Promise<void>{
         }
       }
     objDistrictSelected(event, index: number){
-
+        this.billingAddressesControls[index].patchValue({
+            district: event.id
+        });
     }
 async objProvinceSelected(event, index: number){
         let resp: any;
@@ -195,6 +197,10 @@ async objProvinceSelected(event, index: number){
             const listObjDistrict = this.formatOptions(districts);
             this.billingAddressesControls[index].patchValue({
                 listObjDistrict: listObjDistrict
+            });
+
+            this.billingAddressesControls[index].patchValue({
+                province: event.id
             });
         }
 
@@ -212,6 +218,12 @@ async objDepartmentSelected(event, index: number){
             this.billingAddressesControls[index].patchValue({
                 listObjProvince: listObjProvince
             });
+         /*    if (this.form.get('uid')?.value === null) {
+            
+            } */
+            this.billingAddressesControls[index].patchValue({
+                department: event.id
+            });
         }
     }
 
@@ -225,7 +237,15 @@ async objDepartmentSelected(event, index: number){
         });
     return listObj;
     }
+    createNewClient(){
+        console.log('form value', this.form.value)
+        if (this.form.valid) {
+            
+        } else {
+            
+        }
 
+    }
 
     formatoFecha(fecha: string): string{
     return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))

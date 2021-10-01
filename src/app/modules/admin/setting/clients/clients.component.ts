@@ -144,7 +144,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
 
    }
    createNewClient(){
-
+    this.clientPresenter.createNewClient();
    }
 
 

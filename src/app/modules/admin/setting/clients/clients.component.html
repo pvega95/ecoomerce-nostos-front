@@ -36,9 +36,9 @@
             </button>
         </div>
     </div>
-    <div >
+<!--     <div >
         <P>{{clientPresenter.form.value | json}} </P>
-    </div>
+    </div> -->
 
     <!-- Main -->
     <div class="flex flex-auto overflow-hidden">
@@ -244,7 +244,7 @@
                                         Quitar dirección
                                     </button>
                                 </div>
-                                <div class="relative flex flex-0 mt-2">
+                                <div *ngIf="clientPresenter.form.get('uid')?.value !== null"  class="relative flex flex-0 mt-2">
                                     <div class="w-3/12" >
                                         <mat-form-field class="pr-2" style="width: 100%;">
                                             <mat-label>Fecha de creación</mat-label>
@@ -310,6 +310,7 @@
                                     </ng-container>
                                     <ng-template #nuevoCliente>
                                         <button
+                                            [disabled]="!clientPresenter.form.valid"
                                             mat-flat-button
                                             [color]="'primary'"
                                             (click)="createNewClient()">
