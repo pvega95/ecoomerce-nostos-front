@@ -36,6 +36,9 @@
             </button>
         </div>
     </div>
+<!--     <div >
+        <P>{{clientPresenter.form.value | json}} </P>
+    </div> -->
 
     <!-- Main -->
     <div class="flex flex-auto overflow-hidden">
@@ -162,7 +165,8 @@
                                             <mat-label>Teléfono</mat-label>
                                             <input
                                                 matInput
-                                                type="number"
+                                                
+                                                [imask]="clientPresenter.maskForTelephone"
                                                 [formControlName]="'phone'">
                                         </mat-form-field>
                                     </div>
@@ -233,14 +237,14 @@
                                         Agregar dirección
                                     </button>
                                     <button class="w-3/12 pr-2 ml-2"
-                                        [disabled]="false"
+                                        [disabled]="clientPresenter.disableButtonRemoveBillingAddress"
                                         mat-flat-button
                                         [color]="'warn'"
                                         (click)="clientPresenter.removeAddress()">
                                         Quitar dirección
                                     </button>
                                 </div>
-                                <div class="relative flex flex-0 mt-2">
+                                <div *ngIf="clientPresenter.form.get('uid')?.value !== null"  class="relative flex flex-0 mt-2">
                                     <div class="w-3/12" >
                                         <mat-form-field class="pr-2" style="width: 100%;">
                                             <mat-label>Fecha de creación</mat-label>
@@ -296,12 +300,23 @@
                                             <span class="ml-2">An error occurred, try again!</span>
                                         </ng-container>
                                     </div>
-                                    <button
-                                        mat-flat-button
-                                        [color]="'primary'"
-                                        (click)="updateSelectedProduct()">
-                                        Actualizar
-                                    </button>
+                                    <ng-container *ngIf="clientPresenter.form.get('uid')?.value !== null;else nuevoCliente" >
+                                        <button
+                                            mat-flat-button
+                                            [color]="'primary'"
+                                            (click)="updateSelectedClient()">
+                                            Actualizar cliente
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #nuevoCliente>
+                                        <button
+                                            [disabled]="!clientPresenter.form.valid"
+                                            mat-flat-button
+                                            [color]="'primary'"
+                                            (click)="createNewClient()">
+                                            Crear nuevo cliente
+                                        </button>
+                                    </ng-template>
                                 </div>
                             </div>
 

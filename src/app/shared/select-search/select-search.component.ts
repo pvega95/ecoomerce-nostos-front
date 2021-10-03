@@ -11,8 +11,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 })
 export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   
-  @Input() listObj: any[];
-  @Input() id: any;
+  @Input() listObj: any[]=[];
+  @Input() id: string | number;
   @Input() labelTop: string = null;
   @Input() placeholderLabel: string;
   @Input() noEntriesFoundLabel: string;
@@ -61,13 +61,16 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
   //  console.log('this.listObj', this.listObj, this.id)
    // if (changes.data) {
       //this.banks = this.data; 
-      
-    this.listObj.forEach((element, index) => {
-        if(element.id == this.id){
-          this.objSelected.setValue(this.listObj[index]);
-          this.selectObj(this.objSelected);
-        }
-      }); 
+  if(changes.value){    
+ 
+      this.listObj.forEach((element, index) => {
+          if(element.id == this.id){
+            this.objSelected.setValue(this.listObj[index]);
+            this.selectObj(this.objSelected);
+          }
+        }); 
+    
+  }
 /*       this.filteredObjs.next(this.listObj.slice());
       this.objFilterCtrl.valueChanges
         .pipe(takeUntil(this._onDestroy))

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { AddressClient } from "app/models/address-client";
 import { Select } from "app/models/select";
@@ -26,6 +26,15 @@ export class ClientPresenter {
     public listObjDepartment: Select[];
     public listObjProvince: Select[];
     public listObjDistrict: Select[];
+    public disableButtonRemoveBillingAddress: boolean;
+    public maskForTelephone: any =
+    { mask: Number,
+      radix: '.',
+      signed: false,
+      mapToRadix: [','],
+      scale: 0,
+      min: 9999 ,
+      max: 999999999 };
 
     constructor(
         protected fb: FormBuilder, 
@@ -60,11 +69,11 @@ export class ClientPresenter {
     }
     private createValidators(): void {
         this.uid = new FormControl(-1);
-        this.name = new FormControl();
-        this.lastName = new FormControl();
+        this.name = new FormControl('', [ Validators.required, ]);
+        this.lastName = new FormControl('', [ Validators.required, ]);
         this.billing_address = new FormArray([]);
-        this.email = new FormControl();
-        this.phone = new FormControl();
+        this.email = new FormControl('', [ Validators.required, Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}')],);
+        this.phone = new FormControl('', [ Validators.required, Validators.minLength(9),  Validators.maxLength(9), Validators.pattern('[0-9]{9,9}') ],);
         this.createdAt = new FormControl();
         this.updatedAt = new FormControl();
     }
@@ -113,15 +122,15 @@ async loadAddressClient(client): Promise<void>{
         if(billing_address.length > 0) {
             billing_address.map(b_address => this.addAddressControl(b_address));
         } 
-       
+        
     }
     createAddressForm(val?: AddressClient): FormGroup{
         return  this.formBuilder.group({
             department: new FormControl(val?.department || ''),
             province: new FormControl(val?.province || ''),
             district: new FormControl(val?.district || ''),
-            address:  new FormControl(val?.address || ''),
-            reference: new FormControl(val?.reference || ''),
+            address:  new FormControl(val?.address || '' , [ Validators.required,]),
+            reference: new FormControl(val?.reference || '' , [ Validators.required,]),
             listObjProvince: new FormControl(''),
             listObjDistrict: new FormControl(''),
         });
@@ -132,9 +141,20 @@ async loadAddressClient(client): Promise<void>{
         console.log('valll', val)
         const formAddress = this.createAddressForm(val);
         this.billingAddressForm.push(formAddress);
+        this.verifyLongArrayBillingAddressForm();
     }
     removeAddressControl(){
         this.billingAddressForm.removeAt(this.billingAddressForm.length - 1);
+        this.verifyLongArrayBillingAddressForm();
+    }
+    verifyLongArrayBillingAddressForm(): void{
+        console.log('cantidadd', this.billingAddressForm.length)
+        if (this.billingAddressForm.length === 0) {
+            this.disableButtonRemoveBillingAddress = true;
+        } else {
+            this.disableButtonRemoveBillingAddress = false;
+        }
+
     }
 
     get billingAddressForm() {
@@ -162,7 +182,9 @@ async loadAddressClient(client): Promise<void>{
         }
       }
     objDistrictSelected(event, index: number){
-
+        this.billingAddressesControls[index].patchValue({
+            district: event.id
+        });
     }
 async objProvinceSelected(event, index: number){
         let resp: any;
@@ -175,6 +197,10 @@ async objProvinceSelected(event, index: number){
             const listObjDistrict = this.formatOptions(districts);
             this.billingAddressesControls[index].patchValue({
                 listObjDistrict: listObjDistrict
+            });
+
+            this.billingAddressesControls[index].patchValue({
+                province: event.id
             });
         }
 
@@ -192,6 +218,12 @@ async objDepartmentSelected(event, index: number){
             this.billingAddressesControls[index].patchValue({
                 listObjProvince: listObjProvince
             });
+         /*    if (this.form.get('uid')?.value === null) {
+            
+            } */
+            this.billingAddressesControls[index].patchValue({
+                department: event.id
+            });
         }
     }
 
@@ -205,7 +237,15 @@ async objDepartmentSelected(event, index: number){
         });
     return listObj;
     }
+    createNewClient(){
+        console.log('form value', this.form.value)
+        if (this.form.valid) {
+            
+        } else {
+            
+        }
 
+    }
 
     formatoFecha(fecha: string): string{
     return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
