@@ -21,7 +21,6 @@ export class ProductPresenter {
     currentImageIndex: FormControl;
 
     constructor(protected fb: FormBuilder, private fuseUtilsService: FuseUtilsService,) {
-        console.log('ProductPresenter');
         this.createValidators();
         this.createForm();
     }
@@ -36,6 +35,10 @@ export class ProductPresenter {
 
     get currentImageIdx(){
         return this.form.get('currentImageIndex').value
+    }
+
+    get idForm(){
+        return this.form.get('id');
     }
 
     createForm(): void {
@@ -123,16 +126,18 @@ export class ProductPresenter {
     }
 
     loadProductForm(product){
+        console.log('loadProductForm', product);
         const { descriptions, images } = product;
         product.createdAt = this.formatoFecha(product.createdAt);
         product.updatedAt = this.formatoFecha(product.updatedAt);
 
         this.form.patchValue(product);
+        this.idForm.setValue(product._id);
         if(descriptions.length > 0) {
             descriptions.map(desc => this.addDescriptionControl(desc))
         }
         if(images.length > 0) {
-            images.map(img => this.addImageControl())
+            images.map(img => this.addImageControl(img))
         }
     }
 
@@ -146,6 +151,12 @@ export class ProductPresenter {
         this.currentImageIndex.setValue(0);
         this.clearFormArray(this.images);
         this.clearFormArray(this.descriptions);
+    }
+
+    limpiarImagenes(){
+        while (this.images.length !== 0) {
+            this.images.removeAt(0)
+          }
     }
 
     clearFormArray(formArray: FormArray) {

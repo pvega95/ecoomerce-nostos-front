@@ -32,8 +32,9 @@ export class ProductsService {
     return data ;
   }
 
-  async actualizarProducto(body: any): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management`;
+  async actualizarProducto(body: any, id: string ): Promise<any> {
+    const url = `${ProductsService.BASE_URL}/product-management/${ id }`;
+    // return null;
     const  data  = (await this.http.put(url, body).toPromise()) as any;
     return data ;
   }
