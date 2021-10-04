@@ -220,7 +220,7 @@
                                                 [formControl]="clientPresenter.billingAddressesControls[i].get('address')"> 
                                         </mat-form-field> 
                                         <mat-form-field class="w-6/12 ">
-                                            <mat-label>Dirección delivery</mat-label>
+                                            <mat-label>Referencia</mat-label>
                                              <input
                                                 matInput
                                                 [formControl]="clientPresenter.billingAddressesControls[i].get('reference')"> 
@@ -286,25 +286,25 @@
                                 <div class="flex items-center">
                                     <div
                                         class="flex items-center mr-4"
-                                        *ngIf="flashMessage">
-                                        <ng-container *ngIf="flashMessage === 'success'">
+                                        *ngIf="seeMessage">
+                                        <ng-container *ngIf="flashMessage">
                                             <mat-icon
                                                 class="text-green-500"
                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Cliente actualizado</span>
+                                            <span class="ml-2">{{successMessage}}</span>
                                         </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
+                                        <ng-container *ngIf="!flashMessage">
                                             <mat-icon
                                                 class="text-red-500"
                                                 [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
+                                            <span class="ml-2">un error occurrió, prueba de nuevo!</span>
                                         </ng-container>
                                     </div>
                                     <ng-container *ngIf="clientPresenter.form.get('uid')?.value !== null;else nuevoCliente" >
                                         <button
                                             mat-flat-button
                                             [color]="'primary'"
-                                            (click)="updateSelectedClient()">
+                                            (click)="updateSelectedClient(clientPresenter.form.get('uid').value)">
                                             Actualizar cliente
                                         </button>
                                     </ng-container>

@@ -225,9 +225,19 @@ async objProvinceSelected(event, index: number){
         });
     return listObj;
     }
-    createNewClient(){
-       
+    
+    createClientBody(){
+       let list_address:  AddressClient[] = [];
         if (this.form.valid) {
+            this.billingAddressesControls.forEach((billing_address) => {
+                list_address.push({
+                    department: billing_address.get('department').value,
+                    province: billing_address.get('province').value,
+                    district: billing_address.get('district').value,
+                    address: billing_address.get('address').value,
+                    reference: billing_address.get('reference').value
+                });
+            });
             const body = 
             { 
                 email: this.form.get('email').value,
@@ -235,25 +245,14 @@ async objProvinceSelected(event, index: number){
                     name: this.form.get('name').value,
                     lastName: this.form.get('lastName').value
                 },
-                billing_address: [
-                    {
-                        "address": "Jr.loreto 107",
-                        "department": "07",
-                        "province": "0701",
-                        "district": "070103",
-                        "reference": "cerca al hospital"
-                    }
-                ],
+                billing_address: list_address,                
                 phone: this.form.get('phone').value,
                 google: false
             }
-            console.log('body value', body)
-            
-            
-        } else {
-            
+        //    console.log('body value', body)
+            return body;
         }
-
+        return null;
     }
 
     formatoFecha(fecha: string): string{

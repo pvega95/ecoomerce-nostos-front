@@ -1,6 +1,5 @@
 export interface IAddressClient {
     _id: string;
-    customer: string;
     department: string;
     province: string;
     district: string;
@@ -12,7 +11,6 @@ export interface IAddressClient {
 
 export class AddressClient {
     _id?: string;
-    customer?: string;
     department: string;
     province: string;
     district: string;
@@ -22,7 +20,6 @@ export class AddressClient {
     updatedAt?: string;
     constructor(addressClient: IAddressClient){
         this._id  = addressClient._id || null;
-        this.customer = addressClient.customer || null;
         this.department = addressClient.department || null;
         this.province = addressClient.province || null;
         this.district = addressClient.district || null;

@@ -4,8 +4,8 @@
 
 export const environment = {
     VERSION: '1.0',
-    // backendURL: 'https://ecoomerce-nostos.herokuapp.com',
-    backendURL: 'http://localhost:3000',
+     backendURL: 'https://ecoomerce-nostos.herokuapp.com',
+    //backendURL: 'http://localhost:3000',
     production: false
 };
 

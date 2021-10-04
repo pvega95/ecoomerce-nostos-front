@@ -43,15 +43,17 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) private _sort: MatSort;
 
   public clients: any[]=[];
-  public isLoading: boolean = true;
+  public isLoading: boolean;
 
 
-  flashMessage: 'success' | 'error' | null = null;
+  flashMessage: boolean;
 
   searchInputControl: FormControl = new FormControl();
   selectedClient: any = null;
   selectedClientForm: FormGroup;
   tagsEditMode: boolean = false;
+  public seeMessage: boolean = false;
+  public successMessage: string;
 
 
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -66,6 +68,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     ) { }
 
   ngOnInit(): void {
+    this.successMessage = '';
     this.cargarLista();
     this.initForm();
   }
@@ -93,6 +96,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async cargarLista(){
     let resp: any;
+    this.isLoading = true;
     // console.log('lista product', await this.productsService.listarProductos())
     resp = await this.clientsService.listarClientes();
     if(resp.ok){
@@ -117,7 +121,8 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
              return;
          }
        }
-     
+       this.successMessage = '';
+       this.seeMessage = false;
 
        // Get the client by id
        const clienteEncontrado = this.clients.find(item => item.uid === clientId)  || null;
@@ -137,11 +142,60 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        
    }
 
-   updateSelectedClient(){
+   updateSelectedClient(uid: string){
+       console.log('uid', uid)
+       const body = this.clientPresenter.createClientBody();
+       this.isLoading = true;
+       if (body) {
+        this.clientsService.actualizarCliente(body,uid).then((resp)=>{
+            this.flashMessage = resp.ok;
+            this.seeMessage = true;
+     
+            if (resp.ok) {
+                this.successMessage = 'Cliente actualizado';
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+
+                setTimeout(()=>{  
+                    this.cargarLista();
+                    this.closeDetails();
+                    }, 1000); 
+                
+            }
+        });
+       }
 
    }
    createNewClient(){
-    this.clientPresenter.createNewClient();
+    const body = this.clientPresenter.createClientBody();
+ 
+    this.isLoading = true;
+    if (body) {
+        
+        this.clientsService.crearCliente(body).then((resp)=>{
+            console.log('resp', resp)
+            
+            this.flashMessage = resp.ok;
+            this.seeMessage = true;
+    
+            if (resp.ok) {
+                this.successMessage = 'Cliente creado';
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+                setTimeout(()=>{  
+                    this.cargarLista();
+                    this.closeDetails();
+                    }, 1000); 
+                
+            }
+        });
+    }
+                
+    
    }
 
 
@@ -192,23 +246,6 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
           // Show a success message
           this.showFlashMessage('success');
       }); */
-  }
-  showFlashMessage(type: 'success' | 'error'): void
-  {
-      // Show the message
-      this.flashMessage = type;
-
-      // Mark for check
-      this._changeDetectorRef.markForCheck();
-
-      // Hide it after 3 seconds
-      setTimeout(() => {
-
-          this.flashMessage = null;
-
-          // Mark for check
-          this._changeDetectorRef.markForCheck();
-      }, 3000);
   }
 
    closeDetails(): void
