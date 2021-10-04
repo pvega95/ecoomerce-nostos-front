@@ -36,6 +36,16 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
     
     // carga lista de clientes
     this.filteredObjs.next(this.listObj.slice());
+
+    this.listObj.forEach((element, index) => {
+      if(element.id == this.id){
+        this.objSelected.setValue(this.listObj[index]);
+        this.selectObj(this.objSelected);
+      }
+    }); 
+
+
+
     // listen for search field value changes
     this.objFilterCtrl.valueChanges
     .pipe(takeUntil(this._onDestroy))
@@ -61,16 +71,7 @@ export class SelectSearchComponent implements OnInit, OnDestroy, AfterViewInit, 
   //  console.log('this.listObj', this.listObj, this.id)
    // if (changes.data) {
       //this.banks = this.data; 
-  if(changes.value){    
- 
-      this.listObj.forEach((element, index) => {
-          if(element.id == this.id){
-            this.objSelected.setValue(this.listObj[index]);
-            this.selectObj(this.objSelected);
-          }
-        }); 
-    
-  }
+
 /*       this.filteredObjs.next(this.listObj.slice());
       this.objFilterCtrl.valueChanges
         .pipe(takeUntil(this._onDestroy))

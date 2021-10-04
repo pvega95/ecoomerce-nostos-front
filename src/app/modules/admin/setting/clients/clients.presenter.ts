@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Injectable } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { AddressClient } from "app/models/address-client";
@@ -8,7 +8,7 @@ import { ClientsService } from './clients.service';
 
 
 @Injectable()
-export class ClientPresenter {
+export class ClientPresenter  {
     form: FormGroup;
     uid: FormControl;
     name: FormControl;
@@ -40,12 +40,12 @@ export class ClientPresenter {
         protected fb: FormBuilder, 
         protected formBuilder: FormBuilder,
         private fuseUtilsService: FuseUtilsService,
-        private clientsService: ClientsService) {
-        console.log('Client Presenter');
+        private clientsService: ClientsService,) {
         this.createValidators();
         this.createForm();
         this.loadUbigeo();
     }
+
     async loadUbigeo(): Promise<void>{
       let resp1;
       let resp2;
@@ -59,7 +59,6 @@ export class ClientPresenter {
 
       resp1 = await this.clientsService.listarDepartamentos();
     if (resp1.ok) {
-        console.log('depart', resp1)
         this.departments = resp1.data;
         this.listObjDepartment = this.formatOptions(this.departments);
     }
@@ -90,21 +89,10 @@ export class ClientPresenter {
             updatedAt: this.updatedAt
         });
     }
-async loadAddressClient(client): Promise<void>{
-        this.addressClient = [];
-        let resp;
-        resp = await this.clientsService.consultaDireccionCliente(client.uid);
-        if (resp.ok) {
-            resp.data.forEach(address => {
-                this.addressClient.push(address);
-            });
-        }
-        
-        console.log('addressClient', this.addressClient)
-    }
+
     loadClientForm(client){
         this.resetClientForm();
-        this.loadAddressClient(client);
+      //  this.loadAddressClient(client);
         this.provinces = [];
         this.districts = [];
     
@@ -131,14 +119,13 @@ async loadAddressClient(client): Promise<void>{
             district: new FormControl(val?.district || ''),
             address:  new FormControl(val?.address || '' , [ Validators.required,]),
             reference: new FormControl(val?.reference || '' , [ Validators.required,]),
-            listObjProvince: new FormControl(''),
-            listObjDistrict: new FormControl(''),
+            listObjProvince: new FormControl([]),
+            listObjDistrict: new FormControl([]),
         });
         
         //new FormControl(val || '');
     }
     addAddressControl(val?: AddressClient) {
-        console.log('valll', val)
         const formAddress = this.createAddressForm(val);
         this.billingAddressForm.push(formAddress);
         this.verifyLongArrayBillingAddressForm();
@@ -148,7 +135,6 @@ async loadAddressClient(client): Promise<void>{
         this.verifyLongArrayBillingAddressForm();
     }
     verifyLongArrayBillingAddressForm(): void{
-        console.log('cantidadd', this.billingAddressForm.length)
         if (this.billingAddressForm.length === 0) {
             this.disableButtonRemoveBillingAddress = true;
         } else {
@@ -189,7 +175,7 @@ async loadAddressClient(client): Promise<void>{
 async objProvinceSelected(event, index: number){
         let resp: any;
         this.billingAddressesControls[index].patchValue({
-            listObjDistrict: ''
+            listObjDistrict: []
             });
         resp = await this.clientsService.listarDistritos(event.id);   
         if (resp.ok) {
@@ -205,26 +191,28 @@ async objProvinceSelected(event, index: number){
         }
 
       }
-async objDepartmentSelected(event, index: number){
+ objDepartmentSelected(event, index: number){
        let resp: any;
+       this.listObjProvince = [];
        this.billingAddressesControls[index].patchValue({
-        listObjProvince: '',
-        listObjDistrict: ''
+        listObjProvince: [],
+        listObjDistrict: []
         });
-        resp = await this.clientsService.listarProvincias(event.id);   
-        if (resp.ok) {
-            const provinces = resp.data;
-            const listObjProvince = this.formatOptions(provinces);
-            this.billingAddressesControls[index].patchValue({
-                listObjProvince: listObjProvince
-            });
-         /*    if (this.form.get('uid')?.value === null) {
-            
-            } */
-            this.billingAddressesControls[index].patchValue({
-                department: event.id
-            });
-        }
+        this.clientsService.listarProvincias(event.id).then((resp)=>{
+            if (resp.ok) {
+                const provinces = resp.data;
+                const listObjProvince = this.formatOptions(provinces);
+                this.listObjProvince = listObjProvince;
+                this.billingAddressesControls[index].patchValue({
+                    listObjProvince: listObjProvince,
+                    department: event.id
+                });
+             /*    if (this.form.get('uid')?.value === null) {
+                
+                } */
+        
+            }
+        });   
     }
 
     formatOptions(listObjRaw: any[]): Select[]{
@@ -238,8 +226,29 @@ async objDepartmentSelected(event, index: number){
     return listObj;
     }
     createNewClient(){
-        console.log('form value', this.form.value)
+       
         if (this.form.valid) {
+            const body = 
+            { 
+                email: this.form.get('email').value,
+                full_name: {
+                    name: this.form.get('name').value,
+                    lastName: this.form.get('lastName').value
+                },
+                billing_address: [
+                    {
+                        "address": "Jr.loreto 107",
+                        "department": "07",
+                        "province": "0701",
+                        "district": "070103",
+                        "reference": "cerca al hospital"
+                    }
+                ],
+                phone: this.form.get('phone').value,
+                google: false
+            }
+            console.log('body value', body)
+            
             
         } else {
             

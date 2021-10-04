@@ -99,13 +99,13 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       // Get the products
       this.clients = resp.data;
       this.isLoading = false;
-      console.log('lista clients',resp.data);
+      //console.log('lista clients',resp.data);
     }
    }
 
    toggleDetails(clientId: string, open: boolean): void
    {
-       console.log('selectedClient', this.selectedClient);
+     //  console.log('selectedClient', this.selectedClient);
 
        // If the product is already selected...
        if (this.selectedClient ) {
@@ -128,10 +128,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        } else {
            this.clientPresenter.resetClientForm();
        }
-       this.clientPresenter.verifyLongArrayBillingAddressForm();
-
-       console.log('presneter client', this.clientPresenter.form.value)
-       
+       this.clientPresenter.verifyLongArrayBillingAddressForm();     
 
       // this.stringToDate(clienteEncontrado.createdAt);
 

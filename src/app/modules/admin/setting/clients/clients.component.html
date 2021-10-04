@@ -199,8 +199,8 @@
                                                 [noEntriesFoundLabel]="'departamento no encontrado'" (objSelectedOut)="clientPresenter.objDepartmentSelected($event, i)"  > 
                                             </app-select-search>                        
                                         </div>
-                                        <div class="w-4/12 pr-2">
-                                            <app-select-search *ngIf="clientPresenter.billingAddressesControls[i].get('listObjProvince').value != '' " [labelTop]= "'Provincia'" [listObj] = "clientPresenter.billingAddressesControls[i].get('listObjProvince').value" 
+                                        <div class="w-4/12 pr-2" *ngIf="clientPresenter.billingAddressesControls[i].get('listObjProvince').value.length > 0 ">
+                                            <app-select-search  [labelTop]= "'Provincia'" [listObj] = "clientPresenter.billingAddressesControls[i].get('listObjProvince').value" 
                                                 [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "clientPresenter.billingAddressesControls[i].get('province').value"
                                                 [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)"   > 
                                             </app-select-search>                        
