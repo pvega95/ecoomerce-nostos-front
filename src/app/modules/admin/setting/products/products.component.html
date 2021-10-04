@@ -87,12 +87,12 @@
                                         <div class="relative flex flex-0 items-center justify-center w-12 h-12 mr-6 rounded overflow-hidden border">
                                             <img
                                                 class="w-8"
-                                                *ngIf="product.thumbnail"
-                                                [alt]="'Product thumbnail image'"
+                                                *ngIf="product.images.length"
+                                                [alt]="'Product images'"
                                                 [src]="product.images[0].imageURL">
                                             <div
                                                 class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase"
-                                                *ngIf="!product.thumbnail">
+                                                *ngIf="!product.images.length">
                                                 NO THUMB
                                             </div>
                                         </div>
@@ -459,7 +459,7 @@
                                                 mat-flat-button
                                                 [color]="'primary'"
                                                 [disabled]="isLoading"
-                                                (click)="updateSelectedProduct()">
+                                                (click)="updateSelectedProduct(presenter.form.get('id').value)">
                                                 <span *ngIf="!isLoading">
                                                     Actualizar
                                                 </span>

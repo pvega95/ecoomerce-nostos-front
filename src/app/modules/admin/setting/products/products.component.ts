@@ -121,22 +121,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     initForm() {
         
         this.selectedProductForm = this._formBuilder.group({
-            id: [''],
             category: [''],
             name: ['', [Validators.required]],
             descriptions: this._formBuilder.array([]),
-            createdDate: [''],
-            updatedDate: [''],
-            tags: [[]],
             sku: [''],
-            barcode: [''],
-            brand: [''],
-            vendor: [''],
             stock: [''],
-            reserved: [''],
-            cost: [''],
-            basePrice: [''],
-            taxPercent: [''],
             price: [''],
             weight: [''],
             thumbnail: [''],
@@ -237,6 +226,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const productEncontrado = this.products.find(item => item._id === productId) || null;
         productEncontrado.currentImageIndex = 0;
         this.selectedProduct = productEncontrado;
+        this.selectedProductForm.patchValue(productEncontrado);
         this.verificarCantidadDescripciones();
         if (productEncontrado._id) {
             this.presenter.loadProductForm(productEncontrado);
@@ -436,16 +426,18 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * Update the selected product using the form data
      */
-    async updateSelectedProduct(): Promise<void> {
+    async updateSelectedProduct(id): Promise<void> {
+
         let resp;
         // Get the product object
-        const product = this.selectedProductForm.getRawValue();
-
-        // Remove the currentImageIndex field
-        delete product.currentImageIndex;
+        const product = this.presenter.form.value;
+        if( product.images.length > 0 ) {
+            product.images = product.images.filter(img => img instanceof File)
+            resp = await this.productsService.actualizarProducto(this.toFormData(product), id);
+        } else {
+            resp = await this.productsService.actualizarProducto(product, id);
+        }
         this.isLoading = true;
-        resp = await this.productsService.actualizarProducto(product);
-        console.log('resp', resp)
 
         this.seeMessage = true;
         this.flashMessage = resp.ok;
@@ -470,7 +462,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('presenter', this.presenter.form.value);
         const productForm = new Product(this.presenter.form.value);
         this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
-            console.log('resp', resp)
             this.dialog.closeAll();
 
         }); 
@@ -504,20 +495,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.countDescripcion++;
         if (this.verificarCantidadDescripciones()) {
             this.presenter.addDescriptionControl();
-     /*     this.selectedProductForm.patchValue({
-                descriptions: (this.selectedProductForm.get('descriptions') as FormArray).push(this.createDescriptionForm())
-            }); */
         } 
-       
-     //   console.log('descriptions', this.selectedProductForm.get('descriptions').value);
-
 
     }
     quitarDescripcion(): void {
         this.countDescripcion--;
         if (this.verificarCantidadDescripciones()) {
             this.presenter.removeDescriptionControl();
-           // (this.selectedProductForm.get('descriptions') as FormArray).removeAt((this.selectedProductForm.get('descriptions') as FormArray).length - 1)
         }
 
     }
@@ -559,7 +543,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         dialogRef.afterClosed().subscribe(async result => {
-            console.log('result', result);
             if (result) {
                 this.presenter.addImages(result);
                 result.forEach(file => {
@@ -570,23 +553,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                         .catch(err => console.error(err));
                 });
 
-                //   if (this.selectedProductForm.controls.id.value === NEW_PRODUCT){
-                //     this.files = (result as File[]);
-                //     this.files.forEach(file => {
-                // this.fuseUtilsService.readImageFile(file)
-                //         .then(img => setTimeout(() => {        
-                //             listImgs.push(img as string)       
-                //         }))
-                //         .catch(err => console.error(err));
-                //     });
-                //    this.selectedProductForm.patchValue({
-                //         images: listImgs
-                //     }); 
 
-                //   }
-
-            } else {
-                console.log('indefinido')
             }
 
         });
@@ -594,11 +561,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     removeImages(): void {
-        this.selectedProductForm.patchValue({
-            images: [],
-            currentImageIndex: 0
-        });
         this.files = [];
+        this.presenter.limpiarImagenes();
     }
 
     /**
