@@ -43,6 +43,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) private _sort: MatSort;
 
   public clients: any[]=[];
+  public clientsFiltered: any[]=[];
   public isLoading: boolean;
 
 
@@ -80,12 +81,13 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.closeDetails();
             this.isLoading = true;
             console.log('query', query)
-            let val = this.clients.filter((client)=>{
-                return client.full_name.name == query || client.full_name.lastName == query
+  /*           let val = this.clients.filter((client)=>{
+                console.log('query 2', query)
+                return (client.full_name.name as string).match(query)  || (client.full_name.lastName as string).match(query)
             });
-            console.log('val', val)
-           return this.clients.filter((client)=>{
-               return client.full_name.name == query || client.full_name.lastName == query
+            console.log('val', val) */
+          return this.clientsFiltered = this.clients.filter((client)=>{
+                return (client.full_name.name as string).match(query)  || (client.full_name.lastName as string).match(query)
            });
             //return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
         }),
@@ -125,6 +127,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     if(resp.ok){
       // Get the products
       this.clients = resp.data;
+      this.clientsFiltered = this.clients;
       this.isLoading = false;
       console.log('lista clients',resp.data);
     }
