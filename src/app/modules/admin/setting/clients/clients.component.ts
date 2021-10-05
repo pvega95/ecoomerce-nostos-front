@@ -70,7 +70,30 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.successMessage = '';
     this.cargarLista();
-    this.initForm();
+   // this.initForm();
+    // Subscribe to search input field value changes
+    this.searchInputControl.valueChanges
+    .pipe(
+        takeUntil(this._unsubscribeAll),
+        debounceTime(300),
+        switchMap((query) => {
+            this.closeDetails();
+            this.isLoading = true;
+            console.log('query', query)
+            let val = this.clients.filter((client)=>{
+                return client.full_name.name == query || client.full_name.lastName == query
+            });
+            console.log('val', val)
+           return this.clients.filter((client)=>{
+               return client.full_name.name == query || client.full_name.lastName == query
+           });
+            //return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
+        }),
+        map(() => {
+            this.isLoading = false;
+        })
+    )
+    .subscribe(); 
   }
 
   initForm() {
@@ -103,7 +126,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       // Get the products
       this.clients = resp.data;
       this.isLoading = false;
-      //console.log('lista clients',resp.data);
+      console.log('lista clients',resp.data);
     }
    }
 
@@ -148,11 +171,11 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
        this.isLoading = true;
        if (body) {
         this.clientsService.actualizarCliente(body,uid).then((resp)=>{
-            this.flashMessage = resp.ok;
+            this.flashMessage = resp.success;
             this.seeMessage = true;
      
-            if (resp.ok) {
-                this.successMessage = 'Cliente actualizado';
+            if (resp.success) {
+                this.successMessage = resp.message;
                 this.isLoading = false;
                 setTimeout(()=>{  // 2 segundo se cierra 
                     this.seeMessage = false;
