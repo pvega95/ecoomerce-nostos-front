@@ -46,7 +46,7 @@
         <!-- Products list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
             <ng-container *ngIf="!(isLoading && products.length === 0); else loadingProducts">
-                <ng-container *ngIf="products.length > 0; else noProducts">
+                <ng-container *ngIf="products.length > 0 && productsFiltered.length > 0; else noProducts">
                     <div class="grid">
                         <!-- Header -->
                         <div
@@ -79,7 +79,7 @@
                         </div>
                         <!-- Rows -->
                       
-                            <ng-container *ngFor="let product of products; trackBy: trackByFn">
+                            <ng-container *ngFor="let product of productsFiltered; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
 
                                     <!-- Image -->

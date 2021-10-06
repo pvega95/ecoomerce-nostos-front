@@ -50,7 +50,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
-    products: any[];
+    products: any[] = [];
+    productsFiltered: any[] = [];
     categories: any[];
     countDescripcion: number = 0;
     deshabilitarBotonAgregarDescripcion: boolean = false;
@@ -97,6 +98,26 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.cargarListaProductos();
         this.cargarCategorias();
+        this.searchInputControl.valueChanges
+        .pipe(
+            takeUntil(this._unsubscribeAll),
+            debounceTime(300),
+            switchMap((queryInput) => {
+                this.closeDetails();
+                this.isLoading = true;
+                const query = (queryInput as string).toLowerCase();
+              return this.productsFiltered = this.products.filter((product)=>{
+                    return (product.name as string).toLowerCase().match(query) || (product.sku as string).toLowerCase().match(query) 
+                    ||  (product.price as number).toString().match(query)  
+               });
+            }),
+            map(() => {
+                this.isLoading = false;
+            })
+        )
+        .subscribe(); 
+
+
         // Create the selected product form
         this.initForm();
 
@@ -156,6 +177,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (resp.ok) {
             // Get the products
             this.products = resp.data;
+            this.productsFiltered = this.products;
             this.isLoading = false;
             console.log(' this.products ',  this.products )
         }

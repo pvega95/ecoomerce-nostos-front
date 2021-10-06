@@ -77,17 +77,18 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(
         takeUntil(this._unsubscribeAll),
         debounceTime(300),
-        switchMap((query) => {
+        switchMap((queryInput) => {
             this.closeDetails();
             this.isLoading = true;
-            console.log('query', query)
+            const query = (queryInput as string).toLowerCase();
   /*           let val = this.clients.filter((client)=>{
-                console.log('query 2', query)
+                console.log('query 2', query)     
                 return (client.full_name.name as string).match(query)  || (client.full_name.lastName as string).match(query)
             });
             console.log('val', val) */
           return this.clientsFiltered = this.clients.filter((client)=>{
-                return (client.full_name.name as string).match(query)  || (client.full_name.lastName as string).match(query)
+                return (client.full_name.name as string).toLowerCase().match(query)  || (client.full_name.lastName as string).toLowerCase().match(query)
+                        || (client.email as string).toLowerCase().match(query) || (client.phone as string).match(query)
            });
             //return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
         }),
