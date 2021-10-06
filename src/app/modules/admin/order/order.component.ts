@@ -28,6 +28,7 @@ export class OrderComponent implements OnInit {
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
   public orders: any[];
+  public ordersFiltered: any[];
   public statusOrders: any[];
   public products: any[];
   public isLoading: boolean;
@@ -37,6 +38,7 @@ export class OrderComponent implements OnInit {
   selectedOrder: any = null;
   selectedOrderForm: FormGroup;
   selected: number;
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   searchInputControl: FormControl = new FormControl();
 
@@ -51,6 +53,27 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista(); 
+    this.searchInputControl.valueChanges
+        .pipe(
+            takeUntil(this._unsubscribeAll),
+            debounceTime(300),
+            switchMap((queryInput) => {
+                this.closeDetails();
+                this.isLoading = true;
+                const query = (queryInput as string).toLowerCase();   
+              return this.ordersFiltered = this.orders.filter((order)=>{
+                    return  (order.order_status.name as string).toLowerCase().match(query) 
+                    || (order.customer_id.full_name.name as string).toLowerCase().match(query) || (order.customer_id.full_name.lastName as string).toLowerCase().match(query) 
+                    ||  (order.ammount as number).toString().match(query)  
+               });
+            }),
+            map(() => {
+                this.isLoading = false;
+            })
+        )
+        .subscribe(); 
+
+
 /*   this.dialog.open(WindowModalComponent, {
       data: {
               type: Modal.success
@@ -69,6 +92,7 @@ export class OrderComponent implements OnInit {
 
     this.products = [];
     this.orders = [];
+    this.ordersFiltered = [];
     this.statusOrders = [];
     this.isLoading = true;
 
@@ -78,6 +102,7 @@ export class OrderComponent implements OnInit {
     if(resp1.ok && resp2.ok){
       // Get the ordersn
       this.orders = resp1.data;
+      this.ordersFiltered = this.orders;
       this.statusOrders = resp2.data;
       this.isLoading = false;
       console.log('lista ordenes',resp1.data, this.statusOrders);

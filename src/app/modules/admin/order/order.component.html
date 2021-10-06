@@ -43,7 +43,7 @@
         <!-- Orders list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
             <ng-container *ngIf="!(isLoading && orders.length === 0); else loadingOrders">
-                <ng-container *ngIf="orders.length > 0; else noOrders">
+                <ng-container *ngIf="orders.length > 0 && ordersFiltered.length > 0 ; else noOrders">
                     <div class="grid">
                         <!-- Header -->
                         <div
@@ -80,7 +80,7 @@
                         </div>
                         <!-- Rows -->
                       
-                            <ng-container *ngFor="let order of orders; trackBy: trackByFn">
+                            <ng-container *ngFor="let order of ordersFiltered; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
                                     <!-- status -->
                                     <div class="hidden md:block truncate">

@@ -42,7 +42,7 @@
         <!-- Categories list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
             <ng-container *ngIf="!(isLoading && categories.length === 0); else loadingCategories">
-                <ng-container *ngIf="categories.length > 0; else noCategories">
+                <ng-container *ngIf="categories.length > 0 && categoriesFiltered.length > 0 ; else noCategories">
                     <div class="grid">
                         <!-- Header -->
                         <div
@@ -74,7 +74,7 @@
                         </div>
                         <!-- Rows -->
                       
-                            <ng-container *ngFor="let category of categories; trackBy: trackByFn">
+                            <ng-container *ngFor="let category of categoriesFiltered; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
                                     <!-- Name -->
                                     <div class="truncate">

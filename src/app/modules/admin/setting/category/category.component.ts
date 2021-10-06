@@ -3,6 +3,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { fuseAnimations } from '@fuse/animations';
 import { CategoriesService } from './category.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
+import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-category',
@@ -30,10 +32,12 @@ import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.serv
 })
 export class CategoryComponent implements OnInit {
   categories: any[] = [];
+  categoriesFiltered: any[] = [];
   isLoading: boolean = true;
   searchInputControl: FormControl = new FormControl();
   selectedCategory: any = null;
   selectedCategoryForm: FormGroup;
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
   constructor(
     private fuseUtilsService: FuseUtilsService,
     private categoriesService: CategoriesService,
@@ -43,6 +47,25 @@ export class CategoryComponent implements OnInit {
   ngOnInit(): void {
     this.cargarLista();
     
+    this.searchInputControl.valueChanges
+    .pipe(
+        takeUntil(this._unsubscribeAll),
+        debounceTime(300),
+        switchMap((queryInput) => {
+            this.closeDetails();
+            this.isLoading = true;
+            const query = (queryInput as string).toLowerCase();
+          return this.categoriesFiltered = this.categories.filter((category)=>{
+                return (category.name as string).toLowerCase().match(query) || (category.thumbnail as string).toLowerCase().match(query) 
+                 
+           });
+        }),
+        map(() => {
+            this.isLoading = false;
+        })
+    )
+    .subscribe(); 
+
   }
   initForm() {
     this.selectedCategoryForm = this._formBuilder.group({
@@ -59,6 +82,7 @@ export class CategoryComponent implements OnInit {
     if(resp.ok){
       // Get the products
       this.categories = resp.data;
+      this.categoriesFiltered = this.categories;
       this.isLoading = false;
       console.log('lista categorias',resp.data);
     }
