@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { IsActiveMatchOptions } from '@angular/router';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FuseUtilsService
 {
+
+    private idClient$: BehaviorSubject<any> = new BehaviorSubject(null);
     /**
      * Constructor
      */
@@ -16,6 +21,14 @@ export class FuseUtilsService
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
+
+    getIdClient(): Observable<any> {
+        return this.idClient$.asObservable();
+      }
+    
+    setIdClient(id: string) {
+          this.idClient$.next(id);
+      }
 
     /**
      * Get the equivalent "IsActiveMatchOptions" options for "exact = true".
@@ -90,6 +103,19 @@ export class FuseUtilsService
         //return [year, month, day].join('-');
         return [day, month, year].join('/');
       }
+
+      static sinEspaciosEnBlanco(control: AbstractControl) : ValidationErrors | null {
+        if(control.value != null){
+            if((control.value as string).trim().length > 0){
+                return null;
+            }
+      
+            return {sinEspaciosEnBlanco: true};
+        }else{
+            return null;
+        }
+
+    }
 
     async readImageFile(file: File): Promise<string | ArrayBuffer> {
 		return new Promise<string | ArrayBuffer>((resolve, reject) => {

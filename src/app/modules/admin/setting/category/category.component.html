@@ -192,18 +192,18 @@
                                 <div class="flex items-center">
                                     <div
                                         class="flex items-center mr-4"
-                                        *ngIf="flashMessage">
-                                        <ng-container *ngIf="flashMessage === 'success'">
+                                        *ngIf="seeMessage">
+                                        <ng-container *ngIf="flashMessage">
                                             <mat-icon
                                                 class="text-green-500"
                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Categoria updated</span>
+                                            <span class="ml-2">{{successMessage}}</span>
                                         </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
+                                        <ng-container *ngIf="!flashMessage">
                                             <mat-icon
                                                 class="text-red-500"
                                                 [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
+                                            <span class="ml-2">un error occurrió, prueba de nuevo!</span>
                                         </ng-container>
                                     </div>
                                     <ng-container *ngIf="selectedCategoryForm.get('id').value !== -1;else nuevaCategoria" >
@@ -217,6 +217,7 @@
                                     <ng-template #nuevaCategoria>
                                         <button
                                             mat-flat-button
+                                            [disabled] = "!selectedCategoryForm.valid"
                                             [color]="'primary'"
                                             (click)="crearNuevaCategoria()">
                                             Crear nueva categoria

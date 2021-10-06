@@ -89,13 +89,31 @@
                                     >
                                 </app-select-search> 
                             </div>
+                            <div class="mb-4">
+                                <button class="  ml-3"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    (click)="goToClient(this.orderForm.controls.clientSelected.value)">
+                                    Agregar dirección cliente
+                                </button>
+                            </div>
                         </div>
                         <ng-template   #messageAddress >
                             <div *ngIf="isLoadingAddressClient " class="relative flex-row flex-0 mx-3 mb-2">
                                 <p>Cargando dirección cliente</p>
                             </div>
-                            <div *ngIf="!isLoadingAddressClient && listObjAddressClient.length === 0 && this.orderForm.controls.clientSelected.value != null " class="relative flex-row flex-0 mx-3 mb-2">
-                                <p>No hay dirección cliente</p>
+                            <div *ngIf="!isLoadingAddressClient && listObjAddressClient.length === 0 && this.orderForm.controls.clientSelected.value != null " class="relative flex mx-3 mb-2  flex-wrap  justify-center">
+                               <div class="flex items-center">
+                                <p class="my-0">No hay dirección cliente</p>
+                               </div>
+                               <div>
+                                   <button class="  ml-3"
+                                       mat-flat-button
+                                       [color]="'primary'"
+                                       (click)="goToClient(this.orderForm.controls.clientSelected.value)">
+                                       Agregar dirección cliente
+                                   </button>
+                               </div>
                             </div>
                         </ng-template>
                         

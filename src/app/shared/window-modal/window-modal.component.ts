@@ -6,7 +6,7 @@ import { Modal } from '../../enums/modal.enum';
 import { ProductsService } from '../../modules/admin/setting/products/products.service';
 import { ClientsService } from '../../modules/admin/setting/clients/clients.service';
 import { OrdersService } from '../../modules/admin/order/order.service';
-
+import { FuseUtilsService } from '../../../@fuse/services/utils/utils.service';
 import { MatSelect } from '@angular/material/select';
 import { Select } from 'app/models/select';
 import { Router } from '@angular/router';
@@ -44,6 +44,7 @@ export class WindowModalComponent implements OnInit {
     private ordersService: OrdersService,
     public router: Router,
     public dialogRef: MatDialogRef<WindowModalComponent>,
+    private fuseUtilsService: FuseUtilsService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.typeModal = Modal;
@@ -260,7 +261,11 @@ export class WindowModalComponent implements OnInit {
   listProductAvailable(val: boolean): void {
     this.productAvailableSearch = val;
   }
-  goToClient(): void {
+  goToClient(idClient?: string): void {
+    if (idClient) {
+      this.fuseUtilsService.setIdClient(idClient);
+    }
+
     this.router.navigate(['setting/clients']);
     this.dialogRef.close();
   }

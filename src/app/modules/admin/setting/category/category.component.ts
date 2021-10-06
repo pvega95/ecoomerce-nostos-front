@@ -5,6 +5,7 @@ import { CategoriesService } from './category.service';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
   selector: 'app-category',
@@ -37,16 +38,21 @@ export class CategoryComponent implements OnInit {
   searchInputControl: FormControl = new FormControl();
   selectedCategory: any = null;
   selectedCategoryForm: FormGroup;
+  flashMessage: boolean;
+  seeMessage: boolean = false;
+  successMessage: string;
+
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   constructor(
     private fuseUtilsService: FuseUtilsService,
     private categoriesService: CategoriesService,
     private _formBuilder: FormBuilder,
+    private _fuseConfirmationService: FuseConfirmationService,
     ) { }
 
   ngOnInit(): void {
+    this.successMessage = '';
     this.cargarLista();
-    
     this.searchInputControl.valueChanges
     .pipe(
         takeUntil(this._unsubscribeAll),
@@ -70,8 +76,8 @@ export class CategoryComponent implements OnInit {
   initForm() {
     this.selectedCategoryForm = this._formBuilder.group({
         id               : [''],
-        name             : ['', [Validators.required]],
-        thumbnail        : [''],
+        name             : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
+        thumbnail        : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
         createdDate      : [''],
         updatedDate      : ['']
     });
@@ -103,6 +109,8 @@ export class CategoryComponent implements OnInit {
             return;
         }
       }
+      this.successMessage = '';
+      this.seeMessage = false;
       this.initForm();
     
 
@@ -116,8 +124,8 @@ export class CategoryComponent implements OnInit {
             id: categoryEncontrado._id,
             name: categoryEncontrado.name,
             thumbnail: categoryEncontrado.thumbnail,
-            createdDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(categoryEncontrado.createdAt)),
-            updatedDate: this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(categoryEncontrado.updatedAt))
+            createdDate: categoryEncontrado.createdAt !== '' ?  this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(categoryEncontrado.createdAt)) : '',
+            updatedDate: categoryEncontrado.updatedAt !== '' ? this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(categoryEncontrado.updatedAt)) : ''
             
           });
 
@@ -140,7 +148,7 @@ export class CategoryComponent implements OnInit {
 
   }
   formatoFecha(fecha: string): string{
-    return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
+    return  fecha !== '' ? this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha)) : ''
   }
 
 
@@ -149,16 +157,73 @@ export class CategoryComponent implements OnInit {
       this.selectedCategory = null;
   }
   agregarNuevaCategoria(){
+    this.categories.unshift({
+      name: '',
+      thumbnail: '',
+      createdAt: '',
+      updatedAt: ''
+    });
 
   }
 
   deleteSelectedCategory(){
+    const confirmation = this._fuseConfirmationService.open({
+      title  : 'Eliminar categoria',
+      message: '¿Estás seguro(a) que quieres eliminar esta categoria?. Esta acción no puede deshacerse!',
+      actions: {
+          confirm: {
+              label: 'Eliminar'
+          }
+      }
+  });
 
+  // Subscribe to the confirmation dialog closed action
+  confirmation.afterClosed().subscribe((result) => {
+
+      // If the confirm button pressed...
+      if ( result === 'confirmed' )
+      {
+
+          // Delete the product on the server
+     /*      this._inventoryService.deleteProduct(product.id).subscribe(() => {
+
+              // Close the details
+              this.closeDetails();
+          }); */
+      }
+  });
   }
   updateSelectedCategory(){
 
   }
   crearNuevaCategoria(){
+    if (this.selectedCategoryForm.valid) {
+      const body = {
+        name: this.selectedCategoryForm.get('name').value,
+        thumbnail: (this.selectedCategoryForm.get('thumbnail').value as string).toLocaleUpperCase(),
+      }
+      this.isLoading = true;
+      this.categoriesService.crearCategoria(body).then((resp)=>{
+        this.flashMessage = resp.ok;
+        this.seeMessage = true;
+ 
+        if (resp.ok) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+
+            setTimeout(()=>{  
+                this.cargarLista();
+                this.closeDetails();
+                }, 1000); 
+            
+        }
+      });
+
+    }
+
 
   }
 

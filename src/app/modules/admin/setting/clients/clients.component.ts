@@ -45,7 +45,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   public clients: any[]=[];
   public clientsFiltered: any[]=[];
   public isLoading: boolean;
-
+  public idClient: string;
 
   flashMessage: boolean;
 
@@ -55,7 +55,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   tagsEditMode: boolean = false;
   public seeMessage: boolean = false;
   public successMessage: string;
-
+  public unsubscribe$: Subject<boolean> = new Subject();
 
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -66,7 +66,9 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     private _changeDetectorRef: ChangeDetectorRef,
     private _fuseConfirmationService: FuseConfirmationService,
     private _formBuilder: FormBuilder
-    ) { }
+    ) { 
+        this.idClient = null;
+    }
 
   ngOnInit(): void {
     this.successMessage = '';
@@ -97,6 +99,11 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     )
     .subscribe(); 
+
+    this.fuseUtilsService.getIdClient().pipe(takeUntil(this.unsubscribe$))
+    .subscribe((idClientout: string) => {
+        this.idClient = idClientout;      
+    });
   }
 
   initForm() {
@@ -120,6 +127,8 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 }
 
+
+
   async cargarLista(){
     let resp: any;
     this.isLoading = true;
@@ -130,12 +139,15 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.clients = resp.data;
       this.clientsFiltered = this.clients;
       this.isLoading = false;
+      if (this.clients.length > 0 && this.idClient) {
+            this.toggleDetails(this.idClient);
+      }
       console.log('lista clients',resp.data);
     }
    }
 
-   toggleDetails(clientId: string, open: boolean): void
-   {
+   toggleDetails(clientId: string, open?: boolean): void
+   { 
      //  console.log('selectedClient', this.selectedClient);
 
        // If the product is already selected...
@@ -230,11 +242,11 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
   {
       // Open the confirmation dialog
       const confirmation = this._fuseConfirmationService.open({
-          title  : 'Delete product',
-          message: 'Are you sure you want to remove this product? This action cannot be undone!',
+          title  : 'Eliminar cliente',
+          message: '¿Estás seguro(a) que quieres eliminar este cliente?. Esta acción no puede deshacerse!',
           actions: {
               confirm: {
-                  label: 'Delete'
+                  label: 'Eliminar'
               }
           }
       });
@@ -321,6 +333,10 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
    }
    ngOnDestroy(): void
    {
+      this.unsubscribe$.next(true);
+      this.unsubscribe$.complete();
+      this.fuseUtilsService.setIdClient(null);
+
        // Unsubscribe from all subscriptions
        this._unsubscribeAll.next();
        this._unsubscribeAll.complete();
