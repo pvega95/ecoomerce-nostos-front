@@ -406,7 +406,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     agregarNuevoProducto(): void {
         this.products.unshift({
             name: 'Nuevo producto',
-            thumbnail: null
+            thumbnail: null,
+            images: []
         });
         this.selected = -1;
         /*   // Create the product
@@ -427,7 +428,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      * Update the selected product using the form data
      */
     async updateSelectedProduct(id): Promise<void> {
-
+        this.isLoading = true;
         let resp;
         // Get the product object
         const product = this.presenter.form.value;
@@ -437,10 +438,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
             resp = await this.productsService.actualizarProducto(product, id);
         }
-        this.isLoading = true;
 
         this.seeMessage = true;
-        this.flashMessage = resp.ok;
+        this.flashMessage = resp.success;
      
           this.isLoading = false;
         
