@@ -61,9 +61,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     filePaths: String[] = [];
     public flashMessage: boolean;
     public seeMessage: boolean = false;
+    public successMessage: string;
 
     
-    isLoading: boolean = true;
+    isLoading: boolean;
 
     searchInputControl: FormControl = new FormControl();
     selectedProduct: any = null;
@@ -96,6 +97,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        this.successMessage = '';
         this.cargarListaProductos();
         this.cargarCategorias();
         this.searchInputControl.valueChanges
@@ -173,6 +175,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         let resp: any;
         this.products = [];
         // console.log('lista product', await this.productsService.listarProductos())
+        this.isLoading = true;
         resp = await this.productsService.listarProductos();
         if (resp.ok) {
             // Get the products
@@ -242,13 +245,14 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                 return;
             }
         }
+        this.successMessage = '';
         this.seeMessage = false;
 
         // Get the product by id
         const productEncontrado = this.products.find(item => item._id === productId) || null;
         productEncontrado.currentImageIndex = 0;
         this.selectedProduct = productEncontrado;
-        this.selectedProductForm.patchValue(productEncontrado);
+       // this.selectedProductForm.patchValue(productEncontrado);
         this.verificarCantidadDescripciones();
         if (productEncontrado._id) {
             this.presenter.loadProductForm(productEncontrado);
@@ -461,21 +465,21 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             resp = await this.productsService.actualizarProducto(product, id);
         }
 
-        this.seeMessage = true;
         this.flashMessage = resp.success;
-     
-          this.isLoading = false;
-        
-        setTimeout(()=>{  // 3 segundo se cierra modal
-          this.seeMessage = false;
-          }, 2000);
-    
-          setTimeout(()=>{  
-            this.cargarListaProductos();
-            this.cargarCategorias();
-            this.closeDetails();
-            }, 1000); 
-
+        this.seeMessage = true;
+        if (resp.success) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 3 segundo se cierra modal
+                this.seeMessage = false;
+                }, 2000);
+          
+                setTimeout(()=>{  
+                  this.cargarListaProductos();
+                  this.cargarCategorias();
+                  this.closeDetails();
+                  }, 1000); 
+        }
 
 
     }
@@ -483,8 +487,24 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     crearNuevoProducto(): void {
         console.log('presenter', this.presenter.form.value);
         const productForm = new Product(this.presenter.form.value);
+        this.isLoading = true;
         this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
             this.dialog.closeAll();
+            console.log('resp crear producto', resp)
+            this.flashMessage = resp.ok;
+            this.seeMessage = true;
+            if (resp.ok) {
+                this.successMessage = resp.message;
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+                setTimeout(()=>{  
+                    this.cargarListaProductos();
+                    this.closeDetails();
+                    }, 1000); 
+                
+            }
 
         }); 
     }
@@ -603,14 +623,29 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe((result) => {
-
+        confirmation.afterClosed().subscribe(async (result) => {
+            let resp;
             // If the confirm button pressed...
             if (result === 'confirmed') {
-
                 // Get the product object
-                const product = this.selectedProductForm.getRawValue();
-
+              const product = this.presenter.form.getRawValue();
+              this.isLoading = true;
+              resp = await this.productsService.eliminarProducto(product.id);
+              this.flashMessage = resp.success;
+              this.seeMessage = true;
+              if (resp.success) {
+                this.successMessage = resp.message;
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+                setTimeout(()=>{ 
+                    this.presenter.resetProductForm(); 
+                    this.cargarListaProductos();
+                    this.closeDetails();
+                    }, 1000); 
+                
+            }
 
             }
         });

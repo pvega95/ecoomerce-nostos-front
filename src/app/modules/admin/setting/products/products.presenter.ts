@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 
 @Injectable()
@@ -19,6 +19,22 @@ export class ProductPresenter {
     updatedAt: FormControl;
     id: FormControl;
     currentImageIndex: FormControl;
+    maskForPrice: any =
+    { mask: Number,
+      radix: '.',
+      signed: false,
+      mapToRadix: [','],
+      scale: 2,
+      min: 1,
+      max: 999999999 };
+      maskForWeight: any =
+      { mask: Number,
+        radix: '.',
+        signed: false,
+        mapToRadix: [','],
+        scale: 2,
+        min: 1,
+        max: 999999999 };
 
     constructor(protected fb: FormBuilder, private fuseUtilsService: FuseUtilsService,) {
         this.createValidators();
@@ -63,9 +79,9 @@ export class ProductPresenter {
     private createValidators(): void {
         this.id = new FormControl(-1);
         this.images = new FormArray([]);
-        this.sku = new FormControl();
-        this.name = new FormControl();
-        this.price = new FormControl();
+        this.sku = new FormControl('', [Validators.required,]);
+        this.name = new FormControl('', [Validators.required,]);
+        this.price = new FormControl('', [Validators.required,]);
         this.weight = new FormControl();
         this.descriptions = new FormArray([]);
         this.thumbnail = new FormControl();
@@ -128,10 +144,20 @@ export class ProductPresenter {
     loadProductForm(product){
         console.log('loadProductForm', product);
         const { descriptions, images } = product;
-        product.createdAt = this.formatoFecha(product.createdAt);
-        product.updatedAt = this.formatoFecha(product.updatedAt);
-
-        this.form.patchValue(product);
+        this.form.patchValue({
+            descriptions: product.descriptions,
+            sku: product.sku,
+            name: product.name,
+            price: product.price,
+            weight: product.weight,
+            thumbnail: product.thumbnail,
+            category: product.category,
+            stock: product.stock,
+            images: product.images,
+            currentImageIndex: product.currentImageIndex,
+            createdAt: this.formatoFecha(product.createdAt),
+            updatedAt: this.formatoFecha(product.updatedAt)
+        });
         this.idForm.setValue(product._id);
         if(descriptions.length > 0) {
             descriptions.map(desc => this.addDescriptionControl(desc))

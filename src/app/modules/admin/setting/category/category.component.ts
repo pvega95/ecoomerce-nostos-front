@@ -34,7 +34,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 export class CategoryComponent implements OnInit {
   categories: any[] = [];
   categoriesFiltered: any[] = [];
-  isLoading: boolean = true;
+  isLoading: boolean;
   searchInputControl: FormControl = new FormControl();
   selectedCategory: any = null;
   selectedCategoryForm: FormGroup;
@@ -84,6 +84,7 @@ export class CategoryComponent implements OnInit {
 }
   async cargarLista(){
     let resp: any;
+    this.isLoading = true;
     resp = await this.categoriesService.listarCategorias();
     if(resp.ok){
       // Get the products
@@ -178,18 +179,29 @@ export class CategoryComponent implements OnInit {
   });
 
   // Subscribe to the confirmation dialog closed action
-  confirmation.afterClosed().subscribe((result) => {
-
+  confirmation.afterClosed().subscribe(async (result) => {
+      let resp;
       // If the confirm button pressed...
       if ( result === 'confirmed' )
-      {
-
-          // Delete the product on the server
-     /*      this._inventoryService.deleteProduct(product.id).subscribe(() => {
-
-              // Close the details
+      { // Delete the category on the server
+        const category = this.selectedCategoryForm.getRawValue();
+        this.isLoading = true;
+        resp = await this.categoriesService.eliminarCategoria(category.id);
+        this.flashMessage = resp.success; 
+        this.seeMessage = true;
+        if (resp.success) {
+          this.successMessage = resp.message;
+          this.isLoading = false;
+          setTimeout(()=>{  // 2 segundo se cierra 
+              this.seeMessage = false;
+              }, 2000);
+          setTimeout(()=>{  
+              this.cargarLista();
               this.closeDetails();
-          }); */
+              }, 1000); 
+          
+      }
+
       }
   });
   }

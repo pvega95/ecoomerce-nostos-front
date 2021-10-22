@@ -17,6 +17,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { productsRoutes } from 'app/modules/admin/setting/products/products.routing';
 import { ProductsComponent } from './products.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
@@ -26,6 +27,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     imports     : [
         RouterModule.forChild(productsRoutes),
         MatFormFieldModule,
+        IMaskModule,
         MatProgressSpinnerModule,
         MatCheckboxModule,
         MatInputModule,

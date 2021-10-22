@@ -24,6 +24,11 @@ export class CategoriesService {
     const  data  = (await this.http.post(url, body).toPromise()) as any;
     return data ;
   }
+  async eliminarCategoria(id: string): Promise<any> {
+    const url = `${CategoriesService.BASE_URL}/category-management/${id}`;
+    const  data  = (await this.http.delete(url).toPromise()) as any;
+    return data ;
+  }
 
 
 

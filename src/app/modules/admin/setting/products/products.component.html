@@ -310,7 +310,7 @@
                                             <mat-label>Precio</mat-label>
                                             <span matPrefix>S/. </span>
                                             <input
-                                                type="number"
+                                                [imask]="presenter.maskForPrice"
                                                 matInput
                                                 [formControlName]="'price'">
                                         </mat-form-field>
@@ -336,7 +336,7 @@
                                             <mat-label>Peso</mat-label>
                                             <span matSuffix>Kg</span>
                                             <input
-                                                type="number"
+                                                [imask]="presenter.maskForWeight"
                                                 matInput
                                                 [formControlName]="'weight'">
                                         </mat-form-field>
@@ -430,7 +430,7 @@
                                             <mat-icon
                                                 class="text-green-500"
                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Se actualizo el producto</span>
+                                            <span class="ml-2">{{successMessage}}</span>
                                         </ng-container>
                                         <ng-container *ngIf="!flashMessage">
                                             <mat-icon
@@ -460,6 +460,7 @@
                                     <ng-template #nuevoProducto>
                                         <button
                                             mat-flat-button
+                                            [disabled]="!presenter.form.valid"
                                             [color]="'primary'"
                                             (click)="crearNuevoProducto()">
                                             Crear nuevo producto

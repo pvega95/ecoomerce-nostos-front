@@ -38,6 +38,12 @@ export class ProductsService {
     const  data  = (await this.http.put(url, body).toPromise()) as any;
     return data ;
   }
+  async eliminarProducto(id: string ): Promise<any> {
+    const url = `${ProductsService.BASE_URL}/product-management/${id}`;
+    // return null;
+    const  data  = (await this.http.delete(url).toPromise()) as any;
+    return data ;
+  }
 
 /*   createProduct(): Observable<any>
   {
