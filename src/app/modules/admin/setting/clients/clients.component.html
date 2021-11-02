@@ -280,7 +280,7 @@
                                     class="-ml-4"
                                     mat-button
                                     [color]="'warn'"
-                                    (click)="deleteSelectedClient()">
+                                    (click)="deleteSelectedClient(clientPresenter.form.get('uid').value)">
                                     Eliminar
                                 </button>
                                 <div class="flex items-center">

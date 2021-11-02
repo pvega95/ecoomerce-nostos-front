@@ -26,6 +26,11 @@ export class ClientsService {
     const  data  = (await this.http.put(url, body).toPromise()) as any;
     return data ;
   }
+  async eliminarCliente(uidClient: string): Promise<any> {
+    const url = `${ClientsService.BASE_URL}/user-management/${uidClient}`;
+    const  data  = (await this.http.delete(url).toPromise()) as any;
+    return data ;
+  }
 
   async listarDepartamentos(): Promise<any> {
     const url = `${ClientsService.BASE_URL}/ubigeo-management/departments`;

@@ -142,7 +142,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.clients.length > 0 && this.idClient) {
             this.toggleDetails(this.idClient);
       }
-      console.log('lista clients',resp.data);
+    //  console.log('lista clients',resp.data);
     }
    }
 
@@ -238,7 +238,7 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
    }
 
 
-  deleteSelectedClient(): void
+  deleteSelectedClient(uid: string): void
   {
       // Open the confirmation dialog
       const confirmation = this._fuseConfirmationService.open({
@@ -252,39 +252,31 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       // Subscribe to the confirmation dialog closed action
-      confirmation.afterClosed().subscribe((result) => {
+      confirmation.afterClosed().subscribe(async (result) => {
 
           // If the confirm button pressed...
           if ( result === 'confirmed' )
           {
-
-              // Get the product object
-              const product = this.selectedClientForm.getRawValue();
-
-              // Delete the product on the server
-         /*      this._inventoryService.deleteProduct(product.id).subscribe(() => {
-
-                  // Close the details
-                  this.closeDetails();
-              }); */
+              let resp;          
+              this.isLoading = true;
+              // Delete the client on the server
+              resp = await this.clientsService.eliminarCliente(uid);
+              this.flashMessage = resp.success; 
+              this.seeMessage = true;
+              if (resp.success) {
+                this.successMessage = resp.message;
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+                setTimeout(()=>{  
+                    this.cargarLista();
+                    this.closeDetails();
+                    }, 1000); 
+            }
+              
           }
       });
-  }
-
-  updateSelectedProduct(): void
-  {
-      // Get the product object
-      const product = this.selectedClientForm.getRawValue();
-
-      // Remove the currentImageIndex field
-      delete product.currentImageIndex;
-
-/*       // Update the product on the server
-      this._inventoryService.updateProduct(product.id, product).subscribe(() => {
-
-          // Show a success message
-          this.showFlashMessage('success');
-      }); */
   }
 
    closeDetails(): void

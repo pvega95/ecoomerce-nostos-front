@@ -91,7 +91,7 @@ export class CategoryComponent implements OnInit {
       this.categories = resp.data;
       this.categoriesFiltered = this.categories;
       this.isLoading = false;
-      console.log('lista categorias',resp.data);
+     // console.log('lista categorias',resp.data);
     }
 
 
@@ -205,7 +205,25 @@ export class CategoryComponent implements OnInit {
       }
   });
   }
-  updateSelectedCategory(){
+async updateSelectedCategory(){
+    let resp;
+    const category = this.selectedCategoryForm.getRawValue();
+    this.isLoading = true;
+    resp = await this.categoriesService.editarCategoria(category.id, category);
+    this.flashMessage = resp.success; 
+    this.seeMessage = true;
+    if (resp.success) {
+      this.successMessage = resp.message;
+      this.isLoading = false;
+      setTimeout(()=>{  // 2 segundo se cierra 
+          this.seeMessage = false;
+          }, 2000);
+      setTimeout(()=>{  
+          this.cargarLista();
+          this.closeDetails();
+          }, 1000); 
+  }
+
 
   }
   crearNuevaCategoria(){
