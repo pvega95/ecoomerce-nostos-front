@@ -176,14 +176,14 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     navComponent.refresh();
                 });
         }
-        const idProductsItem = this._fuseNavigationService.getItem('setting.id.0.1', navigation);
-        if ( idProductsItem )
+        const idCategoriesItem = this._fuseNavigationService.getItem('setting.id.0.1', navigation);
+        if ( idCategoriesItem )
         {
-            this._translocoService.selectTranslate('products').pipe(take(1))
+            this._translocoService.selectTranslate('categories').pipe(take(1))
                 .subscribe((translation) => {
 
                     // Set the title
-                    idProductsItem.title = translation;
+                    idCategoriesItem.title = translation;
 
                     // Refresh the navigation component
                     navComponent.refresh();
@@ -202,31 +202,99 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     navComponent.refresh();
                 });
         }
-        const idOptionsItem = this._fuseNavigationService.getItem('setting.id.0.3', navigation);
-        if ( idOptionsItem )
+        const idCompany = this._fuseNavigationService.getItem('setting.id.0.3', navigation);
+        if ( idCompany )
         {
-            this._translocoService.selectTranslate('options').pipe(take(1))
+            this._translocoService.selectTranslate('company').pipe(take(1))
                 .subscribe((translation) => {
 
                     // Set the title
-                    idOptionsItem.title = translation;
+                    idCompany.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        } 
+        const idDocument = this._fuseNavigationService.getItem('setting.id.0.4', navigation);
+        if ( idDocument )
+        {
+            this._translocoService.selectTranslate('document').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idDocument.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        } 
+        const idDocumentseries = this._fuseNavigationService.getItem('setting.id.0.5', navigation);
+        if ( idDocumentseries )
+        {
+            this._translocoService.selectTranslate('documentseries').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idDocumentseries.title = translation;
 
                     // Refresh the navigation component
                     navComponent.refresh();
                 });
         }
-        const idCategoriesItem = this._fuseNavigationService.getItem('setting.id.0.4', navigation);
-        if ( idCategoriesItem )
+        const idPaymentmethod = this._fuseNavigationService.getItem('setting.id.0.6', navigation);
+        if ( idPaymentmethod )
         {
-            this._translocoService.selectTranslate('categories').pipe(take(1))
+            this._translocoService.selectTranslate('paymentmethod').pipe(take(1))
                 .subscribe((translation) => {
 
                     // Set the title
-                    idCategoriesItem.title = translation;
+                    idPaymentmethod.title = translation;
 
                     // Refresh the navigation component
                     navComponent.refresh();
                 });
         }
+        const idPaymentdeadline = this._fuseNavigationService.getItem('setting.id.0.7', navigation);
+        if ( idPaymentdeadline )
+        {
+            this._translocoService.selectTranslate('paymentdeadline').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idPaymentdeadline.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idProductsItem = this._fuseNavigationService.getItem('setting.id.0.8', navigation);
+        if ( idProductsItem )
+        {
+            this._translocoService.selectTranslate('products').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idProductsItem.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+        const idTypedocument = this._fuseNavigationService.getItem('setting.id.0.9', navigation);
+        if ( idTypedocument )
+        {
+            this._translocoService.selectTranslate('typedocument').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idTypedocument.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+
+  
+   
     }
 }

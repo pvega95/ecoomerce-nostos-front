@@ -87,7 +87,13 @@ export const appRoutes: Route[] = [
                 {path: 'products', loadChildren: () => import('app/modules/admin/setting/products/products.module').then(m => m.ProductsModule)},
                 {path: 'clients', loadChildren: () => import('app/modules/admin/setting/clients/clients.module').then(m => m.ClientsModule)},
                // {path: 'options', loadChildren: () => import('app/modules/admin/setting/options/options.module').then(m => m.OptionsModule)},
-                {path: 'categories', loadChildren: () => import('app/modules/admin/setting/category/category.module').then(m => m.CategoriesModule)}
+                {path: 'categories', loadChildren: () => import('app/modules/admin/setting/category/category.module').then(m => m.CategoriesModule)},
+                {path: 'company', loadChildren: () => import('app/modules/admin/setting/company/company.module').then(m => m.CompanyModule)},
+                {path: 'document', loadChildren: () => import('app/modules/admin/setting/document/document.module').then(m => m.DocumentModule)},
+                {path: 'documentseries', loadChildren: () => import('app/modules/admin/setting/document-series/document-series.module').then(m => m.DocumentSeriesModule)},
+                {path: 'paymentdeadline', loadChildren: () => import('app/modules/admin/setting/payment-deadline/payment-deadline.module').then(m => m.PaymentDeadlineModule)},
+                {path: 'paymentmethod', loadChildren: () => import('app/modules/admin/setting/payment-method/payment-method.module').then(m => m.paymentMethodModule)},
+                {path: 'typedocument', loadChildren: () => import('app/modules/admin/setting/type-document/type-document.module').then(m => m.typeDocumentModule)},
             ]},
       
 
