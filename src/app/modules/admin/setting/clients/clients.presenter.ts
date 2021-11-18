@@ -4,7 +4,7 @@ import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { AddressClient } from "app/models/address-client";
 import { Select } from "app/models/select";
 import { ClientsService } from './clients.service';
-
+import { CommonService } from '../../../../shared/services/common.service'
 
 
 @Injectable()
@@ -40,7 +40,8 @@ export class ClientPresenter  {
         protected fb: FormBuilder, 
         protected formBuilder: FormBuilder,
         private fuseUtilsService: FuseUtilsService,
-        private clientsService: ClientsService,) {
+        private clientsService: ClientsService,
+        private commonService: CommonService) {
         this.createValidators();
         this.createForm();
         this.loadUbigeo();
@@ -57,7 +58,7 @@ export class ClientPresenter  {
       this.listObjDistrict = [];
       this.addressClient = [];
 
-      resp1 = await this.clientsService.listarDepartamentos();
+      resp1 = await this.commonService.listarDepartamentos();
     if (resp1.ok) {
         this.departments = resp1.data;
         this.listObjDepartment = this.formatOptions(this.departments);
@@ -177,7 +178,7 @@ async objProvinceSelected(event, index: number){
         this.billingAddressesControls[index].patchValue({
             listObjDistrict: []
             });
-        resp = await this.clientsService.listarDistritos(event.id);   
+        resp = await this.commonService.listarDistritos(event.id);   
         if (resp.ok) {
             const districts = resp.data;
             const listObjDistrict = this.formatOptions(districts);
@@ -198,7 +199,7 @@ async objProvinceSelected(event, index: number){
         listObjProvince: [],
         listObjDistrict: []
         });
-        this.clientsService.listarProvincias(event.id).then((resp)=>{
+        this.commonService.listarProvincias(event.id).then((resp)=>{
             if (resp.ok) {
                 const provinces = resp.data;
                 const listObjProvince = this.formatOptions(provinces);
