@@ -180,14 +180,14 @@
                                         <p class="mb-2" style="color: blue; font-weight: bold;">Dirección </p>
                                     </div>
                                     <div class="relative flex flex-0 w-full">
-                                        <!-- <p>{{clientPresenter.form.value | json}} </p> -->
+                                        <p>{{selectedCompanyForm.value | json}} </p> 
                                         <div class="w-3/12 pr-2" >
-                                        <app-select-search *ngIf="clientPresenter.departments.length > 0 " [labelTop]= "'Departamento'" [listObj] = "listObjDepartment" 
-                                            [placeholder]="'departamento'" [placeholderLabel]="'Buscar departamento'" [id]= "clientPresenter.billingAddressesControls[i].get('department').value"
-                                            [noEntriesFoundLabel]="'departamento no encontrado'" (objSelectedOut)="clientPresenter.objDepartmentSelected($event, i)"  > 
+                                        <app-select-search *ngIf="departments.length > 0 " [labelTop]= "'Departamento'" [listObj] = "listObjDepartment" 
+                                            [placeholder]="'departamento'" [placeholderLabel]="'Buscar departamento'" [id]= "selectedCompanyForm.get('department').value"
+                                            [noEntriesFoundLabel]="'departamento no encontrado'" (objSelectedOut)="objDepartmentSelected($event)"  > 
                                         </app-select-search>                        
                                         </div>
-                                        <div class="w-4/12 pr-2" *ngIf="clientPresenter.billingAddressesControls[i].get('listObjProvince').value.length > 0 ">
+                                <!--         <div class="w-4/12 pr-2" *ngIf="clientPresenter.billingAddressesControls[i].get('listObjProvince').value.length > 0 ">
                                             <app-select-search  [labelTop]= "'Provincia'" [listObj] = "clientPresenter.billingAddressesControls[i].get('listObjProvince').value" 
                                                 [placeholder]="'provincia'" [placeholderLabel]="'Buscar provincia'" [id]= "clientPresenter.billingAddressesControls[i].get('province').value"
                                                 [noEntriesFoundLabel]="'provincia no encontrada'" (objSelectedOut)="clientPresenter.objProvinceSelected($event, i)"   > 
@@ -198,7 +198,7 @@
                                                 [placeholder]="'distrito'" [placeholderLabel]="'Buscar distrito'" [id]= "clientPresenter.billingAddressesControls[i].get('district').value"
                                                 [noEntriesFoundLabel]="'distrito no encontrado'" (objSelectedOut)="clientPresenter.objDistrictSelected($event, i)"   > 
                                             </app-select-search>                        
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
     
@@ -256,10 +256,10 @@
                 </ng-template>
     
                 <ng-template #noCompany>
-                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">No hay categorias!</div>
+                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">No hay compañias!</div>
                 </ng-template>
                 <ng-template #loadingCompany>
-                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de categorias</div>
+                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de compañias</div>
                 </ng-template>
     
             </div>

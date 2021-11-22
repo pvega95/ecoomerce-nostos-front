@@ -71,8 +71,8 @@ export class CompanyComponent implements OnInit {
 
   ngOnInit(): void {
     this.successMessage = '';
-    this.loadListCompany();
     this.loadUbigeo();
+    this.loadListCompany();
     this.searchInputControl.valueChanges
     .pipe(
         takeUntil(this._unsubscribeAll),
@@ -114,23 +114,52 @@ export class CompanyComponent implements OnInit {
         id               : [''],
         comercialName    : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
         ruc              : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
+        deparment        : [''],
+        province         : [''],
+        district         : [''],
         createdDate      : [''],
-        updatedDate      : ['']
+        updatedDate      : [''],
+        listObjProvince: new FormControl([]),
+        listObjDistrict: new FormControl([]),
     });
   }
 
-  loadListCompany(): void {
+  loadListCompany() {
     this.isLoading = true;
     this.companyService.getListCompany().subscribe((resp)=>{
       if (resp.ok) {
        this.companies = resp.data;
        this.companiesFiltered = this.companies;
        this.isLoading = false;
-     //  console.log('lista compañias ',  this.companies)    
+       console.log('lista compañias ',  this.companies)    
       }
     });
 
   }
+  objDepartmentSelected(event){
+    let resp: any;
+    this.listObjProvince = [];
+    this.selectedCompanyForm.patchValue({
+     listObjProvince: [],
+     listObjDistrict: []
+     });
+     this.commonService.listarProvincias(event.id).then((resp)=>{
+         if (resp.ok) {
+             const provinces = resp.data;
+             const listObjProvince = this.formatOptions(provinces);
+             this.listObjProvince = listObjProvince;
+             this.selectedCompanyForm.patchValue({
+                 listObjProvince: listObjProvince,
+                 department: event.id
+             });
+          /*    if (this.form.get('uid')?.value === null) {
+             
+             } */
+     
+         }
+     });   
+ }
+
 
   toggleDetails(companyId: string): void
   {
@@ -160,6 +189,9 @@ export class CompanyComponent implements OnInit {
             id: companyEncontrado._id,
             comercialName: companyEncontrado.comercialName,
             ruc: companyEncontrado.ruc,
+            deparment: companyEncontrado.deparment,
+            province: companyEncontrado.province,
+            district: companyEncontrado.district,
             createdDate: companyEncontrado.createdAt !== '' ?  this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(companyEncontrado.createdAt)) : '',
             updatedDate: companyEncontrado.updatedAt !== '' ? this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(companyEncontrado.updatedAt)) : ''
             
