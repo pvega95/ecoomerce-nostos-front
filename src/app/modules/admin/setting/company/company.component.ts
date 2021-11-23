@@ -104,6 +104,7 @@ export class CompanyComponent implements OnInit {
   if (resp1.ok) {
       this.departments = resp1.data;
       this.listObjDepartment = this.formatOptions(this.departments);
+      console.log('depas obj', this.listObjDepartment)
   }
 
 
@@ -114,7 +115,7 @@ export class CompanyComponent implements OnInit {
         id               : [''],
         comercialName    : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
         ruc              : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
-        deparment        : [''],
+        department        : [''],
         province         : [''],
         district         : [''],
         createdDate      : [''],
@@ -159,6 +160,29 @@ export class CompanyComponent implements OnInit {
          }
      });   
  }
+ async objProvinceSelected(event){
+  let resp: any;
+  this.selectedCompanyForm.patchValue({
+      listObjDistrict: []
+      });
+  resp = await this.commonService.listarDistritos(event.id);   
+  if (resp.ok) {
+      const districts = resp.data;
+      const listObjDistrict = this.formatOptions(districts);
+      this.selectedCompanyForm.patchValue({
+          listObjDistrict: listObjDistrict
+      });
+
+      this.selectedCompanyForm.patchValue({
+          province: event.id
+      });
+  }
+}
+objDistrictSelected(event, index: number){
+  this.selectedCompanyForm[index].patchValue({
+      district: event.id
+  });
+}
 
 
   toggleDetails(companyId: string): void
@@ -189,7 +213,7 @@ export class CompanyComponent implements OnInit {
             id: companyEncontrado._id,
             comercialName: companyEncontrado.comercialName,
             ruc: companyEncontrado.ruc,
-            deparment: companyEncontrado.deparment,
+            department: companyEncontrado.department || '09' ,
             province: companyEncontrado.province,
             district: companyEncontrado.district,
             createdDate: companyEncontrado.createdAt !== '' ?  this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(companyEncontrado.createdAt)) : '',

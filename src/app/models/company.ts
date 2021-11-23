@@ -2,7 +2,7 @@ export interface ICompany {
     _id?: string;
     ruc: string;
     comercialName: string;
-    deparment: string;
+    department: string;
     province: string;
     district: string;
     status: boolean;
@@ -14,7 +14,7 @@ export class Company {
     _id?: string;
     ruc: string;
     comercialName: string;
-    deparment: string;
+    department: string;
     province: string;
     district: string;
     status: boolean;
@@ -24,7 +24,7 @@ export class Company {
         this._id  = company._id || null;
         this.ruc = company.ruc || null;
         this.comercialName = company.comercialName || null;
-        this.deparment = company.deparment || null;
+        this.department = company.department || null;
         this.province = company.province || null;
         this.district = company.district || null;
         this.status = company.status || false;
