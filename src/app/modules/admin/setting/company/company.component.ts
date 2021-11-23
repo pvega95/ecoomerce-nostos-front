@@ -104,7 +104,6 @@ export class CompanyComponent implements OnInit {
   if (resp1.ok) {
       this.departments = resp1.data;
       this.listObjDepartment = this.formatOptions(this.departments);
-      console.log('depas obj', this.listObjDepartment)
   }
 
 
@@ -132,7 +131,7 @@ export class CompanyComponent implements OnInit {
        this.companies = resp.data;
        this.companiesFiltered = this.companies;
        this.isLoading = false;
-       console.log('lista compañias ',  this.companies)    
+      
       }
     });
 
@@ -178,8 +177,8 @@ export class CompanyComponent implements OnInit {
       });
   }
 }
-objDistrictSelected(event, index: number){
-  this.selectedCompanyForm[index].patchValue({
+objDistrictSelected(event){
+  this.selectedCompanyForm.patchValue({
       district: event.id
   });
 }
@@ -187,8 +186,6 @@ objDistrictSelected(event, index: number){
 
   toggleDetails(companyId: string): void
   {
-      console.log('selectedCompany', this.selectedCompany);
-
       // If the company is already selected...
       if (this.selectedCompany ) {
         if (this.selectedCompany._id === companyId )
@@ -205,7 +202,7 @@ objDistrictSelected(event, index: number){
 
       // Get the company by id
       const companyEncontrado = this.companies.find(item => item._id === companyId)  || null;
-      console.log('companyEncontrado', companyEncontrado)
+      //console.log('companyEncontrado', companyEncontrado)
       this.selectedCompany = companyEncontrado;
       if(companyEncontrado._id){
           
