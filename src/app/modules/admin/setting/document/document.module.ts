@@ -15,6 +15,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
 import { documentRoutes } from './document.routing';
 import { DocumentComponent } from './document.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
 
@@ -25,6 +26,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     imports     : [
         RouterModule.forChild(documentRoutes),
         MatInputModule,
+        MatProgressSpinnerModule,
         IMaskModule,
         MatFormFieldModule,
         TranslocoModule,

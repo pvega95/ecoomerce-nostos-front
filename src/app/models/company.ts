@@ -17,9 +17,9 @@ export class Company {
     department: string;
     province: string;
     district: string;
-    status: boolean;
-    createdAt: string;
-    updatedAt: string;
+    status?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
     constructor(company: ICompany){
         this._id  = company._id || null;
         this.ruc = company.ruc || null;

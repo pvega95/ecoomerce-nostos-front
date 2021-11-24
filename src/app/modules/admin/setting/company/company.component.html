@@ -10,7 +10,7 @@
         </div>
         <!-- Title -->
         <ng-container *transloco="let t">
-            <div class="text-4xl font-extrabold tracking-tight">Compañia</div>
+            <div class="text-4xl font-extrabold tracking-tight">Compañía</div>
         </ng-container>
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
@@ -23,7 +23,7 @@
                     matInput
                     [formControl]="searchInputControl"
                     [autocomplete]="'off'"
-                    [placeholder]="'Buscar compañia'">
+                    [placeholder]="'Buscar compañía'">
             </mat-form-field>
             <!-- Add product button -->
             <button
@@ -32,7 +32,7 @@
                 [color]="'primary'"
                 (click)="createCompany()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Agregar nueva compañia</span>
+                <span class="ml-2 mr-1">Agregar nueva compañía</span>
             </button>
         </div>
     </div>
@@ -88,7 +88,7 @@
                                             {{company.ruc}}
                                         </div>
                                         <!-- creation date -->
-                                        <div class="truncate">
+                                        <div class="truncate"  >
                                             {{formatoFecha(company.createdAt)}}
                                         </div>
                                         <!-- update date -->
@@ -230,22 +230,41 @@
                                                     <span class="ml-2">un error occurrió, prueba de nuevo!</span>
                                                 </ng-container>
                                             </div>
-                                            <ng-container *ngIf="selectedCompanyForm.get('id').value !== -1;else nuevaCategoria" >
-                                                <button
-                                                    mat-flat-button
-                                                    [color]="'primary'"
-                                                    (click)="updateSelectedcompany()">
-                                                    Actualizar
-                                                </button>
+                                            <ng-container *ngIf="selectedCompanyForm.get('id').value !== -1;else nuevaCompania" >
+                                                <div class="w-full max-w-80 sm:w-30 mx-auto sm:mx-0">
+                                                    <button
+                                                        class=" w-full "
+                                                        mat-flat-button
+                                                        [disabled] = "!selectedCompanyForm.valid || isLoading"
+                                                        [color]="'primary'"
+                                                        (click)="updateSelectedcompany()">
+                                                        <span *ngIf="!isLoading">
+                                                            Actualizar
+                                                        </span>
+                                                        <mat-progress-spinner
+                                                        *ngIf="isLoading"
+                                                        [diameter]="22"
+                                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                                    </button>
+                                                </div>
                                             </ng-container>
-                                            <ng-template #nuevaCategoria>
-                                                <button
-                                                    mat-flat-button
-                                                    [disabled] = "!selectedCompanyForm.valid"
-                                                    [color]="'primary'"
-                                                    (click)="crearNuevaCategoria()">
-                                                    Crear nueva categoria
-                                                </button>
+                                            <ng-template #nuevaCompania>
+                                                <div class="w-full max-w-80 sm:w-50 mx-auto sm:mx-0">
+                                                    <button
+                                                        class=" w-full "
+                                                        mat-flat-button
+                                                        [disabled] = "!selectedCompanyForm.valid || isLoading"
+                                                        [color]="'primary'"
+                                                        (click)="createNewCompany()">
+                                                        <span *ngIf="!isLoading">
+                                                            Crear nueva compañía
+                                                        </span>
+                                                        <mat-progress-spinner
+                                                        *ngIf="isLoading"
+                                                        [diameter]="22"
+                                                        [mode]="'indeterminate'"></mat-progress-spinner>
+                                                    </button>
+                                                </div>
                                             </ng-template>
                                       
                                         </div>
@@ -263,10 +282,10 @@
                 </ng-template>
     
                 <ng-template #noCompany>
-                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">No hay compañias!</div>
+                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">No hay compañías!</div>
                 </ng-template>
                 <ng-template #loadingCompany>
-                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de compañias</div>
+                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de compañías</div>
                 </ng-template>
     
             </div>

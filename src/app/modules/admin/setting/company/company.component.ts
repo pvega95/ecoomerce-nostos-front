@@ -10,7 +10,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Select } from "app/models/select";
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
-import { Company, ICompany } from '../../../../models/company';
+import { Company } from '../../../../models/company';
 import { CommonService } from '../../../../shared/services/common.service'
 
 @Component({
@@ -112,11 +112,11 @@ export class CompanyComponent implements OnInit {
   initForm() {
     this.selectedCompanyForm = this._formBuilder.group({
         id               : [''],
-        comercialName    : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
-        ruc              : ['', [Validators.required, FuseUtilsService.sinEspaciosEnBlanco]],
-        department        : [''],
-        province         : [''],
-        district         : [''],
+        comercialName    : ['', [Validators.required, Validators.minLength(2), FuseUtilsService.sinEspaciosEnBlanco]],
+        ruc              : ['', [Validators.required, Validators.minLength(11),  Validators.maxLength(11), FuseUtilsService.sinEspaciosEnBlanco]],
+        department       : ['',[Validators.required]],
+        province         : ['',[Validators.required]],
+        district         : ['',[Validators.required]],
         createdDate      : [''],
         updatedDate      : [''],
         listObjProvince: new FormControl([]),
@@ -205,7 +205,6 @@ objDistrictSelected(event){
       //console.log('companyEncontrado', companyEncontrado)
       this.selectedCompany = companyEncontrado;
       if(companyEncontrado._id){
-          
           this.selectedCompanyForm.patchValue({
             id: companyEncontrado._id,
             comercialName: companyEncontrado.comercialName,
@@ -238,8 +237,50 @@ objDistrictSelected(event){
   {
       this.selectedCompany = null;
   }
-  createCompany(): void{
 
+  createCompany(): void{
+    this.companies.unshift(
+      {
+        ruc:'',
+        comercialName: '',
+        department: '',
+        province: '',
+        district: '',
+        createdAt: '',
+        updatedAt: ''
+      });
+  }
+  createNewCompany(): void{
+    const body: Company = {
+      ruc: this.selectedCompanyForm.get('ruc').value,
+      comercialName: this.selectedCompanyForm.get('comercialName').value,
+      department: this.selectedCompanyForm.get('department').value,
+      province: this.selectedCompanyForm.get('province').value,
+      district: this.selectedCompanyForm.get('district').value,
+    } 
+    this.isLoading = true;
+    if (body) {
+      this.companyService.createCompany(body).subscribe((resp)=>{
+        console.log('resp', resp)
+        
+        this.flashMessage = resp.ok;
+        this.seeMessage = true;
+
+        if (resp.ok) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+            setTimeout(()=>{  
+                this.loadListCompany();
+                this.closeDetails();
+                }, 1000); 
+            
+        }
+      });
+    }
+    
   }
   formatOptions(listObjRaw: any[]): Select[]{
       let listObj: Select[] = [];
