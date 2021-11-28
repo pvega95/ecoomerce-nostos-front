@@ -15,6 +15,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
 import { paymentMethodRoutes } from './payment-method.routing';
 import { PaymentMethodComponent } from './payment-method.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
 
@@ -25,6 +26,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     imports     : [
         RouterModule.forChild(paymentMethodRoutes),
         MatInputModule,
+        MatProgressSpinnerModule,
         IMaskModule,
         MatFormFieldModule,
         TranslocoModule,
