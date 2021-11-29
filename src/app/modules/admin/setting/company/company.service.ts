@@ -40,5 +40,21 @@ import { catchError, map } from 'rxjs/operators';
         })
       );
     } 
+    updateCompany(id: string, body: Company):  Observable<any> {
+      const url = `${CompanyService.BASE_URL}${CompanyService.confManagement}/company/${id}`;
+      return this.http.put(url, body).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
+    deleteCompany(id: string):  Observable<any> {
+      const url = `${CompanyService.BASE_URL}${CompanyService.confManagement}/company/${id}`;
+      return this.http.delete(url).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
 
   }

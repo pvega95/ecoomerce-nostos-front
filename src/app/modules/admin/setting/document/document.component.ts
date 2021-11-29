@@ -3,6 +3,7 @@ import { DocumentService } from './document.service';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 import { fuseAnimations } from '@fuse/animations';
 import { Document } from '../../../../models/document';
@@ -51,6 +52,7 @@ export class DocumentComponent implements OnInit {
   constructor(
     private documentService: DocumentService,
     private _formBuilder: FormBuilder,
+    private _fuseConfirmationService: FuseConfirmationService,
     ) { }
 
   ngOnInit(): void {
@@ -172,9 +174,62 @@ export class DocumentComponent implements OnInit {
     }
   }
   updateSelectedDocument(): void{
-
+    const body: Document = {
+      description: this.selectedDocumentForm.get('description').value,
+      abreviation: this.selectedDocumentForm.get('abreviation').value,
+      typeDocument: this.selectedDocumentForm.get('typeDocument').value,
+    } 
+    const id = this.selectedDocumentForm.get('id').value
+    this.isLoading = true;
+    if (body) {
+      this.documentService.updateDocument(id, body).subscribe((resp)=>{
+        this.flashMessage = resp.success;
+        this.seeMessage = true;
+        if (resp.success) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+            setTimeout(()=>{  
+                this.loadListDocument();
+                this.closeDetails();
+                }, 1000); 
+        }
+      });
+    }
   }
-  deleteSelecteddocument(): void{
+  deleteSelectedDocument() {
+    const confirmation = this._fuseConfirmationService.open({
+      title  : 'Eliminar documento',
+      message: '¿Estás seguro(a) que quieres eliminar este documento?. Esta acción no puede deshacerse!',
+      actions: {
+          confirm: {
+              label: 'Eliminar'
+          }
+      }
+    });
+  confirmation.afterClosed().subscribe( result => {
+    if ( result === 'confirmed' ){
+      const id = this.selectedDocumentForm.get('id').value
+      this.isLoading = true;
+      this.documentService.deleteDocument(id).subscribe((resp)=>{
+          this.flashMessage = resp.success;
+          this.seeMessage = true;
+          if (resp.success) {
+              this.successMessage = resp.message;
+              this.isLoading = false;
+              setTimeout(()=>{  // 2 segundo se cierra 
+                  this.seeMessage = false;
+                  }, 2000);
+              setTimeout(()=>{  
+                  this.loadListDocument();
+                  this.closeDetails();
+                  }, 1000); 
+          }
+        });
+      }
+    });
 
   }
 }

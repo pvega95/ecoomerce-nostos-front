@@ -40,5 +40,21 @@ import { catchError, map } from 'rxjs/operators';
         })
       );
     } 
+    updatePaymentMethod(id: string, body: PaymentMethod):  Observable<any> {
+      const url = `${PaymentMethodService.BASE_URL}${PaymentMethodService.confManagement}/payment-method/${id}`;
+      return this.http.put(url, body).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
+    deletePaymentMethod(id: string):  Observable<any> {
+      const url = `${PaymentMethodService.BASE_URL}${PaymentMethodService.confManagement}/payment-method/${id}`;
+      return this.http.delete(url).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
 
   }

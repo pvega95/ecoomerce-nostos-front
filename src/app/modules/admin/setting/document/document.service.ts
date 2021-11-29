@@ -40,5 +40,21 @@ import { catchError, map } from 'rxjs/operators';
         })
       );
     } 
+    updateDocument(id: string, body: Document):  Observable<any> {
+      const url = `${DocumentService.BASE_URL}${DocumentService.confManagement}/document/${id}`;
+      return this.http.put(url, body).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
+    deleteDocument(id: string):  Observable<any> {
+      const url = `${DocumentService.BASE_URL}${DocumentService.confManagement}/document/${id}`;
+      return this.http.delete(url).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
 
   }

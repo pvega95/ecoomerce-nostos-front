@@ -159,7 +159,7 @@
                                  class="-ml-4"
                                  mat-button
                                  [color]="'warn'"
-                                 (click)="deleteselectedDocument()">
+                                 (click)="deleteSelectedDocument()">
                                  Eliminar
                              </button>
                              <div class="flex items-center">
@@ -186,7 +186,7 @@
                                              mat-flat-button
                                              [disabled] = "!selectedDocumentForm.valid || isLoading"
                                              [color]="'primary'"
-                                             (click)="updateselectedDocument()">
+                                             (click)="updateSelectedDocument()">
                                              <span *ngIf="!isLoading">
                                                  Actualizar
                                              </span>

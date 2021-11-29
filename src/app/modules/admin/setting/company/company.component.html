@@ -210,7 +210,7 @@
                                             class="-ml-4"
                                             mat-button
                                             [color]="'warn'"
-                                            (click)="deleteSelectedcompany()">
+                                            (click)="deleteSelectedCompany()">
                                             Eliminar
                                         </button>
                                         <div class="flex items-center">
@@ -237,7 +237,7 @@
                                                         mat-flat-button
                                                         [disabled] = "!selectedCompanyForm.valid || isLoading"
                                                         [color]="'primary'"
-                                                        (click)="updateSelectedcompany()">
+                                                        (click)="updateSelectedCompany()">
                                                         <span *ngIf="!isLoading">
                                                             Actualizar
                                                         </span>

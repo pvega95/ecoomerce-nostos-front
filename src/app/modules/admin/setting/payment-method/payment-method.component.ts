@@ -6,7 +6,6 @@ import { MatSort } from '@angular/material/sort';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { Select } from "app/models/select";
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseUtilsService } from '../../../../../@fuse/services/utils/utils.service';
 import { PaymentMethodService } from './payment-method.service';
@@ -59,6 +58,7 @@ export class PaymentMethodComponent implements OnInit {
     private paymentMethodService: PaymentMethodService,
     private commonService: CommonService,
     private _formBuilder: FormBuilder,
+    private _fuseConfirmationService: FuseConfirmationService,
     ) { }
 
   ngOnInit(): void {
@@ -174,6 +174,64 @@ export class PaymentMethodComponent implements OnInit {
         }
       });
     }
+  }
+  updateSelectedpaymentMethod(): void {
+    const body: PaymentMethod = {
+      description: this.selectedPaymentMethodForm.get('description').value
+    } 
+    const id = this.selectedPaymentMethodForm.get('id').value
+    this.isLoading = true;
+    if (body) {
+      this.paymentMethodService.updatePaymentMethod(id, body).subscribe((resp)=>{
+        this.flashMessage = resp.success;
+        this.seeMessage = true;
+        if (resp.success) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+            setTimeout(()=>{  
+                this.loadListPaymentMethod();
+                this.closeDetails();
+                }, 1000); 
+        }
+      });
+    }
+
+  }
+  deleteSelectedpaymentMethod(): void {
+    const confirmation = this._fuseConfirmationService.open({
+      title  : 'Eliminar método de pago',
+      message: '¿Estás seguro(a) que quieres eliminar este método de pago?. Esta acción no puede deshacerse!',
+      actions: {
+          confirm: {
+              label: 'Eliminar'
+          }
+      }
+    });
+
+    confirmation.afterClosed().subscribe( result => {
+      if ( result === 'confirmed' ){
+        const id = this.selectedPaymentMethodForm.get('id').value
+        this.isLoading = true;
+        this.paymentMethodService.deletePaymentMethod(id).subscribe((resp)=>{
+            this.flashMessage = resp.success;
+            this.seeMessage = true;
+            if (resp.success) {
+                this.successMessage = resp.message;
+                this.isLoading = false;
+                setTimeout(()=>{  // 2 segundo se cierra 
+                    this.seeMessage = false;
+                    }, 2000);
+                setTimeout(()=>{  
+                    this.loadListPaymentMethod();
+                    this.closeDetails();
+                    }, 1000); 
+            }
+          });
+      }
+    });
   }
 
 }

@@ -261,8 +261,6 @@ objDistrictSelected(event){
     this.isLoading = true;
     if (body) {
       this.companyService.createCompany(body).subscribe((resp)=>{
-        console.log('resp', resp)
-        
         this.flashMessage = resp.ok;
         this.seeMessage = true;
 
@@ -280,8 +278,71 @@ objDistrictSelected(event){
         }
       });
     }
-    
   }
+  updateSelectedCompany(): void{
+    const body: Company = {
+      ruc: this.selectedCompanyForm.get('ruc').value,
+      comercialName: this.selectedCompanyForm.get('comercialName').value,
+      department: this.selectedCompanyForm.get('department').value,
+      province: this.selectedCompanyForm.get('province').value,
+      district: this.selectedCompanyForm.get('district').value,
+    } 
+    const id = this.selectedCompanyForm.get('id').value
+    this.isLoading = true;
+    if (body) {
+      this.companyService.updateCompany(id, body).subscribe((resp)=>{
+        this.flashMessage = resp.success;
+        this.seeMessage = true;
+        if (resp.success) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+            setTimeout(()=>{  
+                this.loadListCompany();
+                this.closeDetails();
+                }, 1000); 
+        }
+      });
+    }
+  }
+
+  deleteSelectedCompany(): void{
+    const confirmation = this._fuseConfirmationService.open({
+      title  : 'Eliminar compañía "'+ this.selectedCompanyForm.get('comercialName').value+ '"',
+      message: '¿Estás seguro(a) que quieres eliminar esta compañía?. Esta acción no puede deshacerse!',
+      actions: {
+          confirm: {
+              label: 'Eliminar'
+          }
+      }
+    });
+  confirmation.afterClosed().subscribe( result => {
+    if ( result === 'confirmed' ){
+      const id = this.selectedCompanyForm.get('id').value
+      this.isLoading = true;
+      this.companyService.deleteCompany(id).subscribe((resp)=>{
+          this.flashMessage = resp.success;
+          this.seeMessage = true;
+          if (resp.success) {
+              this.successMessage = resp.message;
+              this.isLoading = false;
+              setTimeout(()=>{  // 2 segundo se cierra 
+                  this.seeMessage = false;
+                  }, 2000);
+              setTimeout(()=>{  
+                  this.loadListCompany();
+                  this.closeDetails();
+                  }, 1000); 
+          }
+        });
+      }
+    });
+  }
+
+
+
   formatOptions(listObjRaw: any[]): Select[]{
       let listObj: Select[] = [];
       listObjRaw.forEach(objRaw => {
