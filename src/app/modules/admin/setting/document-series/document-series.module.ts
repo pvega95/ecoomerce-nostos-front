@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
 import { DocumentSeriesRoutes } from './document-series.routing';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DocumentSeriesComponent } from './document-series.component';
 import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
@@ -25,6 +26,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     imports     : [
         RouterModule.forChild(DocumentSeriesRoutes),
         MatInputModule,
+        MatProgressSpinnerModule,
         IMaskModule,
         MatFormFieldModule,
         TranslocoModule,

@@ -209,7 +209,7 @@ objDistrictSelected(event){
             id: companyEncontrado._id,
             comercialName: companyEncontrado.comercialName,
             ruc: companyEncontrado.ruc,
-            department: companyEncontrado.department || '09' ,
+            department: companyEncontrado.department,
             province: companyEncontrado.province,
             district: companyEncontrado.district,
             createdDate: companyEncontrado.createdAt !== '' ?  this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(companyEncontrado.createdAt)) : '',

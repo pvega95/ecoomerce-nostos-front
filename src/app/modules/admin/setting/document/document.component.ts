@@ -86,8 +86,6 @@ export class DocumentComponent implements OnInit {
       
       }
     });
-
-
   }
   closeDetails(): void
   {

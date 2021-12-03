@@ -106,15 +106,27 @@ export class FuseUtilsService
 
       static sinEspaciosEnBlanco(control: AbstractControl) : ValidationErrors | null {
         if(control.value != null){
-            if((control.value as string).trim().length > 0){
-                return null;
+            if (typeof(control.value) === 'number') {
+                if((control.value as number).toString().trim().length > 0){
+                    return null;
+                }
+            } else {
+                if((control.value as string).trim().length > 0){
+                    return null;
+                }          
             }
-      
             return {sinEspaciosEnBlanco: true};
         }else{
             return null;
         }
 
+    }
+    static convertFromValueToNumber(value: any): number{
+        if (typeof(value) === 'number') {
+            return value;
+        }else{
+            return Number(value);
+        }
     }
 
     async readImageFile(file: File): Promise<string | ArrayBuffer> {
