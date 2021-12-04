@@ -126,12 +126,12 @@
 
                      <div class="relative flex flex-0 ">
                          <!-- Name, SKU & etc. -->
-                         <div class="w-4/12" *ngIf="selectedDocumentSeriesForm.get('document').value.length > 0 " >
+                         <div class="w-4/12" *ngIf="listObjDocuments.length > 0 " >
                             <app-select-search [labelTop]= "'Documento'" [listObj] = "listObjDocuments" 
-                                [placeholder]="'documentos'" [placeholderLabel]="'Buscar documentos'" [id]= "selectedDocumentSeriesForm.get('document').value"
+                                [placeholder]="'documentos'" [placeholderLabel]="'Buscar documentos'" [id]= "IdDocument"
                                 [noEntriesFoundLabel]="'documento no encontrado'" (objSelectedOut)="objDocumentSelected($event)"  > 
                             </app-select-search> 
-                         </div>
+                         </div> 
                          <div class="w-4/12">
                              <!-- thumbnail -->
                              <mat-form-field class="pr-2" style="width: 100%;">
@@ -144,9 +144,19 @@
                          </div>
                          <div class="w-4/12">
                             <app-select-search *ngIf="companies.length > 0 " [labelTop]= "'Compañía'" [listObj] = "listObjCompanies" 
-                                [placeholder]="'compañías'" [placeholderLabel]="'Buscar compañías'" [id]= "selectedDocumentSeriesForm.get('company').value"
+                                [placeholder]="'compañías'" [placeholderLabel]="'Buscar compañías'" [id]= "IdCompany"
                                 [noEntriesFoundLabel]="'compañía no encontrada'" (objSelectedOut)="objCompanySelected($event)"  > 
                             </app-select-search> 
+                        </div>
+                        <div class="w-4/12">
+                            <!-- thumbnail -->
+                            <mat-form-field class="pr-2" style="width: 100%;">
+                                <mat-label>Correlativo</mat-label>
+                                <input
+                                    [imask]="maskForInputCorrelative"
+                                    matInput
+                                    [formControlName]="'currentCorrelative'">
+                            </mat-form-field>
                         </div>
                      </div>
                     
@@ -194,7 +204,7 @@
                                  </div>
                              </ng-container>
                              <ng-template #nuevaDocumento>
-                                 <div class="w-full max-w-80 sm:w-50 mx-auto sm:mx-0">
+                                 <div class="w-full max-w-80 sm:w-60 mx-auto sm:mx-0">
                                      <button
                                          class=" w-full "
                                          mat-flat-button
@@ -202,7 +212,7 @@
                                          [color]="'primary'"
                                          (click)="createNewdocumentSerie()">
                                          <span *ngIf="!isLoading">
-                                             Crear nuevo documento
+                                             Crear nuevo documento serie
                                          </span>
                                          <mat-progress-spinner
                                          *ngIf="isLoading"

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { DocumentSerieService } from './document-series.service';
 import { CompanyService } from '../company/company.service';
 import { DocumentService } from '../document/document.service'
@@ -56,10 +56,15 @@ export class DocumentSeriesComponent implements OnInit {
   flashMessage: boolean;
   seeMessage: boolean = false;
   successMessage: string;
+  IdDocument: string;
+  IdCompany: string;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   //expresion regular numeros, espacios y letras con tildes
   maskForInput: any = 
   {mask: /^[A-Za-zÁ-ú0-9\s]+$/g
+  };
+  maskForInputCorrelative: any = 
+  {mask: Number
   };
 
   constructor(
@@ -181,14 +186,16 @@ export class DocumentSeriesComponent implements OnInit {
 
       // Get the company by id
       const selectedDocumentSerie = this.documentSeries.find(item => item._id === documentSerieId)  || null;
-      console.log('selectedDocumentSerie', selectedDocumentSerie)
       this.selectedDocumentSerie = selectedDocumentSerie;
+      this.IdDocument = selectedDocumentSerie.document._id
+      this.IdCompany = selectedDocumentSerie.company._id;
+     // compa = 'abc'
       if(selectedDocumentSerie._id){
           this.selectedDocumentSeriesForm.patchValue({
             id: selectedDocumentSerie._id,
-            document: selectedDocumentSerie.document._id,
+            document: '',
             series: selectedDocumentSerie.series,
-            company: selectedDocumentSerie.company._id,
+            company: '',
             currentCorrelative: selectedDocumentSerie.currentCorrelative,            
           });
 
@@ -204,14 +211,13 @@ export class DocumentSeriesComponent implements OnInit {
       }
 
   }
-
   initForm() {
     this.selectedDocumentSeriesForm = this._formBuilder.group({
         id                  : [''],
         document            : ['', [Validators.required]],
         series              : ['', [Validators.required, Validators.minLength(1), FuseUtilsService.sinEspaciosEnBlanco]],
         company             : ['',[Validators.required]],
-        currentCorrelative  : ['',[Validators.required]],
+        currentCorrelative  : [ 0 ,[Validators.required]],
     });
   }
 
@@ -224,35 +230,67 @@ export class DocumentSeriesComponent implements OnInit {
 
 
   createDocumentSerie(): void{
-  /*   this.documentSeries.unshift(
+    const doc: Document = {
+      _id: '',
+      description: '',
+      abreviation: '',
+      typeDocument: ''
+    }
+    const company: Company = {
+      _id: '',
+      ruc: '',
+      comercialName: '',
+      department: '',
+      province: '',
+      district: ''
+    }
+    this.documentSeries.unshift(
       {
-        document: '',
+        document: doc,
         series: '',
-        company: '',
+        company: company,
         currentCorrelative: 0
-      }); */
+      }); 
    // FuseUtilsService.convertFromValueToNumber()
   } 
   createNewdocumentSerie(): void{
     const body = {
-      document: this.selectedDocumentSeriesForm.get('document').value,
-      series: this.selectedDocumentSeriesForm.get('series').value,
-      company: this.selectedDocumentSeriesForm.get('company').value,
-      currentCorrelative: 0
+      document: (this.selectedDocumentSeriesForm.get('document').value as Select).id,
+      series: (this.selectedDocumentSeriesForm.get('series').value as string).toUpperCase(),
+      company: (this.selectedDocumentSeriesForm.get('company').value as Select).id,
+      currentCorrelative: this.selectedDocumentSeriesForm.get('currentCorrelative').value,
     }
-    console.log('body', body)
+    this.isLoading = true;
+    if (body) {
+      this.documentSerieService.createDocumentSerie(body).subscribe((resp)=>{
+        this.flashMessage = resp.ok;
+        this.seeMessage = true;
+
+        if (resp.ok) {
+            this.successMessage = resp.message;
+            this.isLoading = false;
+            setTimeout(()=>{  // 2 segundo se cierra 
+                this.seeMessage = false;
+                }, 2000);
+            setTimeout(()=>{  
+                this.loadListDocumentSeries();
+                this.closeDetails();
+                }, 1000); 
+            
+        }
+      });
+    }
   }
   updateSelectedDocumentSerie(): void{
-    const body: Company = {
-      ruc: this.selectedDocumentSeriesForm.get('ruc').value,
-      comercialName: this.selectedDocumentSeriesForm.get('comercialName').value,
-      department: this.selectedDocumentSeriesForm.get('department').value,
-      province: this.selectedDocumentSeriesForm.get('province').value,
-      district: this.selectedDocumentSeriesForm.get('district').value,
-    } 
+    const body = {
+      document: (this.selectedDocumentSeriesForm.get('document').value as Select).id,
+      series: (this.selectedDocumentSeriesForm.get('series').value as string).toUpperCase(),
+      company: (this.selectedDocumentSeriesForm.get('company').value as Select).id,
+      currentCorrelative: this.selectedDocumentSeriesForm.get('currentCorrelative').value,
+    }
     const id = this.selectedDocumentSeriesForm.get('id').value
     this.isLoading = true;
- /*    if (body) {
+   if (body) {
       this.documentSerieService.updateDocumentSerie(id, body).subscribe((resp)=>{
         this.flashMessage = resp.success;
         this.seeMessage = true;
@@ -268,12 +306,12 @@ export class DocumentSeriesComponent implements OnInit {
                 }, 1000); 
         }
       });
-    } */
+    } 
 
   }
   deleteSelectedDocumentSerie(): void{
     const confirmation = this._fuseConfirmationService.open({
-      title  : 'Eliminar documento serie "'+ this.selectedDocumentSeriesForm.get('comercialName').value+ '"',
+      title  : 'Eliminar documento serie "'+ this.selectedDocumentSeriesForm.get('series').value+ '"',
       message: '¿Estás seguro(a) que quieres eliminar este documento serie?. Esta acción no puede deshacerse!',
       actions: {
           confirm: {

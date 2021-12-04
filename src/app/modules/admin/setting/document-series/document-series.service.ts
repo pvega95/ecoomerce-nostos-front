@@ -31,7 +31,7 @@ import { catchError, map } from 'rxjs/operators';
      * @param body 
      * @returns 
      */
-    createDocumentSerie(body: DocumentSeries):  Observable<any> {
+    createDocumentSerie(body: any):  Observable<any> {
       const url = `${DocumentSerieService.BASE_URL}${DocumentSerieService.confManagement}/document-serial`;
       return this.http.post(url, body).pipe(
         catchError(error => {
@@ -39,7 +39,7 @@ import { catchError, map } from 'rxjs/operators';
         })
       );
     } 
-    updateDocumentSerie(id: string, body: DocumentSeries):  Observable<any> {
+    updateDocumentSerie(id: string, body: any):  Observable<any> {
       const url = `${DocumentSerieService.BASE_URL}${DocumentSerieService.confManagement}/document-serial/${id}`;
       return this.http.put(url, body).pipe(
         catchError(error => {
