@@ -83,6 +83,9 @@ export const appRoutes: Route[] = [
             {path: 'order', children: [
                 {path: '', loadChildren: () => import('app/modules/admin/order/order.module').then(m => m.OrderModule)}
             ]},
+            {path: 'salenote', children: [
+                {path: '', loadChildren: () => import('app/modules/admin/sale-note/sale-note.module').then(m => m.SaleNoteModule)}
+            ]},
             {path: 'setting', children: [
                 {path: 'products', loadChildren: () => import('app/modules/admin/setting/products/products.module').then(m => m.ProductsModule)},
                 {path: 'clients', loadChildren: () => import('app/modules/admin/setting/clients/clients.module').then(m => m.ClientsModule)},
