@@ -16,16 +16,20 @@ import { SaleNoteComponent } from './sale-note.component';
 import { TranslocoModule } from '@ngneat/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { IMaskModule } from 'angular-imask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit-sale-note.component';
 
 @NgModule({
     declarations: [
-        SaleNoteComponent
+        SaleNoteComponent,
+        CreateEditSaleNoteComponent,
     ],
     imports     : [
         RouterModule.forChild(saleNoteRoutes),
         MatFormFieldModule,
+        IMaskModule,
         MatProgressSpinnerModule,
         MatSelectModule,
         MatInputModule,
