@@ -1,5 +1,11 @@
-.mat-input-element:read-only .mat-form-field-flex {
-    background-color: #80808033;
+::ng-deep .mat-form-field-disabled .mat-form-field-underline   {
+   
+    background-color: #d8191933 !important; 
+    
+
+   
+      
+   
 }
 
 /**
