@@ -3,6 +3,7 @@ import { IsActiveMatchOptions } from '@angular/router';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
+import { Select } from 'app/models/select';
 
 @Injectable({
     providedIn: 'root'
@@ -128,6 +129,26 @@ export class FuseUtilsService
             return Number(value);
         }
     }
+    static formatOptionsDocument(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.description
+            })
+        });
+        return listObj;
+      }
+    static formatOptionsCompany(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.comercialName
+            })
+        });
+        return listObj;
+      }
 
     async readImageFile(file: File): Promise<string | ArrayBuffer> {
 		return new Promise<string | ArrayBuffer>((resolve, reject) => {

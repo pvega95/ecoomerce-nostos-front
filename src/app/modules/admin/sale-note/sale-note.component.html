@@ -58,10 +58,10 @@
     </div>
 
     <!-- Main -->
-    <div class="flex flex-auto overflow-hidden">
+    <div  *ngIf="!panelCreateEditSaleNote" class="flex flex-auto overflow-hidden">
 
         <!-- sales note list -->
-        <div *ngIf="!panelCreateEditSaleNote"  class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+        <div  class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
             <ng-container *ngIf="!(isLoading && salesNotes.length === 0); else loadingSaleNote">
                 <ng-container *ngIf="salesNotes.length > 0 && salesNotesFiltered.length > 0 ; else noSaleNote">
                     <div class="grid">
@@ -161,8 +161,11 @@
                 <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de notas de ventas</div>
             </ng-template>
         </div>
-        <div *ngIf="panelCreateEditSaleNote" >
-            <app-create-edit-sale-note (backTolist)="getBackTolist($event)"></app-create-edit-sale-note>
-        </div>
+     
 
-</div>
+    </div>
+    <div *ngIf="panelCreateEditSaleNote" >
+        <app-create-edit-sale-note (backTolist)="getBackTolist($event)"
+            (isLoading)="getIsLoading($event)"
+        ></app-create-edit-sale-note>
+    </div>

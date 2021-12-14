@@ -111,5 +111,8 @@ export class SaleNoteComponent implements OnInit {
     this.panelCreateEditSaleNote = !this.panelCreateEditSaleNote;
     this.stateLabel = '';
   }
+  getIsLoading(value: boolean): void{
+    this.isLoading = value;
+  }
 
 }
