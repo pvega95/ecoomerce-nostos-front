@@ -81,6 +81,8 @@ export class CategoryComponent implements OnInit {
         createdDate      : [''],
         updatedDate      : ['']
     });
+    this.selectedCategoryForm.controls.createdDate.disable();
+    this.selectedCategoryForm.controls.updatedDate.disable();
 }
   async cargarLista(){
     let resp: any;

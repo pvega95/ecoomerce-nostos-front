@@ -149,6 +149,16 @@ export class FuseUtilsService
         });
         return listObj;
       }
+      static formatOptionsPaymentDeadline(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.description
+            })
+        });
+        return listObj;
+      }
 
     async readImageFile(file: File): Promise<string | ArrayBuffer> {
 		return new Promise<string | ArrayBuffer>((resolve, reject) => {

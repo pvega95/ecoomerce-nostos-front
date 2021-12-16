@@ -74,6 +74,8 @@ export class ProductPresenter {
             updatedAt: this.updatedAt,
             currentImageIndex: this.currentImageIndex
         });
+        this.form.controls.createdAt.disable();
+        this.form.controls.updatedAt.disable();
     }
 
     private createValidators(): void {

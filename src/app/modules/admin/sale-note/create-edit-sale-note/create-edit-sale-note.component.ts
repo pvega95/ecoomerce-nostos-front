@@ -17,6 +17,43 @@ import { PaymentDeadlineService } from '../../setting/payment-deadline/payment-d
   styleUrls: ['./create-edit-sale-note.component.scss']
 })
 export class CreateEditSaleNoteComponent implements OnInit {
+  public voucher: any[] = [
+    {
+      sku: 'askkas',
+      productname: 'gaseosea inka cola',
+      quantity: 322,
+      netprice: 25.00,
+      igvprice: 4.00 ,
+      totalprice: 29.00
+    },
+    {
+      sku: 'raaatgs',
+      productname: 'paneton tottus',
+      quantity: 30,
+      netprice: 5.13,
+      igvprice: 2.30,
+      totalprice: 38.20
+    },
+    {
+      sku: 'koiff',
+      productname: 'silla gamer',
+      quantity: 69,
+      netprice: 10.20,
+      igvprice: 63.20,
+      totalprice: 123.50
+    },
+    {
+      sku: 'jhiys',
+      productname: 'teclado',
+      quantity: 20,
+      netprice: 40.20,
+      igvprice: 10.26,
+      totalprice: 50.20
+    },
+  ]
+    
+      
+  
   public companies: Company[];
   public documents: Document[];
   public paymentDeadlines: PaymentDeadline[];
@@ -43,6 +80,12 @@ export class CreateEditSaleNoteComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadValues();
+   let cadena: string ='03,05,02'
+    const variable: any[] = cadena.split(',');
+   
+    const x = variable.find(val=> val == '026') || null
+    console.log('valor x',x)
+    
   }
   backTolistSaleNote(){
     this.backTolist.emit();
@@ -66,8 +109,10 @@ export class CreateEditSaleNoteComponent implements OnInit {
         this.companies = companyResponse.data;
         this.documents = documentResponse.data;
         this.paymentDeadlines = paymentDeadlineResponse.data;
+
         this.listObjDocuments = FuseUtilsService.formatOptionsDocument(this.documents);
         this.listObjCompanies = FuseUtilsService.formatOptionsCompany(this.companies);
+        this.listObjPaymentDeadlines = FuseUtilsService.formatOptionsPaymentDeadline(this.paymentDeadlines);
       
         this.isLoading.emit(false);
       }
@@ -79,6 +124,9 @@ export class CreateEditSaleNoteComponent implements OnInit {
   objDocumentSelected(objDocument: Select){
   //  console.log('value documento selected', value)
   }
+  objPaymentDeadlineSelected(objDocument: Select){
+
+  }
 
   initForm() {
     this.selectedSaleNoteForm = this._formBuilder.group({
@@ -86,17 +134,19 @@ export class CreateEditSaleNoteComponent implements OnInit {
         client              : ['', [Validators.required]],
         company             : ['', [Validators.required]],
         document            : ['', [Validators.required]],
-        serie               : ['322', [Validators.required, Validators.minLength(1), FuseUtilsService.sinEspaciosEnBlanco]],
+        serie               : ['', [Validators.required, Validators.minLength(1), FuseUtilsService.sinEspaciosEnBlanco]],
         numberdocument      : ['', [Validators.required]],
         paymentdeadline     : ['', [Validators.required]],
         status              : ['', [Validators.required]],
         reference           : ['', [Validators.required]],
         note                : ['', [Validators.required]],
         dateissue           : ['', [Validators.required]],
-        datemodification    : ['', [Validators.required]],
-       
+        datemodification    : ['', [Validators.required]],    
     });
     this.selectedSaleNoteForm.controls.serie.disable();
+    this.selectedSaleNoteForm.controls.numberdocument.disable();
+    this.selectedSaleNoteForm.controls.dateissue.disable();
+    this.selectedSaleNoteForm.controls.datemodification.disable();
   }
 
 }
