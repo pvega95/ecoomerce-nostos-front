@@ -103,23 +103,23 @@
                             <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
                                 <!-- comercial cliente -->
                                 <div class="truncate">
-                                  <span  matTooltip="">{{salesNote.client}}</span>
+                                  <span  [matTooltip]="salesNote.client.comercialName">{{salesNote.client.comercialName}}</span>
                                 </div>
                                 <!-- documento -->
                                 <div class="truncate">
-                                    {{salesNote.document}}
+                                    {{salesNote.document.document}}
                                 </div>
                                 <!-- creation serie -->
                                 <div class="truncate"  >
                                     {{salesNote.serie}}
                                 </div>
                                 <!-- creation  numero documento -->
-                                <div class="truncate"  >
-                                    {{salesNote.numberdoc}}
+                                <div class="truncate" style="text-align: right;" >
+                                    <span class="pr-4">{{salesNote.documentNumber}}</span>
                                 </div>
                                 <!-- creation  numero documento -->
-                                <div class="truncate"  >
-                                    {{salesNote.totalprice | number:'1.2-2'}}
+                                <div class="truncate" style="text-align: right;" >
+                                    <span class="pr-4">{{salesNote.salesTotalNC | number:'1.2-2'}}</span>
                                 </div>
                                 <!-- Details button -->
                                 <div>
@@ -127,7 +127,7 @@
                                         class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                         mat-flat-button
                                         matTooltip="Editar nota de venta"
-                                        (click)="editSaleNote(salesNote.id)">
+                                        (click)="editSaleNote(salesNote)">
                                         <mat-icon
                                             class="icon-size-5 editIcon"
                                             [svgIcon]=" 'heroicons_solid:pencil' "></mat-icon>
@@ -136,7 +136,7 @@
                                         class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                         mat-flat-button
                                         matTooltip="Eliminar nota de venta"
-                                        (click)="deleteSaleNote(salesNote.id)">
+                                        (click)="deleteSaleNote(salesNote._id)">
                                         <mat-icon
                                             class="icon-size-5 deleteIcon"
                                             [svgIcon]=" 'heroicons_solid:trash' "></mat-icon>
@@ -165,7 +165,9 @@
 
     </div>
     <div *ngIf="panelCreateEditSaleNote" >
-        <app-create-edit-sale-note (backTolist)="getBackTolist($event)"
-            (isLoading)="getIsLoading($event)"
+        <app-create-edit-sale-note 
+          [salesNoteInput]="salesNoteInput"
+          (backTolist)="getBackTolist($event)"
+          (isLoading)="getIsLoading($event)"
         ></app-create-edit-sale-note>
     </div>

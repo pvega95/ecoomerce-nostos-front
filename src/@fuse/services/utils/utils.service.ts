@@ -104,6 +104,9 @@ export class FuseUtilsService
         //return [year, month, day].join('-');
         return [day, month, year].join('/');
       }
+     formatDateOut(fecha: string): string{
+         return this.formatDate(this.stringToDate(fecha))
+       }
 
       static sinEspaciosEnBlanco(control: AbstractControl) : ValidationErrors | null {
         if(control.value != null){
