@@ -16,6 +16,8 @@ import { ProductPresenter } from './products.presenter';
 import { isArray } from 'lodash-es';
 import { Product } from 'app/models/product';
 import { Modal } from '../../../../enums/modal.enum';
+import { MatTableDataSource } from '@angular/material/table';
+import { ProductAddComponent } from './product-add/product-add.component';
 
 const NEW_PRODUCT = -1;
 const MAX_CANT_DESCRIPCIONES = 4;
@@ -23,6 +25,7 @@ const MAX_CANT_DESCRIPCIONES = 4;
 @Component({
     selector: 'app-products',
     templateUrl: './products.component.html',
+    styleUrls: ['./products.component.scss'],
     styles: [
         /* language=SCSS */
         `
@@ -47,8 +50,13 @@ const MAX_CANT_DESCRIPCIONES = 4;
     providers: [ProductPresenter],
 })
 export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    @ViewChild('recentTransactionsTable', {read: MatSort}) recentTransactionsTableMatSort: MatSort;
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
+
+    recentTransactionsDataSource: MatTableDataSource<any> = new MatTableDataSource();
+    recentTransactionsTableColumns: string[] = ['thumb', 'sku', 'name', 'description', 'category', 'brand','actions'];
 
     products: any[] = [];
     productsFiltered: any[] = [];
@@ -58,14 +66,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     deshabilitarBotonQuitarDescripcion: boolean = false;
     selected: number;
     files: File[] = [];
-    filePaths: String[] = [];
+    filePaths: string[] = [];
     public flashMessage: boolean;
     public seeMessage: boolean = false;
     public successMessage: string;
-
-    
     isLoading: boolean;
-
     searchInputControl: FormControl = new FormControl();
     selectedProduct: any = null;
     selectedProductForm: FormGroup;
@@ -104,20 +109,19 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(
             takeUntil(this._unsubscribeAll),
             debounceTime(300),
-            switchMap((queryInput) => {
+            switchMap((queryInput: string ) => {
                 this.closeDetails();
                 this.isLoading = true;
-                const query = (queryInput as string).toLowerCase();
-              return this.productsFiltered = this.products.filter((product)=>{
-                    return (product.name as string).toLowerCase().match(query) || (product.sku as string).toLowerCase().match(query) 
-                    ||  (product.price as number).toString().match(query)  
-               });
+                const query = queryInput.toLowerCase();
+                return this.productsFiltered = this.products.filter(product => product.name.toLowerCase().match(query)
+                || product.sku.toLowerCase().match(query)
+                || product.price.toLowerCase().match(query));
             }),
             map(() => {
                 this.isLoading = false;
             })
         )
-        .subscribe(); 
+        .subscribe();
 
 
         // Create the selected product form
@@ -129,11 +133,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         /*        this._inventoryService.tags$
                    .pipe(takeUntil(this._unsubscribeAll))
                    .subscribe((tags: InventoryTag[]) => {
-       
+
                        // Update the tags
                        this.tags = tags;
                        this.filteredTags = tags;
-       
+
                        // Mark for check
                        this._changeDetectorRef.markForCheck();
                    }); */
@@ -141,8 +145,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    initForm() {
-        
+    initForm(): void {
+
         this.selectedProductForm = this._formBuilder.group({
             category: [''],
             name: ['', [Validators.required]],
@@ -159,9 +163,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     async cargarCategorias(): Promise<void> {
-        let resp: any;
         this.categories = [];
-        resp = await this.categoriesService.listarCategorias();
+        const resp = await this.categoriesService.listarCategorias();
         if (resp.ok) {
             // Get the categories
             this.categories = resp.data;
@@ -172,17 +175,17 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     async cargarListaProductos(): Promise<void> {
-        let resp: any;
         this.products = [];
         // console.log('lista product', await this.productsService.listarProductos())
         this.isLoading = true;
-        resp = await this.productsService.listarProductos();
+        const resp = await this.productsService.listarProductos();
         if (resp.ok) {
             // Get the products
             this.products = resp.data;
             this.productsFiltered = this.products;
             this.isLoading = false;
-            console.log(' this.products ',  this.products )
+            this.recentTransactionsDataSource.data = this.products;
+            console.log(' this.products ',  this.products );
         }
     }
 
@@ -258,7 +261,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.presenter.loadProductForm(productEncontrado);
             const { images } = productEncontrado;
             if (images.length > 0) {
-                images.map(img => this.filePaths.push(img.imageURL))
+                images.map(img => this.filePaths.push(img.imageURL));
             }
 
         } else {
@@ -436,15 +439,16 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             images: []
         });
         this.selected = -1;
+        this.productModal();
         /*   // Create the product
           this._inventoryService.createProduct().subscribe((newProduct) => {
-  
+
               // Go to new product
               this.selectedProduct = newProduct;
-  
+
               // Fill the form
               this.selectedProductForm.patchValue(newProduct);
-  
+
               // Mark for check
               this._changeDetectorRef.markForCheck();
           }); */
@@ -459,7 +463,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Get the product object
         const product = this.presenter.form.value;
         if( product.images.length > 0 ) {
-            product.images = product.images.filter(img => img instanceof File)
+            product.images = product.images.filter(img => img instanceof File);
             resp = await this.productsService.actualizarProducto(this.toFormData(product), id);
         } else {
             resp = await this.productsService.actualizarProducto(product, id);
@@ -473,12 +477,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             setTimeout(()=>{  // 3 segundo se cierra modal
                 this.seeMessage = false;
                 }, 2000);
-          
-                setTimeout(()=>{  
+
+                setTimeout(()=>{
                   this.cargarListaProductos();
                   this.cargarCategorias();
                   this.closeDetails();
-                  }, 1000); 
+                  }, 1000);
         }
 
 
@@ -490,26 +494,25 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading = true;
         this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
             this.dialog.closeAll();
-            console.log('resp crear producto', resp)
+            console.log('resp crear producto', resp);
             this.flashMessage = resp.ok;
             this.seeMessage = true;
             if (resp.ok) {
                 this.successMessage = resp.message;
                 this.isLoading = false;
-                setTimeout(()=>{  // 2 segundo se cierra 
+                setTimeout(()=>{  // 2 segundo se cierra
                     this.seeMessage = false;
                     }, 2000);
-                setTimeout(()=>{  
+                setTimeout(()=>{
                     this.cargarListaProductos();
                     this.closeDetails();
-                    }, 1000); 
-                
+                    }, 1000);
             }
 
-        }); 
+        });
     }
 
-    toFormData<T>(formValue: T) {
+    toFormData<T>(formValue: T): FormData {
         const formData = new FormData();
 
         for (const key of Object.keys(formValue)) {
@@ -527,9 +530,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     sacarListaDescripcionesDesdeForm(): string[] {
-        let cadena: string[] = [];
-        (this.selectedProductForm.get('descriptions') as FormArray).value.forEach(element => {
-            cadena.push(element.description)
+        const cadena: string[] = [];
+        (this.selectedProductForm.get('descriptions') as FormArray).value.forEach((element) => {
+            cadena.push(element.description);
         });
         return cadena;
     }
@@ -537,7 +540,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.countDescripcion++;
         if (this.verificarCantidadDescripciones()) {
             this.presenter.addDescriptionControl();
-        } 
+        }
 
     }
     quitarDescripcion(): void {
@@ -584,13 +587,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         disableClose: true
         });
 
-        dialogRef.afterClosed().subscribe(async result => {
+        dialogRef.afterClosed().subscribe(async (result) => {
             if (result) {
                 this.presenter.addImages(result);
-                result.forEach(file => {
+                result.forEach((file) => {
                     this.fuseUtilsService.readImageFile(file)
                         .then((img: string) => setTimeout(() => {
-                            this.filePaths.push(img)
+                            this.filePaths.push(img);
                         }))
                         .catch(err => console.error(err));
                 });
@@ -636,15 +639,15 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
               if (resp.success) {
                 this.successMessage = resp.message;
                 this.isLoading = false;
-                setTimeout(()=>{  // 2 segundo se cierra 
+                setTimeout(()=>{  // 2 segundo se cierra
                     this.seeMessage = false;
                     }, 2000);
-                setTimeout(()=>{ 
-                    this.presenter.resetProductForm(); 
+                setTimeout(()=>{
+                    this.presenter.resetProductForm();
                     this.cargarListaProductos();
                     this.closeDetails();
-                    }, 1000); 
-                
+                    }, 1000);
+
             }
 
             }
@@ -660,5 +663,21 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+
+    productModal(): void {
+        const dialogRef = this.dialog.open(ProductAddComponent,
+             {
+                panelClass: 'my-custom-dialog-class',
+                // backdropClass: 'p-0'
+                //  disableClose: true
+             }
+             );
+        dialogRef.afterClosed().subscribe(async (result) => {
+            if (result) {
+               console.log(result);
+            }
+
+        });
     }
 }

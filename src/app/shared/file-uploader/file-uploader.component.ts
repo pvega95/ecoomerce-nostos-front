@@ -1,37 +1,50 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-file-uploader',
-  templateUrl: './file-uploader.component.html',
-  styleUrls: ['./file-uploader.component.scss']
+    selector: 'app-file-uploader',
+    templateUrl: './file-uploader.component.html',
+    styleUrls: ['./file-uploader.component.scss'],
 })
 export class FileUploaderComponent implements OnInit {
-  files: File[] = [];
-  errorMessage: string = ''; 
-  @Input() ratio: string[] = ['1:2', '2:1']
-  @Output() filesLoaded = new EventEmitter<File[]>();
-  constructor() { }
+    @Input() ratio: string[] = ['1:2', '2:1'];
+    @Output() filesLoaded = new EventEmitter<File[]>();
+    files: File[] = [];
+    errorMessage: string = '';
+    filesNames: string = null;
 
-  ngOnInit(): void {
-  }
+    constructor() {}
 
- 
-onSelect(event) {
- // console.log(event);
-  if(event.contImagesDenied > 0){
-    this.errorMessage = 'La(s) imagen(es) no cumplen con el ratio (ancho/alto) de ' + event.ratio[0] + ' y ' + event.ratio[1]
-  }else{
-    this.errorMessage = '';
-  }
-  this.files.push(...event.addedFiles);
-  this.filesLoaded.emit(this.files);
-}
+    ngOnInit(): void {}
 
-onRemove(event) {
- // console.log(event);
-  this.errorMessage = '';
-  this.files.splice(this.files.indexOf(event), 1);
-  this.filesLoaded.emit(this.files);
-}
+    onSelect(event): void {
+        if (event.contImagesDenied > 0) {
+            this.errorMessage =
+                'La(s) imagen(es) no cumplen con el ratio (ancho/alto) de ' +
+                event.ratio[0] +
+                ' y ' +
+                event.ratio[1];
+        } else {
+            this.errorMessage = '';
+        }
+        this.files.push(...event.addedFiles);
+        this.getFileNames(this.files);
+        this.filesLoaded.emit(this.files);
+    }
 
+    getFileNames(files: Array<any>): void {
+        if (files.length > 1) {
+            this.filesNames = files.reduce((a, b) => a.name + ', ' + b.name);
+        } else if (files.length === 0) {
+            this.filesNames = null;
+        } else {
+            this.filesNames = files[0].name;
+        }
+    }
+
+    onRemove(event): void {
+        this.errorMessage = '';
+        this.files.splice(this.files.indexOf(event), 1);
+        this.getFileNames(this.files);
+        this.filesLoaded.emit(this.files);
+    }
 }

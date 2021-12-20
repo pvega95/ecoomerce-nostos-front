@@ -19,10 +19,13 @@ import { ProductsComponent } from './products.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
+import { ProductAddComponent } from './product-add/product-add.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
     declarations: [
-        ProductsComponent
+        ProductsComponent,
+        ProductAddComponent
     ],
     imports     : [
         RouterModule.forChild(productsRoutes),
@@ -31,6 +34,7 @@ import { TranslocoModule } from '@ngneat/transloco';
         MatProgressSpinnerModule,
         MatCheckboxModule,
         MatInputModule,
+        MatSelectModule,
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,
