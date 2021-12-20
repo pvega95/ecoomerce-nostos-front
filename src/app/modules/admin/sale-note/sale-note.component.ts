@@ -92,7 +92,7 @@ export class SaleNoteComponent implements OnInit {
     this.panelCreateEditSaleNote = true;
     this.stateLabel = editLabel;
     this.salesNoteInput = saleNote;
-   // console.log('voucherDetail valor', saleNote)
+    console.log('voucherDetail valor', saleNote)
   }
   createSaleNote(): void{
     this.panelCreateEditSaleNote = true;

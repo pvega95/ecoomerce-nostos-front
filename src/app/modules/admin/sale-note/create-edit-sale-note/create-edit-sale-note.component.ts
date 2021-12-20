@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, EventEmitter, OnDestroy, OnInit, Output, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, EventEmitter, OnDestroy, OnInit, Output, AfterViewInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { forkJoin } from 'rxjs';
@@ -12,7 +12,10 @@ import { PaymentDeadlineService } from '../../setting/payment-deadline/payment-d
 import { SaleNote } from 'app/models/sale-note';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { SaleNoteService } from '../sale-note.service';
+import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
+import { Product } from 'app/models/product';
 //import {  } from '../../setting/'
 
 @Component({
@@ -20,50 +23,19 @@ import { Modal } from '../../../../enums/modal.enum';
   templateUrl: './create-edit-sale-note.component.html',
   styleUrls: ['./create-edit-sale-note.component.scss']
 })
-export class CreateEditSaleNoteComponent implements OnInit {
-  public voucher: any[] = [
-    {
-      sku: 'askkas',
-      productname: 'gaseosea inka cola',
-      quantity: 322,
-      netprice: 25.00,
-      igvprice: 4.00 ,
-      totalprice: 29.00
-    },
-    {
-      sku: 'raaatgs',
-      productname: 'paneton tottus',
-      quantity: 30,
-      netprice: 5.13,
-      igvprice: 2.30,
-      totalprice: 38.20
-    },
-    {
-      sku: 'koiff',
-      productname: 'silla gamer',
-      quantity: 69,
-      netprice: 10.20,
-      igvprice: 63.20,
-      totalprice: 123.50
-    },
-    {
-      sku: 'jhiys',
-      productname: 'teclado',
-      quantity: 20,
-      netprice: 40.20,
-      igvprice: 10.26,
-      totalprice: 50.20
-    },
-  ]
-    
-      
-  
+export class CreateEditSaleNoteComponent implements OnInit {  
   public companies: Company[];
   public documents: Document[];
+  public products: Product[] = [];
+  public productsFiltered: Product[] = [];
   public paymentDeadlines: PaymentDeadline[];
   public listObjDocuments: Select[];
   public listObjCompanies: Select[];
   public listObjPaymentDeadlines: Select[];
+  public companyId: string = '';
+  public documentId: string = '';
+  public contAuxiliarCompanySelected: number = 0;
+  public contAuxiliarDocumentSelected: number = 0;
   @Input() salesNoteInput: SaleNote = null;
   @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() backTolist: EventEmitter<any> = new EventEmitter<any>();
@@ -72,7 +44,17 @@ export class CreateEditSaleNoteComponent implements OnInit {
     maskForInput: any = 
     {mask: /^[A-Za-zÁ-ú0-9\s]+$/g
     };
-
+    public HeightWindows: number;
+    public WidthWindows: number;
+    @HostListener('window:resize', ['$event'])
+    getScreenSize(event?): {HeightWindows: string; WidthWindows: string} {
+          this.HeightWindows = window.innerHeight;
+          this.WidthWindows = window.innerWidth;
+          return { HeightWindows: (this.HeightWindows*0.7).toString()+'px',
+                    WidthWindows: (this.WidthWindows*0.7).toString()+'px'
+                  }
+    }
+    
   constructor(
     private _formBuilder: FormBuilder,
     private companyService: CompanyService,
@@ -80,18 +62,24 @@ export class CreateEditSaleNoteComponent implements OnInit {
     private fuseUtilsService: FuseUtilsService,
     private documentService: DocumentService,
     private paymentDeadlineService: PaymentDeadlineService,
+    private saleNoteService: SaleNoteService,
+    private productsService: ProductsService
     ) { 
-    this.initForm();
-    
+    this.initForm();   
   }
 
-  ngAfterViewInit() {
+
+/*   ngAfterViewInit() {
     setTimeout(() => {
      
     }, 0);
-   }
+   } */
   ngOnInit(): void {
+    this.getScreenSize();
     this.loadValues();    
+  }
+  getHeight(): string{
+    return '23rem'
   }
   backTolistSaleNote(){
     this.backTolist.emit();
@@ -110,21 +98,26 @@ export class CreateEditSaleNoteComponent implements OnInit {
       [
         this.companyService.getListCompany(),
         this.documentService.getListDocument(),
-        this.paymentDeadlineService.getListPaymentDeadline()
+        this.paymentDeadlineService.getListPaymentDeadline(),
+        this.productsService.getListProducts()
       ]
-    ).subscribe(([companyResponse, documentResponse, paymentDeadlineResponse])=>{
-      if (companyResponse.ok && documentResponse.ok && paymentDeadlineResponse.ok) {
+    ).subscribe(([companyResponse, documentResponse, paymentDeadlineResponse, productsResponse])=>{
+      if (companyResponse.ok && documentResponse.ok && paymentDeadlineResponse.ok && productsResponse.ok) {
         this.companies = companyResponse.data;
         this.documents = documentResponse.data;
         this.paymentDeadlines = paymentDeadlineResponse.data;
+        this.products = productsResponse.data;
+        this.productsFiltered = this.products;
+        //this.isLoading = false;
+        console.log(' this.products ',  this.products )
 
       
         console.log('this.salesNoteInput  value', this.salesNoteInput)
         this.selectedSaleNoteForm.patchValue({
           id:  this.salesNoteInput?._id || '-1',
           client: this.salesNoteInput?.client.comercialName || '',          
-          company: this.salesNoteInput?.document.company || '',  
-          document: this.salesNoteInput?.document.document || '',           
+          company: this.salesNoteInput?.company || '',  
+          document: this.salesNoteInput?.document._id || '',           
           serie: this.salesNoteInput?.serie || '',
           documentNumber: this.salesNoteInput?.documentNumber || '',
           paymentdeadline: this.salesNoteInput?.paymentDeadline._id || '',
@@ -144,12 +137,52 @@ export class CreateEditSaleNoteComponent implements OnInit {
     });
   }
   objCompanySelected(objCompany: Select){
-  //  console.log('value company selected', value.label)
+    if (this.contAuxiliarCompanySelected > 0) {// para editar
+      this.documentId = this.selectedSaleNoteForm.controls.document.value;
+      this.companyId = (objCompany.id as string);
+      this.asignSerie();
+    } else {
+      this.contAuxiliarCompanySelected++;
+    }
+    if(!this.salesNoteInput){// para crear
+      this.contAuxiliarCompanySelected = 0;
+     // this.documentId = this.selectedSaleNoteForm.controls.document.value;
+      this.companyId = (objCompany.id as string);
+      this.asignSerie();
+    }
+
   }
   objDocumentSelected(objDocument: Select){
-  //  console.log('value documento selected', value)
+    console.log('objDocument', objDocument)
+    if (this.contAuxiliarDocumentSelected > 0) {// para editar
+      this.companyId =  this.selectedSaleNoteForm.controls.company.value;
+      this.documentId = (objDocument.id as string);
+      this.asignSerie();
+    } else {
+      this.contAuxiliarDocumentSelected++;
+    }
+    if (!this.salesNoteInput) {// para crear
+      this.contAuxiliarDocumentSelected = 0;
+    //  this.companyId =  this.selectedSaleNoteForm.controls.company.value;
+      this.documentId = (objDocument.id as string);
+      this.asignSerie();
+    }
+ 
+  }
+  asignSerie(){
+    console.log('this.companyId', this.companyId,this.documentId  )
+    if (this.companyId !== '' && this.documentId !== '') {
+      this.isLoading.emit(true);
+      this.saleNoteService.getSerie(this.companyId,this.documentId).subscribe(resp=>{
+        if(resp.ok){
+          console.log(resp)
+          this.isLoading.emit(false);
+        }
+      });
+    }
   }
   objPaymentDeadlineSelected(objDocument: Select){
+  
 
   }
 
@@ -178,7 +211,7 @@ export class CreateEditSaleNoteComponent implements OnInit {
       width: '42rem',
       height: '30rem',
       data: {
-          type: Modal.newOrder
+          type: Modal.newItem
         },
     disableClose: true
     });

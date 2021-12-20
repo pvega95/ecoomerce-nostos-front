@@ -1,11 +1,13 @@
 import { Client } from "./client";
 import { PaymentDeadline } from "./payment-deadline";
 import { VoucherDetail } from "./voucher-detail";
+import { Document } from "./document";
 
 export interface ISaleNote {
     _id?: string;
     client: Client;
-    document: any;
+    company: string;
+    document: Document;
     serie: string;
     documentNumber: number;
     registryDate: string;
@@ -26,7 +28,8 @@ export interface ISaleNote {
 export class SaleNote {
     _id?: string;
     client: Client;
-    document: any;
+    company: string;
+    document: Document;
     serie: string;
     documentNumber: number;
     registryDate: string;

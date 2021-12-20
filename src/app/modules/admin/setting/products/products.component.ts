@@ -176,7 +176,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.products = [];
         // console.log('lista product', await this.productsService.listarProductos())
         this.isLoading = true;
-        resp = await this.productsService.listarProductos();
+        resp = await this.productsService.getListProducts();
         if (resp.ok) {
             // Get the products
             this.products = resp.data;

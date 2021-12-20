@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +20,18 @@ export class ProductsService {
        } */
 
   constructor(private http: HttpClient) {}
+  formatErrors(error: HttpErrorResponse) {
+    const messageError = error.error ? error.error : error;
+    return throwError(messageError);
+  }
 
-  async listarProductos(): Promise<any> {
+  getListProducts(): Observable<any> {
     const url = `${ProductsService.BASE_URL}/product-management`;
-    const  data  = (await this.http.get(url).toPromise()) as any;
-    return data ;
+    return this.http.get(url).pipe(
+      catchError(error => {
+        return this.formatErrors(error);
+      })
+    );
   }
 
   async crearProducto(body: any): Promise<any> {

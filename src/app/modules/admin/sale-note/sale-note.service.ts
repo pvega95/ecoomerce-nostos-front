@@ -27,6 +27,15 @@ import { catchError, map } from 'rxjs/operators';
       );
     } 
 
+    getSerie(companyId: string, documentId: string):  Observable<any> {
+      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial/${companyId}/${documentId}`;
+      return this.http.get(url).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
+
 /*     createSaleNote(body: any):  Observable<any> {
       const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial`;
       return this.http.post(url, body).pipe(
