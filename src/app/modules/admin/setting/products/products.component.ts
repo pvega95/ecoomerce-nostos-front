@@ -162,16 +162,14 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    async cargarCategorias(): Promise<void> {
+    cargarCategorias(): void {
         this.categories = [];
-        const resp = await this.categoriesService.listarCategorias();
-        if (resp.ok) {
-            // Get the categories
-            this.categories = resp.data;
-            this.isLoading = false;
-           // console.log('lista categorias', resp.data);
-        }
-
+        this.categoriesService.listarCategorias().subscribe((categories) => {
+            if (categories.ok) {
+                this.categories = categories.data;
+                this.isLoading = false;
+            }
+        });
     }
 
     async cargarListaProductos(): Promise<void> {
@@ -433,12 +431,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
      * Create product
      */
     agregarNuevoProducto(): void {
-        this.products.unshift({
-            name: 'Nuevo producto',
-            thumbnail: null,
-            images: []
-        });
-        this.selected = -1;
+        // this.products.unshift({
+        //     name: 'Nuevo producto',
+        //     thumbnail: null,
+        //     images: []
+        // });
+        // this.selected = -1;
         this.productModal();
         /*   // Create the product
           this._inventoryService.createProduct().subscribe((newProduct) => {
@@ -669,15 +667,12 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const dialogRef = this.dialog.open(ProductAddComponent,
              {
                 panelClass: 'my-custom-dialog-class',
-                // backdropClass: 'p-0'
-                //  disableClose: true
              }
              );
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                console.log(result);
             }
-
         });
     }
 }

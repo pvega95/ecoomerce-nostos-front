@@ -11,27 +11,26 @@ export class CategoriesService {
   static readonly BASE_URL = `${environment.backendURL}`;
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
-  async listarCategorias(): Promise<any> {
-    const url = `${CategoriesService.BASE_URL}/category-management`;
-    const  data  = (await this.http.get(url).toPromise()) as any;
-    return data ;
+  listarCategorias(): Observable<any> {
+    const query = `${CategoriesService.BASE_URL}/category-management`;
+    return this._http.get(query);
   }
 
   async crearCategoria(body: any): Promise<any> {
     const url = `${CategoriesService.BASE_URL}/category-management`;
-    const  data  = (await this.http.post(url, body).toPromise()) as any;
+    const  data  = (await this._http.post(url, body).toPromise()) as any;
     return data ;
   }
   async editarCategoria(id: string, body: any): Promise<any> {
     const url = `${CategoriesService.BASE_URL}/category-management/${id}`;
-    const  data  = (await this.http.put(url, body).toPromise()) as any;
+    const  data  = (await this._http.put(url, body).toPromise()) as any;
     return data ;
   }
   async eliminarCategoria(id: string): Promise<any> {
     const url = `${CategoriesService.BASE_URL}/category-management/${id}`;
-    const  data  = (await this.http.delete(url).toPromise()) as any;
+    const  data  = (await this._http.delete(url).toPromise()) as any;
     return data ;
   }
 
