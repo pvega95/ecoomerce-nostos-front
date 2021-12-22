@@ -72,10 +72,10 @@
                         <mat-label>Categoria</mat-label>
                         <mat-select formControlName="category" placeholder="Seleccione categoria">
                             <mat-option
-                                *ngFor="let estado of [1, 2, 3]"
-                                [value]="estado"
+                                *ngFor="let category of categories"
+                                [value]="category._id"
                             >
-                                {{ estado }}
+                                {{ category.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -85,10 +85,10 @@
                         <mat-label>Marca</mat-label>
                         <mat-select formControlName="brand" placeholder="Seleccione marca">
                             <mat-option
-                                *ngFor="let estado of [1, 2, 3]"
-                                [value]="estado"
+                                *ngFor="let brand of brands"
+                                [value]="brand._id"
                             >
-                                {{ estado }}
+                                {{ brand.description }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -96,12 +96,12 @@
                 <div class="w-1/3">
                     <mat-form-field class="min-w-full" [floatLabel]="'always'">
                         <mat-label>Unidad</mat-label>
-                        <mat-select formControlName="unit" placeholder="Seleccione unidad">
+                        <mat-select formControlName="unid" placeholder="Seleccione unidad">
                             <mat-option
-                                *ngFor="let estado of [1, 2, 3]"
-                                [value]="estado"
+                                *ngFor="let unid of units"
+                                [value]="unid._id"
                             >
-                                {{ estado }}
+                                {{ unid.description }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -113,7 +113,7 @@
                         <mat-label>Precio lista</mat-label>
                         <input
                             type="number"
-                            formControlName="listPrice"
+                            formControlName="listprice"
                             matInput
                             [autocomplete]="'off'"
                             [placeholder]="'S/ 000.00'"
@@ -124,6 +124,7 @@
                     <mat-form-field class="min-w-full" [floatLabel]="'always'">
                         <mat-label>Descuento</mat-label>
                         <input
+                            type="number"
                             formControlName="discount"
                             matInput
                             [autocomplete]="'off'"

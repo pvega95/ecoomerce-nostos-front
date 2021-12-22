@@ -18,30 +18,30 @@ export class ProductsService {
            return this._products.asObservable();
        } */
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   async listarProductos(): Promise<any> {
     const url = `${ProductsService.BASE_URL}/product-management`;
-    const  data  = (await this.http.get(url).toPromise()) as any;
+    const  data  = (await this._http.get(url).toPromise()) as any;
     return data ;
   }
 
-  async crearProducto(body: any): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management`;
-    const  data  = (await this.http.post(url, body).toPromise()) as any;
-    return data ;
+  crearProducto(body: any): Observable<any> {
+    const query = `${ProductsService.BASE_URL}/product-management`;
+    const data = body;
+    return this._http.post(query, data);
   }
 
   async actualizarProducto(body: any, id: string ): Promise<any> {
     const url = `${ProductsService.BASE_URL}/product-management/${ id }`;
     // return null;
-    const  data  = (await this.http.put(url, body).toPromise()) as any;
+    const  data  = (await this._http.put(url, body).toPromise()) as any;
     return data ;
   }
   async eliminarProducto(id: string ): Promise<any> {
     const url = `${ProductsService.BASE_URL}/product-management/${id}`;
     // return null;
-    const  data  = (await this.http.delete(url).toPromise()) as any;
+    const  data  = (await this._http.delete(url).toPromise()) as any;
     return data ;
   }
 

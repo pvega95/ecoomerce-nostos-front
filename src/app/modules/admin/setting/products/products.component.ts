@@ -486,11 +486,11 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    crearNuevoProducto(): void {
-        console.log('presenter', this.presenter.form.value);
-        const productForm = new Product(this.presenter.form.value);
+    crearNuevoProducto(product): void {
+        // console.log('presenter', this.presenter.form.value);
+        const productForm = new Product(product);
         this.isLoading = true;
-        this.productsService.crearProducto(this.toFormData(productForm)).then((resp)=>{
+        this.productsService.crearProducto(this.toFormData(productForm)).subscribe(resp => {
             this.dialog.closeAll();
             console.log('resp crear producto', resp);
             this.flashMessage = resp.ok;
@@ -506,8 +506,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.closeDetails();
                     }, 1000);
             }
-
-        });
+        })
     }
 
     toFormData<T>(formValue: T): FormData {
@@ -672,6 +671,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                console.log(result);
+               this.crearNuevoProducto(result);
             }
         });
     }
