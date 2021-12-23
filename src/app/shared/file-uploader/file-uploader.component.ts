@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 
 @Component({
     selector: 'app-file-uploader',
@@ -8,15 +8,24 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class FileUploaderComponent implements OnInit {
     @Input() ratio: string[] = ['1:2', '2:1'];
     @Output() filesLoaded = new EventEmitter<File[]>();
-    files: File[] = [];
+    @Input() files: File[] = [];
     errorMessage: string = '';
     filesNames: string = null;
 
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.files && changes.files.currentValue !== changes.files.previousValue) {
+            this.getFileNames(this.files);
+          }
+    }
 
     onSelect(event): void {
+
+        console.log('onSelect', event)
         if (event.contImagesDenied > 0) {
             this.errorMessage =
                 'La(s) imagen(es) no cumplen con el ratio (ancho/alto) de ' +
@@ -33,7 +42,7 @@ export class FileUploaderComponent implements OnInit {
 
     getFileNames(files: Array<any>): void {
         if (files.length > 1) {
-            this.filesNames = files.reduce((a, b) => a.name + ', ' + b.name);
+            this.filesNames = files.map(file => file.name).join(", ");;
         } else if (files.length === 0) {
             this.filesNames = null;
         } else {

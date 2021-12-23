@@ -32,6 +32,11 @@ export class ProductsService {
     return this._http.post(query, data);
   }
 
+  consultarProducto(id: string): Observable<any> {
+    const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+    return this._http.get(query);
+  }
+
   async actualizarProducto(body: any, id: string ): Promise<any> {
     const url = `${ProductsService.BASE_URL}/product-management/${ id }`;
     // return null;

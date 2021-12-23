@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrandService } from '../../brand/brand.service';
 import { CategoriesService } from '../../category/category.service';
 import { UnidService } from '../../unid/unid.service';
@@ -11,8 +11,7 @@ import { ProductsService } from '../products.service';
     templateUrl: './product-add.component.html',
     styleUrls: ['./product-add.component.scss'],
 })
-export class ProductAddComponent implements OnInit{
-
+export class ProductAddComponent implements OnInit {
     categories: any[];
     units: any[];
     brands: any[];
@@ -20,7 +19,7 @@ export class ProductAddComponent implements OnInit{
     productForm: FormGroup;
     sku: FormControl;
     name: FormControl;
-    description: FormArray;
+    descriptions: FormArray;
     category: FormControl;
     brand: FormControl;
     unid: FormControl;
@@ -29,38 +28,79 @@ export class ProductAddComponent implements OnInit{
     stock: FormControl;
     images: FormArray;
 
+    files: File[] = [];
     constructor(
+        private cd: ChangeDetectorRef,
         public dialogRef: MatDialogRef<ProductAddComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any,
         private _categoriesService: CategoriesService,
         private _unidService: UnidService,
         private _brandService: BrandService,
+        private _productsService: ProductsService,
         private fb: FormBuilder
     ) {
         this.createValidators();
         this.createForm();
     }
 
-    ngOnInit(){
+    ngOnInit() {
         this.cargarCategorias();
         this.cargarUnidades();
         this.cargarMarcas();
+        const { idProduct } = this.data;
+        if (idProduct) {
+            this.cargarProducto(idProduct);
+        }
     }
 
-    cargarMarcas(){
-        this._brandService.listarMarca().subscribe((response)=> {
-            if(response.ok){
+    cargarProducto(id: string) {
+        console.log('cargarProducto', id);
+        this._productsService.consultarProducto(id).subscribe((response) => {
+            const producto = response.data[0];
+            this.patchForm(producto);
+        });
+    }
+
+    async patchForm(producto) {
+        const { images } = producto;
+        if (images) {
+            let filesTemp = [];
+            for(const image of images) {
+                this.addImageControl(image); 
+                filesTemp.push(await this.onImageEdit(image.imageURL));
+            }
+            this.files = filesTemp;
+        }
+        this.productForm.patchValue(producto);
+    }
+
+    createImageForm(): FormControl {
+        return new FormControl();
+    }
+
+    addImageControl(image: any) {
+        const imageProduct = this.createImageForm();
+        if (image) {
+            imageProduct.patchValue(image);
+        }
+        this.images.insert(0, imageProduct);
+    }
+
+    cargarMarcas() {
+        this._brandService.listarMarca().subscribe((response) => {
+            if (response.ok) {
                 this.brands = response.data;
             }
-        })
+        });
     }
 
-    cargarUnidades(){
+    cargarUnidades() {
         this.units = [];
-        this._unidService.listarUnidad().subscribe((response)=> {
-            if(response.ok){
+        this._unidService.listarUnidad().subscribe((response) => {
+            if (response.ok) {
                 this.units = response.data;
             }
-        })
+        });
     }
 
     cargarCategorias(): void {
@@ -68,7 +108,6 @@ export class ProductAddComponent implements OnInit{
         this._categoriesService.listarCategorias().subscribe((categories) => {
             if (categories.ok) {
                 this.categories = categories.data;
-                console.log('categories', this.categories);
             }
         });
     }
@@ -78,8 +117,15 @@ export class ProductAddComponent implements OnInit{
     }
 
     getFilesLoades(images): void {
+        let imagesBK = [...images];
+        for (var i = 0, len = images.length; i < len; i++) {
+            const existImage = this.images.value.findIndex(img => img.imageURL.split('/').reverse()[0] === images[i].name);
+            if(existImage > -1) {
+                imagesBK.splice(existImage, 1)
+            }
+        }
         this.clearFormArray(this.images);
-        images.forEach((img) => {
+        imagesBK.forEach((img) => {
             const imageControl = new FormControl(img);
             this.images.push(imageControl);
         });
@@ -88,32 +134,33 @@ export class ProductAddComponent implements OnInit{
     clearFormArray(formArray: FormArray): void {
         while (formArray.length !== 0) {
             formArray.removeAt(0);
-          }
+        }
     }
 
     submitForm(): void {
-        this.dialogRef.close(this.productForm.value);
+        console.log('productForm', this.productForm.value);
+        // this.dialogRef.close(this.productForm.value);
     }
 
     private createForm(): void {
         this.productForm = this.fb.group({
             sku: this.sku,
             name: this.name,
-            description: this.description,
+            descriptions: this.descriptions,
             category: this.category,
             brand: this.brand,
             unid: this.unid,
             listprice: this.listprice,
             discount: this.discount,
             stock: this.stock,
-            images: this.images
+            images: this.images,
         });
     }
 
     private createValidators(): void {
         this.sku = new FormControl();
         this.name = new FormControl();
-        this.description = new FormArray([
+        this.descriptions = new FormArray([
             new FormControl(),
             new FormControl(),
             new FormControl(),
@@ -126,4 +173,24 @@ export class ProductAddComponent implements OnInit{
         this.stock = new FormControl();
         this.images = new FormArray([]);
     }
+
+    // public getUrlExtension = (url) => {
+    //     return url.split(/[#?]/)[0].split('.').pop().trim();
+    // };
+
+    public onImageEdit = async (imgUrl) => {
+        
+        var originalName = imgUrl.split('/').reverse()[0];
+        // var imgExt = this.getUrlExtension(imgUrl);
+
+        const response = await fetch(imgUrl);
+        const blob = await response.blob();
+        const file = new File([blob], originalName, {
+            type: blob.type,
+        });
+
+        
+        return file;
+        
+    };
 }

@@ -55,7 +55,6 @@
             mat-table
             matSort
             [dataSource]="recentTransactionsDataSource"
-            [trackBy]="trackByFn"
             #recentTransactionsTable>
 
             <ng-container matColumnDef="thumb">
@@ -170,8 +169,8 @@
                         <button
                                     class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                     mat-flat-button
-                                    matTooltip="Editar nota de venta"
-                                    (click)="editSaleNote(salesNote.id)">
+                                    matTooltip="Editar producto"
+                                    (click)="editProduct(product._id)">
                                     <mat-icon
                                         class="icon-size-5 editIcon"
                                         [svgIcon]=" 'heroicons_solid:pencil' "></mat-icon>
@@ -179,8 +178,8 @@
                                 <button
                                     class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                     mat-flat-button
-                                    matTooltip="Eliminar nota de venta"
-                                    (click)="deleteSaleNote(salesNote.id)">
+                                    matTooltip="Eliminar producto"
+                                    (click)="deleteProduct(product._id)">
                                     <mat-icon
                                         class="icon-size-5 deleteIcon"
                                         [svgIcon]=" 'heroicons_solid:trash' "></mat-icon>
