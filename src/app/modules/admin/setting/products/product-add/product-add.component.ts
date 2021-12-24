@@ -113,7 +113,7 @@ export class ProductAddComponent implements OnInit {
     }
 
     cancel(): void {
-        this.dialogRef.close();
+        this.dialogRef.close({});
     }
 
     getFilesLoades(images): void {
@@ -138,8 +138,12 @@ export class ProductAddComponent implements OnInit {
     }
 
     submitForm(): void {
-        console.log('productForm', this.productForm.value);
-        // this.dialogRef.close(this.productForm.value);
+        const { idProduct } = this.data;
+        // console.log('productForm', this.productForm.value);
+        this.dialogRef.close({
+            productForm: this.productForm.value,
+            idProduct: idProduct
+        });
     }
 
     private createForm(): void {

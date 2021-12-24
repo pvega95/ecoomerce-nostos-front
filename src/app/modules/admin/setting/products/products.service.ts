@@ -49,18 +49,18 @@ export class ProductsService {
         return this._http.get(query);
     }
 
-    async actualizarProducto(body: any, id: string): Promise<any> {
-        const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-        // return null;
-        const data = (await this._http.put(url, body).toPromise()) as any;
-        return data;
-    }
-    async eliminarProducto(id: string): Promise<any> {
-        const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-        // return null;
-        const data = (await this._http.delete(url).toPromise()) as any;
-        return data;
-    }
+  actualizarProducto(body: any, id: string ): Observable<any> {
+    const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+    const data = body;
+    return this._http.put(query, data);
+  }
+
+  async eliminarProducto(id: string ): Promise<any> {
+    const url = `${ProductsService.BASE_URL}/product-management/${id}`;
+    // return null;
+    const  data  = (await this._http.delete(url).toPromise()) as any;
+    return data ;
+  }
 
     /*   createProduct(): Observable<any>
   {
