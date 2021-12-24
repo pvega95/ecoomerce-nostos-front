@@ -283,7 +283,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     productModal(idProduct?: string): void {
         const dialogRef = this.dialog.open(ProductAddComponent, {
             data: {
-                idProduct: idProduct || null
+                idProduct: idProduct || null
             },
             panelClass: 'my-custom-dialog-class',
         });
