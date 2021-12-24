@@ -5,11 +5,9 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
-import {
-    FormControl,
-} from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
@@ -226,6 +224,24 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
 
+    actualizarProducto(product, idProduct): void {
+        const productForm = new Product(product);
+        const hasTypeFile = productForm.images.some(x => x instanceof File);
+        let productData = (hasTypeFile) ? this.toFormData(productForm) : productForm;
+        this.isLoading = true;
+        this.productsService
+            .actualizarProducto(productData, idProduct)
+            .subscribe((resp) => {
+                this.dialog.closeAll();
+                if (resp.ok) {
+                    this.isLoading = false;
+                    setTimeout(() => {
+                        this.cargarListaProductos();
+                    }, 1000);
+                }
+            });
+    }
+
     toFormData<T>(formValue: T): FormData {
         const formData = new FormData();
 
@@ -283,13 +299,17 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     productModal(idProduct?: string): void {
         const dialogRef = this.dialog.open(ProductAddComponent, {
             data: {
-                idProduct: idProduct || null
+                idProduct: idProduct || null,
             },
             panelClass: 'my-custom-dialog-class',
         });
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                // this.crearNuevoProducto(result);
+        dialogRef.afterClosed().subscribe(({ productForm, idProduct }) => {
+            if (productForm) {
+                if (idProduct) {
+                    this.actualizarProducto(productForm, idProduct);
+                } else {
+                    this.crearNuevoProducto(productForm);
+                }
             }
         });
     }
