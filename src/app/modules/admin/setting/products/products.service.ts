@@ -36,7 +36,6 @@ export class ProductsService {
         return this._http.get(query);
     }
 
-<<<<<<< HEAD
   actualizarProducto(body: any, id: string ): Observable<any> {
     const query = `${ProductsService.BASE_URL}/product-management/${id}`;
     const data = body;
@@ -49,20 +48,6 @@ export class ProductsService {
     const  data  = (await this._http.delete(url).toPromise()) as any;
     return data ;
   }
-=======
-    async actualizarProducto(body: any, id: string): Promise<any> {
-        const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-        // return null;
-        const data = (await this._http.put(url, body).toPromise()) as any;
-        return data;
-    }
-    async eliminarProducto(id: string): Promise<any> {
-        const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-        // return null;
-        const data = (await this._http.delete(url).toPromise()) as any;
-        return data;
-    }
->>>>>>> 44ef9891dc26f8369ec2b573d889201595c84ebd
 
     /*   createProduct(): Observable<any>
   {
