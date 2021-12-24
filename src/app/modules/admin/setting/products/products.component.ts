@@ -99,7 +99,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.isLoading = true;
                     const query = queryInput.toLowerCase();
                     return (this.productsFiltered = this.products.filter(
-                        (product) =>
+                        product =>
                             product.name.toLowerCase().match(query) ||
                             product.sku.toLowerCase().match(query) ||
                             product.price.toLowerCase().match(query)
@@ -115,7 +115,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     cargarListaProductos(): void {
         this.products = [];
         this.isLoading = true;
-        this.productsService.getListProducts().subscribe((resp)=> {
+        this.productsService.getListProducts().subscribe((resp) => {
             if (resp.ok) {
                 // Get the products
                 this.products = resp.data;
@@ -177,6 +177,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /**
      * Update the selected product using the form data
+     *
      * @param id
      */
     async updateSelectedProduct(id): Promise<void> {
@@ -186,7 +187,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const product = this.presenter.form.value;
         if (product.images.length > 0) {
             product.images = product.images.filter(
-                (img) => img instanceof File
+                img => img instanceof File
             );
             resp = await this.productsService.actualizarProducto(
                 this.toFormData(product),
@@ -227,7 +228,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     actualizarProducto(product, idProduct): void {
         const productForm = new Product(product);
         const hasTypeFile = productForm.images.some(x => x instanceof File);
-        let productData = (hasTypeFile) ? this.toFormData(productForm) : productForm;
+        const productData = hasTypeFile
+            ? this.toFormData(productForm)
+            : productForm;
         this.isLoading = true;
         this.productsService
             .actualizarProducto(productData, idProduct)
@@ -296,10 +299,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    productModal(idProduct?: string): void {
+    productModal(id?: string): void {
         const dialogRef = this.dialog.open(ProductAddComponent, {
             data: {
-                idProduct: idProduct || null,
+                idProduct: id || null,
             },
             panelClass: 'my-custom-dialog-class',
         });

@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Inject, OnInit, SimpleChanges } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrandService } from '../../brand/brand.service';
@@ -43,7 +49,7 @@ export class ProductAddComponent implements OnInit {
         this.createForm();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.cargarCategorias();
         this.cargarUnidades();
         this.cargarMarcas();
@@ -53,7 +59,7 @@ export class ProductAddComponent implements OnInit {
         }
     }
 
-    cargarProducto(id: string) {
+    cargarProducto(id: string): void {
         console.log('cargarProducto', id);
         this._productsService.consultarProducto(id).subscribe((response) => {
             const producto = response.data[0];
@@ -61,12 +67,12 @@ export class ProductAddComponent implements OnInit {
         });
     }
 
-    async patchForm(producto) {
+    async patchForm(producto): Promise<void> {
         const { images } = producto;
         if (images) {
-            let filesTemp = [];
-            for(const image of images) {
-                this.addImageControl(image); 
+            const filesTemp = [];
+            for (const image of images) {
+                this.addImageControl(image);
                 filesTemp.push(await this.onImageEdit(image.imageURL));
             }
             this.files = filesTemp;
@@ -78,7 +84,7 @@ export class ProductAddComponent implements OnInit {
         return new FormControl();
     }
 
-    addImageControl(image: any) {
+    addImageControl(image: any): void {
         const imageProduct = this.createImageForm();
         if (image) {
             imageProduct.patchValue(image);
@@ -86,7 +92,7 @@ export class ProductAddComponent implements OnInit {
         this.images.insert(0, imageProduct);
     }
 
-    cargarMarcas() {
+    cargarMarcas(): void {
         this._brandService.listarMarca().subscribe((response) => {
             if (response.ok) {
                 this.brands = response.data;
@@ -94,7 +100,7 @@ export class ProductAddComponent implements OnInit {
         });
     }
 
-    cargarUnidades() {
+    cargarUnidades(): void {
         this.units = [];
         this._unidService.listarUnidad().subscribe((response) => {
             if (response.ok) {
@@ -117,11 +123,13 @@ export class ProductAddComponent implements OnInit {
     }
 
     getFilesLoades(images): void {
-        let imagesBK = [...images];
-        for (var i = 0, len = images.length; i < len; i++) {
-            const existImage = this.images.value.findIndex(img => img.imageURL.split('/').reverse()[0] === images[i].name);
-            if(existImage > -1) {
-                imagesBK.splice(existImage, 1)
+        const imagesBK = [...images];
+        for (let i = 0, len = images.length; i < len; i++) {
+            const existImage = this.images.value.findIndex(
+                img => img.imageURL.split('/').reverse()[0] === images[i].name
+            );
+            if (existImage > -1) {
+                imagesBK.splice(existImage, 1);
             }
         }
         this.clearFormArray(this.images);
@@ -142,9 +150,22 @@ export class ProductAddComponent implements OnInit {
         // console.log('productForm', this.productForm.value);
         this.dialogRef.close({
             productForm: this.productForm.value,
-            idProduct: idProduct
+            idProduct: idProduct,
         });
     }
+
+    public onImageEdit = async (imgUrl): Promise<File> => {
+        const originalName = imgUrl.split('/').reverse()[0];
+        // var imgExt = this.getUrlExtension(imgUrl);
+
+        const response = await fetch(imgUrl);
+        const blob = await response.blob();
+        const file = new File([blob], originalName, {
+            type: blob.type,
+        });
+
+        return file;
+    };
 
     private createForm(): void {
         this.productForm = this.fb.group({
@@ -181,20 +202,4 @@ export class ProductAddComponent implements OnInit {
     // public getUrlExtension = (url) => {
     //     return url.split(/[#?]/)[0].split('.').pop().trim();
     // };
-
-    public onImageEdit = async (imgUrl) => {
-        
-        var originalName = imgUrl.split('/').reverse()[0];
-        // var imgExt = this.getUrlExtension(imgUrl);
-
-        const response = await fetch(imgUrl);
-        const blob = await response.blob();
-        const file = new File([blob], originalName, {
-            type: blob.type,
-        });
-
-        
-        return file;
-        
-    };
 }
