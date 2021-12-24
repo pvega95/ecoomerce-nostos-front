@@ -4,5 +4,6 @@ export enum Modal {
     success = 3,
     warning = 4,
     error = 5,
-    newOrder = 6
+    newOrder = 6,
+    newItem = 7
   }

@@ -122,6 +122,8 @@ export class CompanyComponent implements OnInit {
         listObjProvince: new FormControl([]),
         listObjDistrict: new FormControl([]),
     });
+    this.selectedCompanyForm.controls.createdDate.disable();
+    this.selectedCompanyForm.controls.updatedDate.disable();
   }
 
   loadListCompany() {

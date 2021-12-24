@@ -136,6 +136,8 @@ export class PaymentMethodComponent implements OnInit {
         createdDate      : [''],
         updatedDate      : ['']
     });
+    this.selectedPaymentMethodForm.controls.createdDate.disable();
+    this.selectedPaymentMethodForm.controls.updatedDate.disable();
   }
 
   createPaymentMethod(): void{

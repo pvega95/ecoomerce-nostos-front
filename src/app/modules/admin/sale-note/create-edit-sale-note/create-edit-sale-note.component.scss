@@ -1,13 +1,26 @@
-::ng-deep .mat-form-field-disabled .mat-form-field-underline   {
-   
-    background-color: #d8191933 !important; 
-    
-
-   
-      
-   
+.sizeScroll{
+    height: 23rem;
 }
+.inventory-grid {
+    grid-template-columns: 48px auto 40px;
 
-/**
- .mat-form-field-wrapper:read-only .mat-form-field-flex:read-only
-*/
+    @screen sm {
+        grid-template-columns: 48px auto 112px 72px;
+    }
+
+    @screen md {
+        grid-template-columns: 6rem 16rem 4rem  7.55rem 7.2rem 7.55rem;
+    }
+
+    @screen lg {
+        grid-template-columns: 6rem 16rem 4rem  7.55rem 7.2rem 7.55rem;
+    }
+}
+.hightlightRow:hover{
+    background-color: #f2ffc4a3;
+}
+.borderRounded{
+    border: 1px solid #ccc!important;
+    padding: 1rem;
+    border-radius: 1rem;
+}

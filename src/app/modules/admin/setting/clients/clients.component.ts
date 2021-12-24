@@ -106,27 +106,6 @@ export class ClientsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  initForm() {
-    this.selectedClientForm = this._formBuilder.group({
-        id               : [''],
-        category         : [''],
-        name             : ['', [Validators.required]],
-        lastName         : ['', [Validators.required]],
-        email            : [''],
-        createdDate      : [''],
-        updatedDate      : [''],
-        tags             : [[]],
-        phone            : [''],
-        barcode          : [''],
-        brand            : [''],
-        vendor           : [''],
-        stock            : [''],
-        images           : [[]],
-        currentImageIndex: [0], // Image index that is currently being viewed
-        active           : [false]
-    });
-}
-
 
 
   async cargarLista(){

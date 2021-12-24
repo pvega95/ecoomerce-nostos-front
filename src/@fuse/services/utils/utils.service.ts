@@ -104,6 +104,9 @@ export class FuseUtilsService
         //return [year, month, day].join('-');
         return [day, month, year].join('/');
       }
+     formatDateOut(fecha: string): string{
+         return this.formatDate(this.stringToDate(fecha))
+       }
 
       static sinEspaciosEnBlanco(control: AbstractControl) : ValidationErrors | null {
         if(control.value != null){
@@ -145,6 +148,16 @@ export class FuseUtilsService
             listObj.push({
                 id: objRaw._id as string,
                 label: objRaw.comercialName
+            })
+        });
+        return listObj;
+      }
+      static formatOptionsPaymentDeadline(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.description
             })
         });
         return listObj;

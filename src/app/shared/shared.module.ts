@@ -11,8 +11,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SelectSearchComponent } from './select-search/select-search.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
@@ -22,9 +25,11 @@ const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
     imports: [
         CommonModule,
         MatSelectModule,
+        MatTooltipModule,
         MatFormFieldModule,
+        MatCheckboxModule,
         MatInputModule,
-        
+        MatTableModule,
         ScrollingModule,
         NgxMatSelectSearchModule,
         FormsModule,

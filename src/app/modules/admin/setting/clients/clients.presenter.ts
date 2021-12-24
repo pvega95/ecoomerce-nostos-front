@@ -89,6 +89,8 @@ export class ClientPresenter  {
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
         });
+        this.form.controls.createdAt.disable();
+        this.form.controls.updatedAt.disable();
     }
 
     loadClientForm(client){

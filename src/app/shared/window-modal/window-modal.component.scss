@@ -7,3 +7,21 @@
  ::ng-deep   .mat-form-field-appearance-outline .mat-form-field-prefix{
         top: 0em !important;
     }
+table {
+    width: 100%;
+    }
+.mat-column-sku {
+    width: 20% !important;
+}
+.mat-column-name {
+    width: 30% !important;
+}
+.mat-column-netoprice {
+    text-align: right;
+    width: 20% !important;
+}
+.mat-column-check {
+    text-align: center;
+    width: 20% !important;
+}
+

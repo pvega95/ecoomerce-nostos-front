@@ -15,6 +15,7 @@ import { saleNoteRoutes } from 'app/modules/admin/sale-note/sale-note.routing';
 import { SaleNoteComponent } from './sale-note.component';
 import { TranslocoModule } from '@ngneat/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatInputModule } from '@angular/material/input';
 import { IMaskModule } from 'angular-imask';
 import { MatSelectModule } from '@angular/material/select';
@@ -29,6 +30,7 @@ import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit
     imports     : [
         RouterModule.forChild(saleNoteRoutes),
         MatFormFieldModule,
+        ScrollingModule,
         IMaskModule,
         MatProgressSpinnerModule,
         MatSelectModule,

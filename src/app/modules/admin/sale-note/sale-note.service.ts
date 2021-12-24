@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 
   export class SaleNoteService {
     static readonly BASE_URL = `${environment.backendURL}`;
-    static readonly confManagement = '/configuration-management';
+    static readonly confManagement = '/order-management';
     constructor(private http: HttpClient) {}
     formatErrors(error: HttpErrorResponse) {
         const messageError = error.error ? error.error : error;
@@ -19,7 +19,16 @@ import { catchError, map } from 'rxjs/operators';
       }
   
     getListSaleNote():  Observable<any> {
-      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial`;
+      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/sales`;
+      return this.http.get(url).pipe(
+        catchError(error => {
+          return this.formatErrors(error);
+        })
+      );
+    } 
+
+    getSerie(companyId: string, documentId: string):  Observable<any> {
+      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial/${companyId}/${documentId}`;
       return this.http.get(url).pipe(
         catchError(error => {
           return this.formatErrors(error);

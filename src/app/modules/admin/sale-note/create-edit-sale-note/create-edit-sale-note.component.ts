@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, OnChanges, EventEmitter, OnDestroy, OnInit, Output, AfterViewInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { forkJoin } from 'rxjs';
@@ -9,6 +9,13 @@ import { PaymentDeadline } from '../../../../models/payment-deadline';
 import { CompanyService } from '../../setting/company/company.service'
 import { DocumentService } from '../../setting/document/document.service'
 import { PaymentDeadlineService } from '../../setting/payment-deadline/payment-deadline.service'
+import { SaleNote } from 'app/models/sale-note';
+import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { SaleNoteService } from '../sale-note.service';
+import { ProductsService } from '../../setting/products/products.service';
+import { Modal } from '../../../../enums/modal.enum';
+import { Product } from 'app/models/product';
 //import {  } from '../../setting/'
 
 @Component({
@@ -16,14 +23,20 @@ import { PaymentDeadlineService } from '../../setting/payment-deadline/payment-d
   templateUrl: './create-edit-sale-note.component.html',
   styleUrls: ['./create-edit-sale-note.component.scss']
 })
-export class CreateEditSaleNoteComponent implements OnInit {
+export class CreateEditSaleNoteComponent implements OnInit {  
   public companies: Company[];
   public documents: Document[];
+  public products: Product[] = [];
+  public productsFiltered: Product[] = [];
   public paymentDeadlines: PaymentDeadline[];
   public listObjDocuments: Select[];
   public listObjCompanies: Select[];
   public listObjPaymentDeadlines: Select[];
-  @Input() minLength: number = 2;
+  public companyId: string = '';
+  public documentId: string = '';
+  public contAuxiliarCompanySelected: number = 0;
+  public contAuxiliarDocumentSelected: number = 0;
+  @Input() salesNoteInput: SaleNote = null;
   @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() backTolist: EventEmitter<any> = new EventEmitter<any>();
   selectedSaleNoteForm: FormGroup;
@@ -31,53 +44,146 @@ export class CreateEditSaleNoteComponent implements OnInit {
     maskForInput: any = 
     {mask: /^[A-Za-zÁ-ú0-9\s]+$/g
     };
-
+    public HeightWindows: number;
+    public WidthWindows: number;
+    @HostListener('window:resize', ['$event'])
+    getScreenSize(event?): {HeightWindows: string; WidthWindows: string} {
+          this.HeightWindows = window.innerHeight;
+          this.WidthWindows = window.innerWidth;
+          return { HeightWindows: (this.HeightWindows*0.7).toString()+'px',
+                    WidthWindows: (this.WidthWindows*0.7).toString()+'px'
+                  }
+    }
+    
   constructor(
     private _formBuilder: FormBuilder,
     private companyService: CompanyService,
+    public dialog: MatDialog,
+    private fuseUtilsService: FuseUtilsService,
     private documentService: DocumentService,
     private paymentDeadlineService: PaymentDeadlineService,
+    private saleNoteService: SaleNoteService,
+    private productsService: ProductsService
     ) { 
-    this.initForm();
+    this.initForm();   
   }
 
+
+/*   ngAfterViewInit() {
+    setTimeout(() => {
+     
+    }, 0);
+   } */
   ngOnInit(): void {
-    this.loadValues();
+    this.getScreenSize();
+    this.loadValues();    
+  }
+  getHeight(): string{
+    return '23rem'
   }
   backTolistSaleNote(){
     this.backTolist.emit();
   }
-  loadValues(){
-    this.isLoading.emit(true);
+  loadValues(){   
     this.listObjDocuments = [];
     this.listObjCompanies = [];
     this.listObjPaymentDeadlines = [];
     this.companies = [];
     this.documents = [];
     this.paymentDeadlines = [];
+    setTimeout(() => {
+      this.isLoading.emit(true);
+    }, 0);
     forkJoin(
       [
         this.companyService.getListCompany(),
         this.documentService.getListDocument(),
-        this.paymentDeadlineService.getListPaymentDeadline()
+        this.paymentDeadlineService.getListPaymentDeadline(),
+        this.productsService.getListProducts()
       ]
-    ).subscribe(([companyResponse, documentResponse, paymentDeadlineResponse])=>{
-      if (companyResponse.ok && documentResponse.ok && paymentDeadlineResponse.ok) {
+    ).subscribe(([companyResponse, documentResponse, paymentDeadlineResponse, productsResponse])=>{
+      if (companyResponse.ok && documentResponse.ok && paymentDeadlineResponse.ok && productsResponse.ok) {
         this.companies = companyResponse.data;
         this.documents = documentResponse.data;
         this.paymentDeadlines = paymentDeadlineResponse.data;
+        this.products = productsResponse.data;
+        this.productsFiltered = this.products;
+        //this.isLoading = false;
+        console.log(' this.products ',  this.products )
+
+      
+        console.log('this.salesNoteInput  value', this.salesNoteInput)
+        this.selectedSaleNoteForm.patchValue({
+          id:  this.salesNoteInput?._id || '-1',
+          client: this.salesNoteInput?.client.comercialName || '',          
+          company: this.salesNoteInput?.company || '',  
+          document: this.salesNoteInput?.document._id || '',           
+          serie: this.salesNoteInput?.serie || '',
+          documentNumber: this.salesNoteInput?.documentNumber || '',
+          paymentdeadline: this.salesNoteInput?.paymentDeadline._id || '',
+          status: this.salesNoteInput?.status || '',           
+          reference: this.salesNoteInput?.reference || '',         
+          note: this.salesNoteInput?.note || '',              
+          registryDate: this.salesNoteInput ? this.fuseUtilsService.formatDateOut(this.salesNoteInput.registryDate) : '',        
+          updatedAt: this.salesNoteInput ? this.fuseUtilsService.formatDateOut(this.salesNoteInput.updatedAt) : '',   
+        });
+        
         this.listObjDocuments = FuseUtilsService.formatOptionsDocument(this.documents);
         this.listObjCompanies = FuseUtilsService.formatOptionsCompany(this.companies);
-      
+        this.listObjPaymentDeadlines = FuseUtilsService.formatOptionsPaymentDeadline(this.paymentDeadlines);
+        console.log('documento ', this.selectedSaleNoteForm.get('document').value, this.listObjDocuments )
         this.isLoading.emit(false);
       }
     });
   }
   objCompanySelected(objCompany: Select){
-  //  console.log('value company selected', value.label)
+    if (this.contAuxiliarCompanySelected > 0) {// para editar
+      this.documentId = this.selectedSaleNoteForm.controls.document.value;
+      this.companyId = (objCompany.id as string);
+      this.asignSerie();
+    } else {
+      this.contAuxiliarCompanySelected++;
+    }
+    if(!this.salesNoteInput){// para crear
+      this.contAuxiliarCompanySelected = 0;
+     // this.documentId = this.selectedSaleNoteForm.controls.document.value;
+      this.companyId = (objCompany.id as string);
+      this.asignSerie();
+    }
+
   }
   objDocumentSelected(objDocument: Select){
-  //  console.log('value documento selected', value)
+    console.log('objDocument', objDocument)
+    if (this.contAuxiliarDocumentSelected > 0) {// para editar
+      this.companyId =  this.selectedSaleNoteForm.controls.company.value;
+      this.documentId = (objDocument.id as string);
+      this.asignSerie();
+    } else {
+      this.contAuxiliarDocumentSelected++;
+    }
+    if (!this.salesNoteInput) {// para crear
+      this.contAuxiliarDocumentSelected = 0;
+    //  this.companyId =  this.selectedSaleNoteForm.controls.company.value;
+      this.documentId = (objDocument.id as string);
+      this.asignSerie();
+    }
+ 
+  }
+  asignSerie(){
+    console.log('this.companyId', this.companyId,this.documentId  )
+    if (this.companyId !== '' && this.documentId !== '') {
+      this.isLoading.emit(true);
+      this.saleNoteService.getSerie(this.companyId,this.documentId).subscribe(resp=>{
+        if(resp.ok){
+          console.log(resp)
+          this.isLoading.emit(false);
+        }
+      });
+    }
+  }
+  objPaymentDeadlineSelected(objDocument: Select){
+  
+
   }
 
   initForm() {
@@ -86,17 +192,42 @@ export class CreateEditSaleNoteComponent implements OnInit {
         client              : ['', [Validators.required]],
         company             : ['', [Validators.required]],
         document            : ['', [Validators.required]],
-        serie               : ['322', [Validators.required, Validators.minLength(1), FuseUtilsService.sinEspaciosEnBlanco]],
-        numberdocument      : ['', [Validators.required]],
+        serie               : ['', [Validators.required, Validators.minLength(1), FuseUtilsService.sinEspaciosEnBlanco]],
+        documentNumber      : ['', [Validators.required]],
         paymentdeadline     : ['', [Validators.required]],
         status              : ['', [Validators.required]],
         reference           : ['', [Validators.required]],
         note                : ['', [Validators.required]],
-        dateissue           : ['', [Validators.required]],
-        datemodification    : ['', [Validators.required]],
-       
+        registryDate        : ['', [Validators.required]],
+        updatedAt           : ['', [Validators.required]],    
     });
     this.selectedSaleNoteForm.controls.serie.disable();
+    this.selectedSaleNoteForm.controls.documentNumber.disable();
+    this.selectedSaleNoteForm.controls.registryDate.disable();
+    this.selectedSaleNoteForm.controls.updatedAt.disable();
+  }
+  addItem(): void{
+    const dialogRef = this.dialog.open(WindowModalComponent, {
+      width: '42rem',
+      height: '30rem',
+      data: {
+          type: Modal.newItem
+        },
+    disableClose: true
+    });
+    dialogRef.afterClosed().subscribe( result => {
+      
+    });
+
+  }
+  cancelSelectedSaleNote(): void{
+
+  }
+  createSaleNote(): void{
+
+  }
+  saveSelectedSaleNote():void{
+    
   }
 
 }

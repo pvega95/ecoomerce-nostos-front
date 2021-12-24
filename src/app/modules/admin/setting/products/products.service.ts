@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -19,16 +20,28 @@ export class ProductsService {
 
     constructor(private _http: HttpClient) {}
 
-    async listarProductos(): Promise<any> {
-        const url = `${ProductsService.BASE_URL}/product-management`;
-        const data = (await this._http.get(url).toPromise()) as any;
-        return data;
-    }
+    // async listarProductos(): Promise<any> {
+    //     const url = `${ProductsService.BASE_URL}/product-management`;
+    //     const data = (await this._http.get(url).toPromise()) as any;
+    //     return data;
+    // }
 
     crearProducto(body: any): Observable<any> {
         const query = `${ProductsService.BASE_URL}/product-management`;
         const data = body;
         return this._http.post(query, data);
+    }
+
+    formatErrors(error: HttpErrorResponse): Observable<any> {
+        const messageError = error.error ? error.error : error;
+        return throwError(messageError);
+    }
+
+    getListProducts(): Observable<any> {
+        const url = `${ProductsService.BASE_URL}/product-management`;
+        return this._http.get(url).pipe(
+            catchError(error => this.formatErrors(error))
+        );
     }
 
     consultarProducto(id: string): Observable<any> {

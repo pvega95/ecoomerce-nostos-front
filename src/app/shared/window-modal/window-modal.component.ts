@@ -10,6 +10,8 @@ import { FuseUtilsService } from '../../../@fuse/services/utils/utils.service';
 import { MatSelect } from '@angular/material/select';
 import { Select } from 'app/models/select';
 import { Router } from '@angular/router';
+import { Product } from 'app/models/product';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 
 
@@ -23,7 +25,7 @@ export class WindowModalComponent implements OnInit {
   public typeModal: any;
   public listFiles: File[] = [];
   public orderForm: FormGroup;
-  public products: any[];
+  public products: Product[];
   public clients: any[];
   public addressClient: any[];
   public isLoading: boolean = true;
@@ -36,6 +38,8 @@ export class WindowModalComponent implements OnInit {
   public productAvailableSearch: boolean = true;
   public totalAmount: number = 0;
   public disableRemoveProduct: boolean;
+  public displayedColumns: string[] = ['sku', 'name', 'netoprice','check'];
+  public dataSource: any;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -51,14 +55,37 @@ export class WindowModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('data', Modal.loading)
     this.disableRemoveProduct = true;
     if (this.data.type === this.typeModal.newOrder) {
       this.loadData();
     }
+    if (this.data.type === this.typeModal.newItem) {
+      this.loadItems();
+    }
     this.initForm();
   }
-
+  itemSelected(val: MatCheckboxChange, itemId: string ){
+    console.log('check ', val.checked, itemId)
+  }
+  loadItems(){
+    this.productsService.getListProducts().subscribe(resp=>{
+      let listItemsTable: any[]=[];
+      if (resp.ok) {
+        this.products = resp.data;
+        this.products.forEach(product=>{
+         const val =  {
+           id: product._id,
+           sku: product.sku,
+           name: product.name,
+           netoprice: product.netoprice
+          }
+          listItemsTable.push(val);
+        });
+        this.dataSource = listItemsTable;
+        this.isLoading = false;
+      }
+    });
+  }
   async loadData(): Promise<void> {
     let resp1: any;
     let resp2: any;
@@ -68,11 +95,11 @@ export class WindowModalComponent implements OnInit {
     this.listObjProduct = [];
     this.listObjAddressClient = [];
     this.success = false;
-    resp1 = await this.productsService.listarProductos();
+    resp1 = await this.productsService.getListProducts();
     resp2 = await this.clientsService.listarClientes();
 
     if (resp1.ok && resp2.ok) {
-      console.log(resp2)
+      //console.log(resp2)
       // Get the products and clients
       this.products = this.formatProduct(resp1.data);
       this.clients = this.formatClient(resp2.data);
@@ -92,12 +119,12 @@ export class WindowModalComponent implements OnInit {
       if (this.products.length > 0) {
         this.products.forEach(element => {
           this.listObjProduct.push({
-            id: element.id as string,
+            id: element._id as string,
             label: element.name,
             data:
             {
               sku: element.sku,
-              price: element.price
+              price: element.grossPrice
             }
           });
         });
@@ -184,7 +211,7 @@ export class WindowModalComponent implements OnInit {
     return this.orderForm.get('products') as FormArray;
   }
   addProduct(): void {
-    console.log('se agrego rpdocuto')
+  //  console.log('se agrego rpdocuto')
     const formProduct = this.createProductForm();
     this.productsForm.push(formProduct);
     this.verifyQuantityLot();

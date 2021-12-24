@@ -114,19 +114,19 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe();
     }
 
-    async cargarListaProductos(): Promise<void> {
+    cargarListaProductos(): void {
         this.products = [];
-        // console.log('lista product', await this.productsService.listarProductos())
         this.isLoading = true;
-        const resp = await this.productsService.listarProductos();
-        if (resp.ok) {
-            // Get the products
-            this.products = resp.data;
-            this.productsFiltered = this.products;
-            this.isLoading = false;
-            this.recentTransactionsDataSource.data = this.products;
-            console.log(' this.products ', this.products);
-        }
+        this.productsService.getListProducts().subscribe((resp)=> {
+            if (resp.ok) {
+                // Get the products
+                this.products = resp.data;
+                this.productsFiltered = this.products;
+                this.isLoading = false;
+                this.recentTransactionsDataSource.data = this.products;
+                console.log(' this.products ', this.products);
+            }
+        });
     }
 
     /**
