@@ -7,8 +7,9 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, Simp
 })
 export class FileUploaderComponent implements OnInit {
     @Input() ratio: string[] = ['1:2', '2:1'];
-    @Output() filesLoaded = new EventEmitter<File[]>();
     @Input() files: File[] = [];
+    @Output() filesLoaded = new EventEmitter<File[]>();
+    @Output() filesDeleted = new EventEmitter<File>();
     errorMessage: string = '';
     filesNames: string = null;
 
@@ -42,7 +43,7 @@ export class FileUploaderComponent implements OnInit {
 
     getFileNames(files: Array<any>): void {
         if (files.length > 1) {
-            this.filesNames = files.map(file => file.name).join(", ");;
+            this.filesNames = files.map(file => file.name).join(', ');;
         } else if (files.length === 0) {
             this.filesNames = null;
         } else {
@@ -51,9 +52,11 @@ export class FileUploaderComponent implements OnInit {
     }
 
     onRemove(event): void {
+        console.log(event);
         this.errorMessage = '';
         this.files.splice(this.files.indexOf(event), 1);
         this.getFileNames(this.files);
         this.filesLoaded.emit(this.files);
+        this.filesDeleted.emit(event);
     }
 }

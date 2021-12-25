@@ -73,7 +73,9 @@ export class ProductAddComponent implements OnInit {
             const filesTemp = [];
             for (const image of images) {
                 this.addImageControl(image);
-                filesTemp.push(await this.onImageEdit(image.imageURL));
+                filesTemp.push(
+                    await this.onImageEdit(image.imageURL, image.filename)
+                );
             }
             this.files = filesTemp;
         }
@@ -123,20 +125,31 @@ export class ProductAddComponent implements OnInit {
     }
 
     getFilesLoades(images): void {
-        const imagesBK = [...images];
-        for (let i = 0, len = images.length; i < len; i++) {
-            const existImage = this.images.value.findIndex(
-                img => img.imageURL.split('/').reverse()[0] === images[i].name
-            );
-            if (existImage > -1) {
-                imagesBK.splice(existImage, 1);
-            }
+        // const imagesBK = [...images];
+        console.log('getFilesLoades', images);
+        // for (let i = 0, len = images.length; i < len; i++) {
+        //     const existImage = this.images.value.findIndex(
+        //         (img: any) => img.filename === images[i].name
+        //     );
+        //     if (existImage > -1) {
+        //         imagesBK.splice(existImage, 1);
+        //     }
+        // }
+        // this.clearFormArray(this.images);
+        // imagesBK.forEach((img) => {
+        //     const imageControl = new FormControl(img);
+        //     this.images.push(imageControl);
+        // });
+    }
+
+    getFileRemoved(file: File): void {
+        const { name } = file;
+        const existProduct = this.images.controls.findIndex(
+            (x: any) => x.value.filename === name
+        );
+        if (existProduct > -1) {
+            this.images.removeAt(existProduct);
         }
-        this.clearFormArray(this.images);
-        imagesBK.forEach((img) => {
-            const imageControl = new FormControl(img);
-            this.images.push(imageControl);
-        });
     }
 
     clearFormArray(formArray: FormArray): void {
@@ -146,21 +159,27 @@ export class ProductAddComponent implements OnInit {
     }
 
     submitForm(): void {
-        const { idProduct } = this.data;
+        console.log('files', this.files);
+
+        const results = this.files.filter(({ name: id1 }) => !this.images.value.some(({ filename: id2 }) => id2 === id1));
+        console.log(results);
+
+
+        // const { idProduct } = this.data;
         // console.log('productForm', this.productForm.value);
-        this.dialogRef.close({
-            productForm: this.productForm.value,
-            idProduct: idProduct,
-        });
+        // this.dialogRef.close({
+        //     productForm: this.productForm.value,
+        //     idProduct: idProduct,
+        // });
     }
 
-    public onImageEdit = async (imgUrl): Promise<File> => {
-        const originalName = imgUrl.split('/').reverse()[0];
+    public onImageEdit = async (imgUrl, filename): Promise<File> => {
+        // const originalName = imgUrl.split('/').reverse()[0];
         // var imgExt = this.getUrlExtension(imgUrl);
 
         const response = await fetch(imgUrl);
         const blob = await response.blob();
-        const file = new File([blob], originalName, {
+        const file = new File([blob], filename, {
             type: blob.type,
         });
 
