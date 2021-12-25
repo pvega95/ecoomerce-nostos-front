@@ -39,9 +39,9 @@ export class ProductsService {
 
     getListProducts(): Observable<any> {
         const url = `${ProductsService.BASE_URL}/product-management`;
-        return this._http.get(url).pipe(
-            catchError(error => this.formatErrors(error))
-        );
+        return this._http
+            .get(url)
+            .pipe(catchError((error) => this.formatErrors(error)));
     }
 
     consultarProducto(id: string): Observable<any> {
@@ -49,18 +49,24 @@ export class ProductsService {
         return this._http.get(query);
     }
 
-  actualizarProducto(body: any, id: string ): Observable<any> {
-    const query = `${ProductsService.BASE_URL}/product-management/${id}`;
-    const data = body;
-    return this._http.put(query, data);
-  }
+    actualizarProducto(body: any, id: string): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+        const data = body;
+        return this._http.put(query, data);
+    }
 
-  async eliminarProducto(id: string ): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-    // return null;
-    const  data  = (await this._http.delete(url).toPromise()) as any;
-    return data ;
-  }
+    subirArchivos(body: any): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/utils-management/uploads`;
+        const data = body;
+        return this._http.post(query, data);
+    }
+
+    async eliminarProducto(id: string): Promise<any> {
+        const url = `${ProductsService.BASE_URL}/product-management/${id}`;
+        // return null;
+        const data = (await this._http.delete(url).toPromise()) as any;
+        return data;
+    }
 
     /*   createProduct(): Observable<any>
   {

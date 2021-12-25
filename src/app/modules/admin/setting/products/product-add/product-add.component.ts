@@ -3,7 +3,6 @@ import {
     Component,
     Inject,
     OnInit,
-    SimpleChanges,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -11,7 +10,7 @@ import { BrandService } from '../../brand/brand.service';
 import { CategoriesService } from '../../category/category.service';
 import { UnidService } from '../../unid/unid.service';
 import { ProductsService } from '../products.service';
-
+import { HttpErrorResponse } from '@angular/common/http';
 @Component({
     selector: 'app-product-add',
     templateUrl: './product-add.component.html',
@@ -22,6 +21,7 @@ export class ProductAddComponent implements OnInit {
     units: any[];
     brands: any[];
 
+    id: FormControl;
     productForm: FormGroup;
     sku: FormControl;
     name: FormControl;
@@ -60,7 +60,6 @@ export class ProductAddComponent implements OnInit {
     }
 
     cargarProducto(id: string): void {
-        console.log('cargarProducto', id);
         this._productsService.consultarProducto(id).subscribe((response) => {
             const producto = response.data[0];
             this.patchForm(producto);
@@ -94,6 +93,12 @@ export class ProductAddComponent implements OnInit {
         this.images.insert(0, imageProduct);
     }
 
+    addImagesProduct(images): void {
+        for (const image of images) {
+            this.addImageControl(image);
+        }
+    }
+
     cargarMarcas(): void {
         this._brandService.listarMarca().subscribe((response) => {
             if (response.ok) {
@@ -125,21 +130,7 @@ export class ProductAddComponent implements OnInit {
     }
 
     getFilesLoades(images): void {
-        // const imagesBK = [...images];
         console.log('getFilesLoades', images);
-        // for (let i = 0, len = images.length; i < len; i++) {
-        //     const existImage = this.images.value.findIndex(
-        //         (img: any) => img.filename === images[i].name
-        //     );
-        //     if (existImage > -1) {
-        //         imagesBK.splice(existImage, 1);
-        //     }
-        // }
-        // this.clearFormArray(this.images);
-        // imagesBK.forEach((img) => {
-        //     const imageControl = new FormControl(img);
-        //     this.images.push(imageControl);
-        // });
     }
 
     getFileRemoved(file: File): void {
@@ -158,25 +149,45 @@ export class ProductAddComponent implements OnInit {
         }
     }
 
-    submitForm(): void {
-        console.log('files', this.files);
+    async submitForm(): Promise<void> {
+        await this.uploadImages();
+        const { idProduct } = this.data;
+        console.log('productForm', this.productForm.value);
+        this.dialogRef.close({
+            productForm: this.productForm.value,
+            idProduct: idProduct,
+        });
+    }
 
-        const results = this.files.filter(({ name: id1 }) => !this.images.value.some(({ filename: id2 }) => id2 === id1));
-        console.log(results);
+    uploadImages(): Promise<any> {
+        return new Promise( ( resolve, reject ) => {
+            const results = this.files.filter(({ name: id1 }) => !this.images.value.some(({ filename: id2 }) => id2 === id1));
+            if(results.length === 0) {
+                resolve(false);
+                return;
+            }
+            const imagesForm = this.toFormData(results);
+            this._productsService.subirArchivos(imagesForm)
+            .subscribe((res) => {
+                if(res.data) {
+                    this.addImagesProduct(res.data);
+                    resolve(true);
+                }
+            },(error: HttpErrorResponse)=> {
+                reject(error);
+            });
+        });
+    }
 
-
-        // const { idProduct } = this.data;
-        // console.log('productForm', this.productForm.value);
-        // this.dialogRef.close({
-        //     productForm: this.productForm.value,
-        //     idProduct: idProduct,
-        // });
+    toFormData<T>(formValue: any[]): FormData {
+        const formData = new FormData();
+        for (const f of formValue) {
+           formData.append('images', f);
+        }
+        return formData;
     }
 
     public onImageEdit = async (imgUrl, filename): Promise<File> => {
-        // const originalName = imgUrl.split('/').reverse()[0];
-        // var imgExt = this.getUrlExtension(imgUrl);
-
         const response = await fetch(imgUrl);
         const blob = await response.blob();
         const file = new File([blob], filename, {
@@ -188,6 +199,7 @@ export class ProductAddComponent implements OnInit {
 
     private createForm(): void {
         this.productForm = this.fb.group({
+            _id: this.id,
             sku: this.sku,
             name: this.name,
             descriptions: this.descriptions,
@@ -202,6 +214,7 @@ export class ProductAddComponent implements OnInit {
     }
 
     private createValidators(): void {
+        this.id = new FormControl();
         this.sku = new FormControl();
         this.name = new FormControl();
         this.descriptions = new FormArray([
@@ -217,8 +230,4 @@ export class ProductAddComponent implements OnInit {
         this.stock = new FormControl();
         this.images = new FormArray([]);
     }
-
-    // public getUrlExtension = (url) => {
-    //     return url.split(/[#?]/)[0].split('.').pop().trim();
-    // };
 }
