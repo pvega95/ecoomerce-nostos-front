@@ -11,7 +11,7 @@ import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, delay, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MatDialog } from '@angular/material/dialog';
@@ -62,6 +62,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         'description',
         'category',
         'brand',
+        'unid',
+        'listprice',
+        'discount',
         'actions',
     ];
 
@@ -99,7 +102,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.isLoading = true;
                     const query = queryInput.toLowerCase();
                     return (this.productsFiltered = this.products.filter(
-                        product =>
+                        (product) =>
                             product.name.toLowerCase().match(query) ||
                             product.sku.toLowerCase().match(query) ||
                             product.price.toLowerCase().match(query)
@@ -187,7 +190,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const product = this.presenter.form.value;
         if (product.images.length > 0) {
             product.images = product.images.filter(
-                img => img instanceof File
+                (img) => img instanceof File
             );
             resp = await this.productsService.actualizarProducto(
                 this.toFormData(product),
@@ -213,7 +216,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         const productForm = new Product(product);
         this.isLoading = true;
         this.productsService
-            .crearProducto(this.toFormData(productForm))
+            .crearProducto(productForm)
             .subscribe((resp) => {
                 this.dialog.closeAll();
                 if (resp.ok) {
@@ -227,13 +230,13 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     actualizarProducto(product, idProduct): void {
         const productForm = new Product(product);
-        const hasTypeFile = productForm.images.some(x => x instanceof File);
-        const productData = hasTypeFile
-            ? this.toFormData(productForm)
-            : productForm;
+        // const hasTypeFile = productForm.images.some((x) => x instanceof File);
+        // const productData = hasTypeFile
+        //     ? this.toFormData(productForm)
+        //     : productForm;
         this.isLoading = true;
         this.productsService
-            .actualizarProducto(productData, idProduct)
+            .actualizarProducto(productForm, idProduct)
             .subscribe((resp) => {
                 this.dialog.closeAll();
                 if (resp.ok) {
@@ -281,20 +284,18 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe(async (result) => {
-            let resp;
+        confirmation.afterClosed().subscribe((result) => {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 // Get the product object
                 this.isLoading = true;
-                resp = await this.productsService.eliminarProducto(idProduct);
-                if (resp.success) {
-                    this.isLoading = false;
-                    setTimeout(() => {
-                        this.presenter.resetProductForm();
-                        this.cargarListaProductos();
-                    }, 1000);
-                }
+                this.productsService
+                    .eliminarProducto(idProduct)
+                    .subscribe((resp) => {
+                        if (resp.ok) {
+                            this.cargarListaProductos();
+                        }
+                    });
             }
         });
     }
