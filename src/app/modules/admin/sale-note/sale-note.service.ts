@@ -28,7 +28,7 @@ import { catchError, map } from 'rxjs/operators';
     } 
 
     getSerie(companyId: string, documentId: string):  Observable<any> {
-      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial/${companyId}/${documentId}`;
+      const url = `${SaleNoteService.BASE_URL}/configuration-management/document-serial/${companyId}/${documentId}`;
       return this.http.get(url).pipe(
         catchError(error => {
           return this.formatErrors(error);

@@ -12,6 +12,7 @@ import { Select } from 'app/models/select';
 import { Router } from '@angular/router';
 import { Product } from 'app/models/product';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { VoucherDetail } from 'app/models/voucher-detail';
 
 
 
@@ -70,6 +71,8 @@ export class WindowModalComponent implements OnInit {
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
       let listItemsTable: any[]=[];
+      let voucherDetail: VoucherDetail[] = (this.data.voucherDetail as VoucherDetail[]);
+      
       if (resp.ok) {
         this.products = resp.data;
         this.products.forEach(product=>{
@@ -77,7 +80,8 @@ export class WindowModalComponent implements OnInit {
            id: product._id,
            sku: product.sku,
            name: product.name,
-           netoprice: product.netoprice
+           netoprice: product.netoprice,
+           selected: this.verifyItemSelected(voucherDetail, product._id)
           }
           listItemsTable.push(val);
         });
@@ -85,6 +89,15 @@ export class WindowModalComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  verifyItemSelected(voucherDetail: VoucherDetail[], productId: string): boolean{
+    console.log('voucherDetail modal', voucherDetail, productId)
+    voucherDetail.forEach(voucher => {
+      if (voucher.id === productId) {
+        return true;
+      }
+    });
+    return false;
   }
   async loadData(): Promise<void> {
     let resp1: any;
