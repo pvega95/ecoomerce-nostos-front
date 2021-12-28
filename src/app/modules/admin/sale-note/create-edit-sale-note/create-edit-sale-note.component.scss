@@ -1,7 +1,9 @@
+@import  "../sale-note.component.scss";
+
 .sizeScroll{
     height: 23rem;
 }
-.inventory-grid {
+.inventory-grid-create-edit {
     grid-template-columns: 48px auto 40px;
 
     @screen sm {
@@ -9,11 +11,11 @@
     }
 
     @screen md {
-        grid-template-columns: 6rem 16rem 4rem  7.55rem 7.2rem 7.55rem;
+        grid-template-columns: 6rem 13rem 4rem  7.55rem 7.2rem 7.55rem 3rem;
     }
 
     @screen lg {
-        grid-template-columns: 6rem 16rem 4rem  7.55rem 7.2rem 7.55rem;
+        grid-template-columns: 6rem 13rem 4rem  7.55rem 7.2rem 7.55rem 3rem;
     }
 }
 .hightlightRow:hover{

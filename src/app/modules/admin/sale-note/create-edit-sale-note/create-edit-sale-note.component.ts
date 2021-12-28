@@ -50,8 +50,8 @@ export class CreateEditSaleNoteComponent implements OnInit {
     getScreenSize(event?): {HeightWindows: string; WidthWindows: string} {
           this.HeightWindows = window.innerHeight;
           this.WidthWindows = window.innerWidth;
-          return { HeightWindows: (this.HeightWindows*0.7).toString()+'px',
-                    WidthWindows: (this.WidthWindows*0.7).toString()+'px'
+          return { HeightWindows: ((this.HeightWindows*0.7)/16).toString()+'rem',
+                    WidthWindows: ((this.WidthWindows*0.7)/16).toString()+'rem'
                   }
     }
     
@@ -170,12 +170,14 @@ export class CreateEditSaleNoteComponent implements OnInit {
  
   }
   asignSerie(){
-    console.log('this.companyId', this.companyId,this.documentId  )
     if (this.companyId !== '' && this.documentId !== '') {
       this.isLoading.emit(true);
       this.saleNoteService.getSerie(this.companyId,this.documentId).subscribe(resp=>{
-        if(resp.ok){
-          console.log(resp)
+        if(resp.success){
+          this.selectedSaleNoteForm.patchValue({
+            serie: resp.data[0].series,
+            documentNumber:  resp.data[0].currentCorrelative
+          });
           this.isLoading.emit(false);
         }
       });
@@ -208,10 +210,11 @@ export class CreateEditSaleNoteComponent implements OnInit {
   }
   addItem(): void{
     const dialogRef = this.dialog.open(WindowModalComponent, {
-      width: '42rem',
+      width: '48rem',
       height: '30rem',
       data: {
-          type: Modal.newItem
+          type: Modal.newItem,
+          voucherDetail: this.salesNoteInput.voucherDetail
         },
     disableClose: true
     });
@@ -219,6 +222,9 @@ export class CreateEditSaleNoteComponent implements OnInit {
       
     });
 
+  }
+  deleteItem(voucherId: string): void{
+    console.log('voucherId', voucherId)
   }
   cancelSelectedSaleNote(): void{
 
