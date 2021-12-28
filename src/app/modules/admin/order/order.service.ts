@@ -16,4 +16,19 @@ export class OrdersService {
     const  data  = (await this.http.get(url).toPromise()) as any;
     return data ;
   }
+  async crearOrden(body: any): Promise<any> {
+    const url = `${OrdersService.BASE_URL}/order-management`;
+    const  data  = (await this.http.post(url, body).toPromise()) as any;
+    return data ;
+  }
+  async listarEstadosOrdenes(): Promise<any> {
+    const url = `${OrdersService.BASE_URL}/order-management/status`;
+    const  data  = (await this.http.get(url).toPromise()) as any;
+    return data ;
+  }
+  async editarEstadoOrden(idOrder: string, body: any): Promise<any> {
+    const url = `${OrdersService.BASE_URL}/order-management/${idOrder}`;
+    const  data  = (await this.http.put(url, body).toPromise()) as any;
+    return data ;
+  }
 }

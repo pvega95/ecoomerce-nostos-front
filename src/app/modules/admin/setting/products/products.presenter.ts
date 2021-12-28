@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 
 @Injectable()
 export class ProductPresenter {
@@ -14,13 +15,28 @@ export class ProductPresenter {
     category: FormControl;
     options: FormControl;
     stock: FormControl;
-    createdDate: FormControl;
-    updatedDate: FormControl;
+    createdAt: FormControl;
+    updatedAt: FormControl;
     id: FormControl;
     currentImageIndex: FormControl;
+    maskForPrice: any =
+    { mask: Number,
+      radix: '.',
+      signed: false,
+      mapToRadix: [','],
+      scale: 2,
+      min: 1,
+      max: 999999999 };
+      maskForWeight: any =
+      { mask: Number,
+        radix: '.',
+        signed: false,
+        mapToRadix: [','],
+        scale: 2,
+        min: 1,
+        max: 999999999 };
 
-    constructor(protected fb: FormBuilder) {
-        console.log('ProductPresenter');
+    constructor(protected fb: FormBuilder, private fuseUtilsService: FuseUtilsService,) {
         this.createValidators();
         this.createForm();
     }
@@ -37,6 +53,10 @@ export class ProductPresenter {
         return this.form.get('currentImageIndex').value
     }
 
+    get idForm(){
+        return this.form.get('id');
+    }
+
     createForm(): void {
         this.form = this.fb.group({
             id: this.id,
@@ -50,60 +70,52 @@ export class ProductPresenter {
             category: this.category,
             options: this.options,
             stock: this.stock,
-            createdDate: this.createdDate,
-            updatedDate: this.updatedDate,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
             currentImageIndex: this.currentImageIndex
         });
+        this.form.controls.createdAt.disable();
+        this.form.controls.updatedAt.disable();
     }
 
     private createValidators(): void {
         this.id = new FormControl(-1);
         this.images = new FormArray([]);
-        this.sku = new FormControl();
-        this.name = new FormControl();
-        this.price = new FormControl();
+        this.sku = new FormControl('', [Validators.required,]);
+        this.name = new FormControl('', [Validators.required,]);
+        this.price = new FormControl('', [Validators.required,]);
         this.weight = new FormControl();
         this.descriptions = new FormArray([]);
         this.thumbnail = new FormControl();
         this.category = new FormControl();
         this.options = new FormControl();
         this.stock = new FormControl(99);
-        this.createdDate = new FormControl();
-        this.updatedDate = new FormControl();
+        this.createdAt = new FormControl();
+        this.updatedAt = new FormControl();
         this.currentImageIndex = new FormControl(0);
     }
 
-    createDescriptionForm(): FormControl {
-        return new FormControl('');
+    createDescriptionForm(val?: string): FormControl {
+        return new FormControl(val || '');
     }
 
     createImageForm(): FormControl {
         return new FormControl();
     }
 
-    addDescriptionControl() {
-        const formDescription = this.createDescriptionForm();
+    addDescriptionControl(val?: string) {
+        const formDescription = this.createDescriptionForm(val);
         this.descriptionsForm.push(formDescription);
     }
     removeDescriptionControl() {
         this.descriptionsForm.removeAt(this.descriptionsForm.length -1);
     }
 
-    createDescriptionBase() {
-        return {
-            name: null
-        }
-    }
-
-    createQuestionForm(): FormGroup {
-        return this.fb.group({
-            name: new FormControl(),
-        });
-    }
-
-    addImageControl(image) {
+    addImageControl(image?: File) {
         const imageProduct = this.createImageForm();
-        imageProduct.patchValue(image);
+        if (image) {
+            imageProduct.patchValue(image);
+        }
         this.images.insert(0, imageProduct);
         // const existProduct = this.images.controls.findIndex((x) => x.value === image);
         // if (existProduct > -1) {
@@ -115,10 +127,69 @@ export class ProductPresenter {
         //   this.images.insert(0, imageProduct);
         // }   
     }
+    loadListImages(listObjImages: any[]): string[] {
+        let listImages: string[] = [];
+        if (listObjImages.length > 0) {
+            listObjImages.forEach(obj => {
+                listImages.push(obj.imageURL);
+            });
+        }
+        return listImages;
+    }
 
     addImages(files: File[]){
         for (const file of files) {
             this.addImageControl(file);
           }
     }
+
+    loadProductForm(product){
+        console.log('loadProductForm', product);
+        const { descriptions, images } = product;
+        this.form.patchValue({
+            descriptions: product.descriptions,
+            sku: product.sku,
+            name: product.name,
+            price: product.price,
+            weight: product.weight,
+            thumbnail: product.thumbnail,
+            category: product.category,
+            stock: product.stock,
+            images: product.images,
+            currentImageIndex: product.currentImageIndex,
+            createdAt: this.formatoFecha(product.createdAt),
+            updatedAt: this.formatoFecha(product.updatedAt)
+        });
+        this.idForm.setValue(product._id);
+        if(descriptions.length > 0) {
+            descriptions.map(desc => this.addDescriptionControl(desc))
+        }
+        if(images.length > 0) {
+            images.map(img => this.addImageControl(img))
+        }
+    }
+
+    formatoFecha(fecha: string): string{
+        return this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(fecha))
+      }
+
+    resetProductForm(){
+        this.form.reset();
+        this.stock.setValue(99);
+        this.currentImageIndex.setValue(0);
+        this.clearFormArray(this.images);
+        this.clearFormArray(this.descriptions);
+    }
+
+    limpiarImagenes(){
+        while (this.images.length !== 0) {
+            this.images.removeAt(0)
+          }
+    }
+
+    clearFormArray(formArray: FormArray) {
+        while (formArray.length !== 0) {
+          formArray.removeAt(0)
+        }
+      }
 }

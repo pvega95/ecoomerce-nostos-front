@@ -1,19 +1,18 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { merge, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { OrdersService } from './order.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
 import { StatusOrder } from '../../../enums/status.enum';
-import { stringify } from 'crypto-js/enc-base64';
 import { WindowModalComponent } from '../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Modal } from '../../../enums/modal.enum';
+
 
 
 @Component({
@@ -26,12 +25,18 @@ export class OrderComponent implements OnInit {
 
   @ViewChild(MatPaginator) private _paginator: MatPaginator;
   @ViewChild(MatSort) private _sort: MatSort;
-  public orders: any[]=[];
-  public products: any[]=[];
-  public isLoading: boolean = true;
+  public orders: any[];
+  public ordersFiltered: any[];
+  public statusOrders: any[];
+  public products: any[];
+  public isLoading: boolean;
+  public orderStatusSelected: string;
+  public flashMessage: boolean;
+  public seeMessage: boolean = false;
   selectedOrder: any = null;
   selectedOrderForm: FormGroup;
   selected: number;
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   searchInputControl: FormControl = new FormControl();
 
@@ -46,32 +51,63 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista(); 
-  this.dialog.open(WindowModalComponent, {
+    this.searchInputControl.valueChanges
+        .pipe(
+            takeUntil(this._unsubscribeAll),
+            debounceTime(300),
+            switchMap((queryInput) => {
+                this.closeDetails();
+                this.isLoading = true;
+                const query = (queryInput as string).toLowerCase();   
+              return this.ordersFiltered = this.orders.filter((order)=>{
+                    return  (order.order_status.name as string).toLowerCase().match(query) 
+                    || (order.customer_id.full_name.name as string).toLowerCase().match(query) || (order.customer_id.full_name.lastName as string).toLowerCase().match(query) 
+                    ||  (order.ammount as number).toString().match(query)  
+               });
+            }),
+            map(() => {
+                this.isLoading = false;
+            })
+        )
+        .subscribe(); 
+
+
+/*   this.dialog.open(WindowModalComponent, {
       data: {
               type: Modal.success
           },
       disableClose: true
-    }); 
+    });  */
 
 /*     setTimeout(()=>{  // 3 segundo se cierra modal
       this.dialog.closeAll();
   }, 3000); */
   }
 
-
-
-
-
   async cargarLista(){
-    let resp: any;
-    resp = await this.ordersService.listarOrdenes();
-    if(resp.ok){
+    let resp1: any;
+    let resp2: any;
+
+    this.products = [];
+    this.orders = [];
+    this.ordersFiltered = [];
+    this.statusOrders = [];
+    this.isLoading = true;
+
+    resp1 = await this.ordersService.listarOrdenes();
+    resp2 = await this.ordersService.listarEstadosOrdenes();
+
+    if(resp1.ok && resp2.ok){
       // Get the ordersn
-      this.orders = resp.data;
+      this.orders = resp1.data;
+      this.ordersFiltered = this.orders;
+      this.statusOrders = resp2.data;
       this.isLoading = false;
-      console.log('lista ordenes',resp.data);
+      console.log('lista ordenes',resp1.data, this.statusOrders);
     }
    }
+
+
    loadColorState(status: any): string{
     let styleColor: string = '';
     switch (status) {
@@ -91,6 +127,21 @@ export class OrderComponent implements OnInit {
 
     return styleColor;
    }
+   addNewOrder(): void {
+    const dialogRef = this.dialog.open(WindowModalComponent, {
+      width: '42rem',
+      height: '30rem',
+      data: {
+          type: Modal.newOrder
+        },
+    disableClose: true
+    });
+    dialogRef.afterClosed().subscribe( result => {
+        this.cargarLista();
+        this.closeDetails();
+    });
+
+   }
 
    toggleDetails(orderId: string, open: boolean): void
    {
@@ -106,8 +157,8 @@ export class OrderComponent implements OnInit {
          }
        }
        this.initForm();
-     
-
+       this.seeMessage = false;
+    
        // Get the order by id
        const orderEncontrado = this.orders.find(item => item._id === orderId)  || null;
       
@@ -122,6 +173,7 @@ export class OrderComponent implements OnInit {
              
            });
            this.products = orderEncontrado.products;
+           this.orderStatusSelected = orderEncontrado.order_status._id;
 
        }else{
            let descriptions = ['']
@@ -141,6 +193,30 @@ export class OrderComponent implements OnInit {
        }
  
    }
+ async  updateselectedOrder(idOrder: string): Promise<void>{
+   let resp;
+   const body = {
+      order_status:  this.orderStatusSelected
+    }
+    this.isLoading = true;
+    resp = await this.ordersService.editarEstadoOrden(idOrder, body);
+    this.seeMessage = true;
+    this.flashMessage = resp.success;
+    if (resp.success) {
+      this.isLoading = false;
+    }
+    setTimeout(()=>{  // 3 segundo se cierra modal
+      this.seeMessage = false;
+      }, 2000);
+
+      setTimeout(()=>{  
+        this.cargarLista();
+        this.closeDetails();
+        }, 1000);
+
+   }
+
+
    initForm() {
     this.selectedOrderForm = this._formBuilder.group({
         id               : [''],

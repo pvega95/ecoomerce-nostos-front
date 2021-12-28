@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
 import { IsActiveMatchOptions } from '@angular/router';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Observable } from 'rxjs/internal/Observable';
+import { Select } from 'app/models/select';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FuseUtilsService
 {
+
+    private idClient$: BehaviorSubject<any> = new BehaviorSubject(null);
     /**
      * Constructor
      */
@@ -16,6 +22,14 @@ export class FuseUtilsService
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
+
+    getIdClient(): Observable<any> {
+        return this.idClient$.asObservable();
+      }
+    
+    setIdClient(id: string) {
+          this.idClient$.next(id);
+      }
 
     /**
      * Get the equivalent "IsActiveMatchOptions" options for "exact = true".
@@ -89,6 +103,64 @@ export class FuseUtilsService
         }
         //return [year, month, day].join('-');
         return [day, month, year].join('/');
+      }
+     formatDateOut(fecha: string): string{
+         return this.formatDate(this.stringToDate(fecha))
+       }
+
+      static sinEspaciosEnBlanco(control: AbstractControl) : ValidationErrors | null {
+        if(control.value != null){
+            if (typeof(control.value) === 'number') {
+                if((control.value as number).toString().trim().length > 0){
+                    return null;
+                }
+            } else {
+                if((control.value as string).trim().length > 0){
+                    return null;
+                }          
+            }
+            return {sinEspaciosEnBlanco: true};
+        }else{
+            return null;
+        }
+
+    }
+    static convertFromValueToNumber(value: any): number{
+        if (typeof(value) === 'number') {
+            return value;
+        }else{
+            return Number(value);
+        }
+    }
+    static formatOptionsDocument(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.description
+            })
+        });
+        return listObj;
+      }
+    static formatOptionsCompany(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.comercialName
+            })
+        });
+        return listObj;
+      }
+      static formatOptionsPaymentDeadline(listObjRaw: any[]): Select[]{
+        let listObj: Select[] = [];
+        listObjRaw.forEach(objRaw => {
+            listObj.push({
+                id: objRaw._id as string,
+                label: objRaw.description
+            })
+        });
+        return listObj;
       }
 
     async readImageFile(file: File): Promise<string | ArrayBuffer> {

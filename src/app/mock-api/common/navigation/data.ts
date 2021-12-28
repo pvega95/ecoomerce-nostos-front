@@ -17,6 +17,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/order'
     },
     {
+        id   : 'salenote.id',
+        title: 'salenote',
+        type : 'basic',
+        icon : 'heroicons_outline:document-text',
+        link : '/salenote'
+    },
+    {
         id      : 'setting.id.0',
         title   : 'setting',
         icon    : 'heroicons_outline:cog',
@@ -24,9 +31,9 @@ export const defaultNavigation: FuseNavigationItem[] = [
         children: [
             {
                 id      : 'setting.id.0.1',
-                title   : 'products',
+                title   : 'categories',
                 type    : 'basic',
-                link : '/setting/products'
+                link : '/setting/categories'
             },
             {
                 id      : 'setting.id.0.2',
@@ -36,16 +43,47 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
             {
                 id      : 'setting.id.0.3',
-                title   : 'options',
+                title   : 'company',
                 type    : 'basic',
-                link : '/setting/options'
-            },
+                link : '/setting/company'
+            }, 
             {
                 id      : 'setting.id.0.4',
-                title   : 'categories',
+                title   : 'document',
                 type    : 'basic',
-                link : '/setting/categories'
-            }
+                link : '/setting/document'
+            }, 
+            {
+                id      : 'setting.id.0.5',
+                title   : 'documentseries',
+                type    : 'basic',
+                link : '/setting/documentseries'
+            }, 
+            {
+                id      : 'setting.id.0.6',
+                title   : 'paymentmethod',
+                type    : 'basic',
+                link : '/setting/paymentmethod'  
+            }, 
+            {
+                id      : 'setting.id.0.7',
+                title   : 'paymentdeadline',
+                type    : 'basic',
+                link : '/setting/paymentdeadline'  
+            },  
+            {
+                id      : 'setting.id.0.8',
+                title   : 'products',
+                type    : 'basic',
+                link : '/setting/products'
+            },
+            {
+                id      : 'setting.id.0.9',
+                title   : 'typedocument',
+                type    : 'basic',
+                link : '/setting/typedocument'  
+            },
+       
         ]
     },
 

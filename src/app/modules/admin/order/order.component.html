@@ -30,9 +30,10 @@
                 class="ml-4"
                 mat-flat-button
                 [color]="'primary'"
-                    > <!--  (click)="agregarNuevoProducto()" -->
+                (click)="addNewOrder()"
+                    > 
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Agre</span>
+                <span class="ml-2 mr-1">Agregar nueva orden</span>
             </button>
         </div>
     </div>
@@ -42,7 +43,7 @@
         <!-- Orders list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
             <ng-container *ngIf="!(isLoading && orders.length === 0); else loadingOrders">
-                <ng-container *ngIf="orders.length > 0; else noOrders">
+                <ng-container *ngIf="orders.length > 0 && ordersFiltered.length > 0 ; else noOrders">
                     <div class="grid">
                         <!-- Header -->
                         <div
@@ -54,7 +55,17 @@
                                 [mat-sort-header]="'status'">
                                 Estado de orden
                             </div>
-                            <div [mat-sort-header]="'name'">Monto</div>
+                            <div
+                                class="hidden md:block"
+                                [mat-sort-header]="'name'">
+                                Nombre
+                            </div>
+                            <div
+                                class="hidden md:block"
+                                [mat-sort-header]="'lastname'">
+                                Apellidos
+                            </div>
+                            <div [mat-sort-header]="'mount'">Monto</div>
                             <div
                                 class="hidden lg:block"
                                 [mat-sort-header]="'createdAt'">
@@ -69,18 +80,25 @@
                         </div>
                         <!-- Rows -->
                       
-                            <ng-container *ngFor="let order of orders; trackBy: trackByFn">
+                            <ng-container *ngFor="let order of ordersFiltered; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
                                     <!-- status -->
                                     <div class="hidden md:block truncate">
-                                        <span class="p-2" [ngClass]="loadColorState(order.order_status)" >
-                                            {{order.order_status}}
+                                        <span class="p-2" [ngClass]="loadColorState(order.order_status.name)" >
+                                            {{order.order_status.name}}
                                         </span>
                                     </div>
-
+                                    <!-- Cliente nombre -->
+                                    <div class="truncate">
+                                         {{order.customer_id.full_name.name}}
+                                    </div>
+                                    <!-- Cliente apellidos -->
+                                    <div class="truncate">
+                                        {{order.customer_id.full_name.lastName}}
+                                    </div>
                                     <!-- Monto -->
                                     <div class="truncate">
-                                      S/.  {{order.ammount}}
+                                      S/.  {{order.ammount | number:'1.2-2'}}
                                     </div>
                                     <!-- creation date  -->
                                     <div class="truncate">
@@ -131,15 +149,13 @@
                 <div class="shadow-lg overflow-hidden">
                     <div class="flex border-b">
                         <!-- Selected product form -->
-                        <div
-                            class="flex flex-col w-full"    >
+                        <div  class="flex flex-col w-full pt-8" >
 
-                            <div class="flex flex-col sm:flex-row p-8">
+                            <div *ngFor="let product of products" class="flex flex-col sm:flex-row px-8 pt-1">
 
-                                <div *ngFor="let product of products" class="flex flex-auto flex-wrap">
+                                <div  class="flex flex-auto flex-wrap">
                                     <!-- Name, SKU & etc. -->
-                                    <div class="flex flex-col w-full lg:w-2/4 sm:pl-8">
-
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
 
                                         <!-- Name -->
                                    <!--      <mat-form-field class="w-full">
@@ -148,10 +164,20 @@
                                                 matInput
                                                 [formControlName]="'name'">
                                         </mat-form-field> -->
-                                        <p>SKU</p>
+                                        <p>SKU: {{product.sku}}</p>
                                         <br/>
-                                        <p>{{product.sku}}</p>
+                                        <!-- p>{{product.sku}}</p> -->
+                                     
      
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>cantidad: {{product.quantity | number:'2.0'}}</p>
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>precio: S/. {{product.price | number:'1.2-2'}}</p>
+                                    </div>
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <p>total: S/. {{product.totalCost | number:'1.2-2'}}</p>
                                     </div>
 
                                     <!-- Cost, Base price, Tax & Price -->
@@ -184,39 +210,57 @@
                                 </div>
 
                             </div>
+                       
+                                <div  class="flex flex-col sm:flex-row px-8 pt-1" >
+                                    <mat-form-field class="ancho-select"  >
+                                        <mat-label>Estado de orden</mat-label>
+                                        <mat-select [(value)]="orderStatusSelected" >
+                                            <mat-option *ngFor="let statusOrder of statusOrders" [value]="statusOrder._id">
+                                                {{statusOrder.name}}
+                                            </mat-option>
+                                        </mat-select>                         
+                                    </mat-form-field>
+                            </div>
+                          
 
-                            <div class="flex items-center justify-between w-full border-t px-8 py-4">
-                                <button
-                                    class="-ml-4"
-                                    mat-button
-                                    [color]="'warn'"
-                                    (click)="deleteselectedOrder()">
-                                    Eliminar
-                                </button>
+                            <div class="flex items-center justify-end w-full border-t px-8 py-4">
+                           
                                 <div class="flex items-center">
                                     <div
                                         class="flex items-center mr-4"
-                                        *ngIf="flashMessage">
-                                        <ng-container *ngIf="flashMessage === 'success'">
+                                        *ngIf="seeMessage">
+                                        <ng-container *ngIf="flashMessage">
                                             <mat-icon
                                                 class="text-green-500"
                                                 [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Product updated</span>
+                                            <span class="ml-2">Se actualizo la orden</span>
                                         </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
+                                        <ng-container *ngIf="!flashMessage">
                                             <mat-icon
                                                 class="text-red-500"
                                                 [svgIcon]="'heroicons_outline:x'"></mat-icon>
-                                            <span class="ml-2">An error occurred, try again!</span>
+                                            <span class="ml-2">Ocurrio un error</span>
                                         </ng-container>
                                     </div>
                                     <ng-container *ngIf="selectedOrderForm.get('id').value !== -1;else nuevoProducto" >
+                                
+                                    <div class="w-full max-w-80 sm:w-24 mx-auto sm:mx-0">
                                         <button
+                                            class="fuse-mat-button-large w-full "
                                             mat-flat-button
                                             [color]="'primary'"
-                                            (click)="updateselectedOrder()">
-                                            Actualizar
+                                            [disabled]="isLoading"
+                                            (click)="updateselectedOrder(selectedOrderForm.get('id').value)">
+                                            <span *ngIf="!isLoading">
+                                                Actualizar
+                                            </span> 
+                                            <mat-progress-spinner
+                                                *ngIf="isLoading"
+                                                [diameter]="22"
+                                                [mode]="'indeterminate'"></mat-progress-spinner>
                                         </button>
+                                    </div>
+                                    
                                     </ng-container>
                                     <ng-template #nuevoProducto>
                                         <button

@@ -1,4 +1,4 @@
 export enum StatusOrder {
-    Creado = 'CREATED',
-    Cancelado = 2
+    Creado = 'CREADO',
+    Cancelado = 'ANULADO'
   }
