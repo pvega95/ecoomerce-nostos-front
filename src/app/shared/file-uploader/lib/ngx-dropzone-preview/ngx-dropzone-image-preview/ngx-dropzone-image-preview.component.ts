@@ -1,15 +1,15 @@
 import { Component, OnInit, HostBinding, Input } from '@angular/core';
 import { NgxDropzonePreviewComponent } from '../ngx-dropzone-preview.component';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-
 @Component({
   selector: 'ngx-dropzone-image-preview',
-  template: `
-    <img [src]="imageSrc" />
-		<ng-content select="ngx-dropzone-label"></ng-content>
-    <ngx-dropzone-remove-badge *ngIf="removable" (click)="_remove($event)">
-    </ngx-dropzone-remove-badge>
-	`,
+  templateUrl: './ngx-dropzone-image-preview.component.html',
+  // template: `
+  //   <img [src]="imageSrc" />
+	// 	<ng-content select="ngx-dropzone-label"></ng-content>
+  //   <ngx-dropzone-remove-badge *ngIf="removable" (click)="_remove($event)">
+  //   </ngx-dropzone-remove-badge>
+	// `,
   styleUrls: ['./ngx-dropzone-image-preview.component.scss'],
   providers: [
     {
@@ -42,7 +42,12 @@ export class NgxDropzoneImagePreviewComponent extends NgxDropzonePreviewComponen
     this.renderImage();
   }
 
-  private renderImage() {
+
+  transformFileSize(size: any): string {
+	return (size / (1024 * 1024)).toFixed(2) + 'MB';
+  }
+
+  private renderImage(): void {
     this.readFile()
       .then(img => setTimeout(() => this.imageSrc = img))
       .catch(err => console.error(err));

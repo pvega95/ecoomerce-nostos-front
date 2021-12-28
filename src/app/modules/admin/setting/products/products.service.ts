@@ -5,70 +5,54 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
-
 export class ProductsService {
-  static readonly BASE_URL = `${environment.backendURL}`;
+    static readonly BASE_URL = `${environment.backendURL}`;
 
-      /**
-     * Getter for products
-     */
-    /*    get products$(): Observable<InventoryProduct[]>
-       {
-           return this._products.asObservable();
-       } */
+    constructor(private _http: HttpClient) {}
 
-  constructor(private http: HttpClient) {}
-  formatErrors(error: HttpErrorResponse) {
-    const messageError = error.error ? error.error : error;
-    return throwError(messageError);
-  }
+    crearProducto(body: any): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/product-management`;
+        const data = body;
+        return this._http.post(query, data);
+    }
 
-  getListProducts(): Observable<any> {
-    const url = `${ProductsService.BASE_URL}/product-management`;
-    return this.http.get(url).pipe(
-      catchError(error => {
-        return this.formatErrors(error);
-      })
-    );
-  }
+    formatErrors(error: HttpErrorResponse): Observable<any> {
+        const messageError = error.error ? error.error : error;
+        return throwError(messageError);
+    }
 
-  async crearProducto(body: any): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management`;
-    const  data  = (await this.http.post(url, body).toPromise()) as any;
-    return data ;
-  }
+    getListProducts(): Observable<any> {
+        const url = `${ProductsService.BASE_URL}/product-management`;
+        return this._http
+            .get(url)
+            .pipe(catchError((error) => this.formatErrors(error)));
+    }
 
-  async actualizarProducto(body: any, id: string ): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management/${ id }`;
-    // return null;
-    const  data  = (await this.http.put(url, body).toPromise()) as any;
-    return data ;
-  }
-  async eliminarProducto(id: string ): Promise<any> {
-    const url = `${ProductsService.BASE_URL}/product-management/${id}`;
-    // return null;
-    const  data  = (await this.http.delete(url).toPromise()) as any;
-    return data ;
-  }
+    consultarProducto(id: string): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+        return this._http.get(query);
+    }
 
-/*   createProduct(): Observable<any>
-  {
-      return this.products$.pipe(
-          take(1),
-          switchMap(products => this._httpClient.post<InventoryProduct>('api/apps/ecommerce/inventory/product', {}).pipe(
-              map((newProduct) => {
+    actualizarProducto(body: any, id: string): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+        const data = body;
+        return this._http.put(query, data);
+    }
 
-                  // Update the products with the new product
-                  this._products.next([newProduct, ...products]);
+    subirArchivos(body: any): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/utils-management/uploads`;
+        const data = body;
+        return this._http.post(query, data);
+    }
 
-                  // Return the new product
-                  return newProduct;
-              })
-          ))
-      );
-  } */
-
+    eliminarProducto(id: string): Observable<any> {
+        const query = `${ProductsService.BASE_URL}/product-management/${id}`;
+        return this._http.delete(query);
+        // const url = `${ProductsService.BASE_URL}/product-management/${id}`;
+        // const data = (await this._http.delete(url).toPromise()) as any;
+        // return data;
+    }
 
 }
