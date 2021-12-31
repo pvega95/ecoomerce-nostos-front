@@ -227,7 +227,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     // Refresh the navigation component
                     navComponent.refresh();
                 });
-        } 
+        }
         const idDocument = this._fuseNavigationService.getItem('setting.id.0.4', navigation);
         if ( idDocument )
         {
@@ -240,7 +240,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     // Refresh the navigation component
                     navComponent.refresh();
                 });
-        } 
+        }
         const idDocumentseries = this._fuseNavigationService.getItem('setting.id.0.5', navigation);
         if ( idDocumentseries )
         {
@@ -307,7 +307,33 @@ export class LanguagesComponent implements OnInit, OnDestroy
                 });
         }
 
-  
-   
+        const idBrand = this._fuseNavigationService.getItem('setting.id.0.10', navigation);
+        if ( idBrand )
+        {
+            this._translocoService.selectTranslate('brand').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idBrand.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+
+        const idUnid = this._fuseNavigationService.getItem('setting.id.0.11', navigation);
+        if ( idUnid )
+        {
+            this._translocoService.selectTranslate('unid').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idUnid.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+
     }
 }

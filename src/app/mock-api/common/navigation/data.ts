@@ -83,7 +83,18 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type    : 'basic',
                 link : '/setting/typedocument'  
             },
-       
+            {
+                id      : 'setting.id.0.10',
+                title   : 'brand',
+                type    : 'basic',
+                link : '/setting/brand'  
+            },
+            {
+                id      : 'setting.id.0.11',
+                title   : 'unid',
+                type    : 'basic',
+                link : '/setting/unid'  
+            },
         ]
     },
 
