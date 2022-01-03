@@ -9,7 +9,8 @@ import {
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Brand } from 'app/models/brand';
-import { BrandService } from './brand.service';
+import { Unid } from 'app/models/unid';
+import { UnidService } from './unid.service';
 
 @Component({
     selector: 'app-unid',
@@ -37,18 +38,18 @@ import { BrandService } from './brand.service';
     animations: fuseAnimations,
 })
 export class UnidComponent implements OnInit {
-    public brands: Brand[] = [];
+    public unids: Unid[] = [];
     public isLoading: boolean;
     searchInputControl: FormControl = new FormControl();
-    brandsFiltered: any[] = [];
-    selectedBrand: any = null;
-    selectedBrandForm: FormGroup;
+    unidsFiltered: any[] = [];
+    selectedUnid: any = null;
+    selectedUnidForm: FormGroup;
 
     seeMessage: boolean = false;
     successMessage: string;
     flashMessage: boolean;
     constructor(
-        private brandService: BrandService,
+        private unidService: UnidService,
         private _formBuilder: FormBuilder,
         private _fuseConfirmationService: FuseConfirmationService,
         private _datePipe: DatePipe,
@@ -60,26 +61,26 @@ export class UnidComponent implements OnInit {
         this.loadListBrand();
     }
 
-    createBrand(): void {
-        this.brands.unshift({
+    createUnid(): void {
+        this.unids.unshift({
             _id: '-1',
-            description: 'Nueva descripcion',
+            description: 'Nueva unidad',
             abreviation: '',
             status: true,
             createdAt: null,
             updatedAt: null,
         });
-        this.selectedBrand = {
+        this.selectedUnid = {
             _id: '-1',
-            description: 'Nueva descripcion',
+            description: 'Nueva unidad',
             abreviation: '',
             status: true,
             createdAt: null,
             updatedAt: null,
         };
-        this.selectedBrandForm.patchValue({
+        this.selectedUnidForm.setValue({
             id: '-1',
-            description: 'Nueva descripcion',
+            description: 'Nueva unidad',
             abreviation: '',
             status: true,
             createdAt: null,
@@ -89,10 +90,10 @@ export class UnidComponent implements OnInit {
     }
 
     loadListBrand(): void {
-        this.brandService.listarMarca().subscribe((resp) => {
+        this.unidService.listarUnidad().subscribe((resp) => {
             if (resp.ok) {
-                this.brands = resp.data;
-                this.brandsFiltered = this.brands;
+                this.unids = resp.data;
+                this.unidsFiltered = this.unids;
                 this.isLoading = false;
             }
         });
@@ -100,8 +101,8 @@ export class UnidComponent implements OnInit {
 
     toggleDetails(brandId: string): void {
         // If the company is already selected...
-        if (this.selectedBrand) {
-            if (this.selectedBrand._id === brandId) {
+        if (this.selectedUnid) {
+            if (this.selectedUnid._id === brandId) {
                 // Close the details
                 this.closeDetails();
                 return;
@@ -112,39 +113,41 @@ export class UnidComponent implements OnInit {
         // this.initForm();
         // Get the company by id
         const brandFounded =
-            this.brands.find((item: Brand) => item._id === brandId) || null;
-        this.selectedBrand = brandFounded;
+            this.unids.find((item: Brand) => item._id === brandId) || null;
+        this.selectedUnid = brandFounded;
         if (brandFounded._id) {
-            this.selectedBrandForm.patchValue({
+            this.selectedUnidForm.patchValue({
                 id: brandFounded._id,
                 description: brandFounded.description,
                 abreviation: brandFounded.abreviation,
-                createdDate: this._datePipe.transform(brandFounded.createdAt),
-                updatedDate: this._datePipe.transform(brandFounded.updatedAt),
+                status: brandFounded.status,
+                createdAt: this._datePipe.transform(brandFounded.createdAt),
+                updatedAt: this._datePipe.transform(brandFounded.updatedAt),
             });
         }
     }
 
     closeDetails(): void {
-        this.selectedBrand = null;
+        this.selectedUnid = null;
     }
 
     initForm(): void {
-        this.selectedBrandForm = this._formBuilder.group({
+        this.selectedUnidForm = this._formBuilder.group({
             id: [''],
             description: [''],
             abreviation: [''],
-            createdDate: [''],
-            updatedDate: [''],
+            status: [''],
+            createdAt: [''],
+            updatedAt: [''],
         });
-        this.selectedBrandForm.controls.createdDate.disable();
-        this.selectedBrandForm.controls.updatedDate.disable();
+        this.selectedUnidForm.controls.createdAt.disable();
+        this.selectedUnidForm.controls.updatedAt.disable();
     }
 
-    createNewBrand(): void {
+    createNewUnit(): void {
         this.isLoading = true;
-        const brand = this.selectedBrandForm.value;
-        this.brandService.crearMarca(brand).subscribe((resp) => {
+        const brand = this.selectedUnidForm.value;
+        this.unidService.crearUnidad(brand).subscribe((resp) => {
             this.flashMessage = resp.ok;
             this.seeMessage = true;
             if (resp.ok) {
@@ -162,10 +165,10 @@ export class UnidComponent implements OnInit {
         });
     }
 
-    updateSelectedBrand(id: string): void {
+    updateselectedUnid(id: string): void {
         this.isLoading = true;
-        const brand = this.selectedBrandForm.value;
-        this.brandService.editarMarca(id, brand).subscribe((resp) => {
+        const brand = this.selectedUnidForm.value;
+        this.unidService.editarUnidad(id, brand).subscribe((resp) => {
             this.flashMessage = resp.ok;
             this.seeMessage = true;
             if (resp.ok) {
@@ -183,7 +186,7 @@ export class UnidComponent implements OnInit {
         });
     }
 
-    deleteSelectedBrand(id: string): void {
+    deleteselectedUnid(id: string): void {
         const confirmation = this._fuseConfirmationService.open({
             title: 'Eliminar marca',
             message:
@@ -198,7 +201,7 @@ export class UnidComponent implements OnInit {
         confirmation.afterClosed().subscribe((result) => {
             if (result === 'confirmed' ) {
               if(id !== '-1'){
-                this.brandService.eliminarMarca(id).subscribe((resp) => {
+                this.unidService.eliminarUnidad(id).subscribe((resp) => {
                   this.flashMessage = resp.ok;
                   this.seeMessage = true;
                   if (resp.ok) {
@@ -216,10 +219,10 @@ export class UnidComponent implements OnInit {
               });
               } else {
                 // Find the index of the deleted product
-                const index = this.brands.findIndex(item => item._id === id);
+                const index = this.unids.findIndex(item => item._id === id);
 
                 // Delete the product
-                this.brands.splice(index, 1);
+                this.unids.splice(index, 1);
               }
             }
         });

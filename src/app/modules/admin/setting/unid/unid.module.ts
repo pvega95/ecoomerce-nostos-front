@@ -17,16 +17,16 @@ import { SharedModule } from 'app/shared/shared.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IMaskModule } from 'angular-imask';
 import { TranslocoModule } from '@ngneat/transloco';
-import { BrandComponent } from './brand.component';
-import { brandRoutes } from './brand.routing';
 import { DatePipe } from '@angular/common';
+import { UnidComponent } from './unid.component';
+import { unidRoutes } from './unid.routing';
 
 @NgModule({
     declarations: [
-        BrandComponent
+        UnidComponent
     ],
     imports     : [
-        RouterModule.forChild(brandRoutes),
+        RouterModule.forChild(unidRoutes),
         MatInputModule,
         MatProgressSpinnerModule,
         IMaskModule,

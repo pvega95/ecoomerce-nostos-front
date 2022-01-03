@@ -1,10 +1,9 @@
 import { Route } from '@angular/router';
-import { BrandComponent } from './brand.component';
-
+import { UnidComponent } from './unid.component';
 export const unidRoutes: Route[] = [
     {
         path     : '',
-        component: BrandComponent,
+        component: UnidComponent,
 
     }
 ];
