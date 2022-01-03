@@ -27,6 +27,7 @@ export class WindowModalComponent implements OnInit {
   public listFiles: File[] = [];
   public orderForm: FormGroup;
   public products: Product[];
+  public productsAdded: Product[];
   public clients: any[];
   public addressClient: any[];
   public isLoading: boolean = true;
@@ -57,6 +58,7 @@ export class WindowModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.disableRemoveProduct = true;
+    this.productsAdded = [];
     if (this.data.type === this.typeModal.newOrder) {
       this.loadData();
     }
@@ -65,8 +67,17 @@ export class WindowModalComponent implements OnInit {
     }
     this.initForm();
   }
-  itemSelected(val: MatCheckboxChange, itemId: string ){
-    console.log('check ', val.checked, itemId)
+  itemSelected(val: MatCheckboxChange, sku: string){
+    console.log('check ', val.checked, sku)
+    if (val.checked) {
+      this.products.forEach(product => {
+        if (product.sku === sku) {
+          this.productsAdded.push(product);
+        }
+      });
+    }else{
+      this.productsAdded = this.productsAdded.filter( product => product.sku !== sku);
+    }
   }
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
@@ -81,7 +92,7 @@ export class WindowModalComponent implements OnInit {
            sku: product.sku,
            name: product.name,
            netoprice: product.netoprice,
-           selected: this.verifyItemSelected(voucherDetail, product._id)
+           selected: this.verifyItemSelected(voucherDetail, product.sku)
           }
           listItemsTable.push(val);
         });
@@ -90,14 +101,15 @@ export class WindowModalComponent implements OnInit {
       }
     });
   }
-  verifyItemSelected(voucherDetail: VoucherDetail[], productId: string): boolean{
-    console.log('voucherDetail modal', voucherDetail, productId)
+  verifyItemSelected(voucherDetail: VoucherDetail[], sku: string): boolean{
+    //console.log('voucherDetail modal', voucherDetail, sku)
+    let exist: boolean = false;
     voucherDetail.forEach(voucher => {
-      if (voucher.id === productId) {
-        return true;
+      if (voucher.sku === sku) {
+        exist = true;
       }
     });
-    return false;
+    return exist;
   }
   async loadData(): Promise<void> {
     let resp1: any;
@@ -232,6 +244,9 @@ export class WindowModalComponent implements OnInit {
   removeProduct(): void {
     this.productsForm.removeAt(this.productsForm.length - 1);
     this.verifyQuantityLot();
+  }
+  addItem(): void{
+    console.log(' this.productsAdded ',  this.productsAdded )
   }
   verifyQuantityLot() {
     if (this.productsForm.length === 1) {
