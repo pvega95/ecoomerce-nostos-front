@@ -16,6 +16,8 @@ import { SaleNoteService } from '../sale-note.service';
 import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
 import { Product } from 'app/models/product';
+import { VoucherDetail } from 'app/models/voucher-detail';
+import { environment } from '../../../../../environments/environment';
 //import {  } from '../../setting/'
 
 @Component({
@@ -218,13 +220,42 @@ export class CreateEditSaleNoteComponent implements OnInit {
         },
     disableClose: true
     });
-    dialogRef.afterClosed().subscribe( result => {
-      
+    dialogRef.afterClosed().subscribe((productsAdded: Product[]) => {
+      let voucherDetailAdded: VoucherDetail[] = [];
+      if(productsAdded){
+        console.log('productsAdded', productsAdded)
+        productsAdded.forEach(productAdded => {
+          this.salesNoteInput?.voucherDetail.push({
+            id: productAdded.discount,
+            sku: productAdded.sku,
+            name: productAdded.name,
+            quantity: 1,
+            igv: environment.IGV * 100,
+            unitaryAmountNC: 0,
+            brutoAmountNC: productAdded.grossPrice,
+            igvAmountNC: productAdded.igvPrice,
+            totalAmountNC: productAdded.netoprice
+          })
+          this.salesNoteInput.brutoTotalNC = this.salesNoteInput.brutoTotalNC + productAdded.grossPrice;
+          this.salesNoteInput.igvTotalNC = this.salesNoteInput.igvTotalNC + productAdded.igvPrice;
+          this.salesNoteInput.salesTotalNC = this.salesNoteInput.salesTotalNC + productAdded.netoprice;
+        });
+       // this.salesNoteInput?.voucherDetail.push(voucherDetailAdded)
+      }
     });
 
   }
-  deleteItem(voucherId: string): void{
-    console.log('voucherId', voucherId)
+  deleteItem(sku: string): void{
+  //  console.log('voucherId', sku)
+  let voucherDetailFound: VoucherDetail[];
+    if (this.salesNoteInput) {
+      voucherDetailFound = this.salesNoteInput?.voucherDetail.filter( voucher => voucher.sku === sku);
+      this.salesNoteInput.voucherDetail = this.salesNoteInput?.voucherDetail.filter( voucher => voucher.sku !== sku);
+      this.salesNoteInput.brutoTotalNC = this.salesNoteInput.brutoTotalNC - voucherDetailFound[0].brutoAmountNC;
+      this.salesNoteInput.igvTotalNC = this.salesNoteInput.igvTotalNC - voucherDetailFound[0].igvAmountNC;
+      this.salesNoteInput.salesTotalNC = this.salesNoteInput.salesTotalNC - voucherDetailFound[0].totalAmountNC;
+    }
+
   }
   cancelSelectedSaleNote(): void{
 

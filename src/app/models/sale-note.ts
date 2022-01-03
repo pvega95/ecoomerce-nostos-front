@@ -17,7 +17,7 @@ export interface ISaleNote {
     reference: string;
     note: string;
     dispatchStatus: string;
-    voucherDetail: VoucherDetail;
+    voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;
@@ -39,7 +39,7 @@ export class SaleNote {
     reference: string;
     note: string;
     dispatchStatus: string;
-    voucherDetail: VoucherDetail;
+    voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;

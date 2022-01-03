@@ -68,7 +68,6 @@ export class WindowModalComponent implements OnInit {
     this.initForm();
   }
   itemSelected(val: MatCheckboxChange, sku: string){
-    console.log('check ', val.checked, sku)
     if (val.checked) {
       this.products.forEach(product => {
         if (product.sku === sku) {
@@ -246,7 +245,8 @@ export class WindowModalComponent implements OnInit {
     this.verifyQuantityLot();
   }
   addItem(): void{
-    console.log(' this.productsAdded ',  this.productsAdded )
+   // console.log(' this.productsAdded ',  this.productsAdded )
+    this.dialogRef.close(this.productsAdded);
   }
   verifyQuantityLot() {
     if (this.productsForm.length === 1) {
@@ -333,8 +333,8 @@ export class WindowModalComponent implements OnInit {
 
     idClient = this.orderForm.controls.clientSelected.value
     address = this.orderForm.controls.address.value
-    console.log('client', this.orderForm.controls.clientSelected.value)
-    console.log('products', this.productsForm.value)
+    //console.log('client', this.orderForm.controls.clientSelected.value)
+    //console.log('products', this.productsForm.value)
     this.productsForm.value.forEach(productForm => {
       // console.log(productForm.product.id, productForm.quantity)
       productsList.push({
