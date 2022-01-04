@@ -1,13 +1,9 @@
 import {
     Component,
     Input,
-    OnChanges,
     EventEmitter,
-    OnDestroy,
     OnInit,
     Output,
-    AfterViewInit,
-    HostListener,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
@@ -54,6 +50,9 @@ import { environment } from '../../../../../environments/environment';
     ],
 })
 export class CreateEditSaleNoteComponent implements OnInit {
+    @Input() salesNoteInput: SaleNote = null;
+    @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() backTolist: EventEmitter<any> = new EventEmitter<any>();
     public companies: Company[];
     public documents: Document[];
     public products: Product[] = [];
@@ -66,44 +65,24 @@ export class CreateEditSaleNoteComponent implements OnInit {
     public documentId: string = '';
     public contAuxiliarCompanySelected: number = 0;
     public contAuxiliarDocumentSelected: number = 0;
-    @Input() salesNoteInput: SaleNote = null;
-    @Output() isLoading: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() backTolist: EventEmitter<any> = new EventEmitter<any>();
     selectedSaleNoteForm: FormGroup;
     //expresion regular numeros, espacios y letras con tildes
     maskForInput: any = { mask: /^[A-Za-zÁ-ú0-9\s]+$/g };
-    public HeightWindows: number;
-    public WidthWindows: number;
-    @HostListener('window:resize', ['$event'])
-    getScreenSize(event?): { HeightWindows: string; WidthWindows: string } {
-        this.HeightWindows = window.innerHeight;
-        this.WidthWindows = window.innerWidth;
-        return {
-            HeightWindows: ((this.HeightWindows * 0.7) / 16).toString() + 'rem',
-            WidthWindows: ((this.WidthWindows * 0.7) / 16).toString() + 'rem',
-        };
-    }
 
     constructor(
         private _formBuilder: FormBuilder,
         private companyService: CompanyService,
-        public dialog: MatDialog,
         private fuseUtilsService: FuseUtilsService,
         private documentService: DocumentService,
         private paymentDeadlineService: PaymentDeadlineService,
         private saleNoteService: SaleNoteService,
-        private productsService: ProductsService
+        private productsService: ProductsService,
+        public dialog: MatDialog
     ) {
         this.initForm();
     }
 
-    /*   ngAfterViewInit() {
-    setTimeout(() => {
-     
-    }, 0);
-   } */
     ngOnInit(): void {
-        this.getScreenSize();
         this.loadValues();
     }
     getHeight(): string {
@@ -281,7 +260,7 @@ export class CreateEditSaleNoteComponent implements OnInit {
             height: '30rem',
             data: {
                 type: Modal.newItem,
-                voucherDetail: this.salesNoteInput.voucherDetail,
+                voucherDetail: this.salesNoteInput ? this.salesNoteInput.voucherDetail : []
             },
             disableClose: true,
         });

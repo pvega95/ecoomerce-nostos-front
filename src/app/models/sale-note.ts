@@ -58,7 +58,7 @@ export class SaleNote {
         this.reference = saleNote.reference || null;
         this.note = saleNote.note || null;
         this.dispatchStatus = saleNote.dispatchStatus || null;
-        this.voucherDetail = saleNote.voucherDetail || null;
+        this.voucherDetail = saleNote.voucherDetail || [];
         this.brutoTotalNC = saleNote.brutoTotalNC || null;
         this.igvTotalNC = saleNote.igvTotalNC || null;
         this.salesTotalNC = saleNote.salesTotalNC || null;
