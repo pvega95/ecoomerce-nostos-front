@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +12,17 @@ import { catchError, map } from 'rxjs/operators';
   export class SaleNoteService {
     static readonly BASE_URL = `${environment.backendURL}`;
     static readonly confManagement = '/order-management';
+    private _salesNotes: BehaviorSubject<any[] | null> = new BehaviorSubject(null); 
     constructor(private http: HttpClient) {}
+
+    /**
+     * Getter for sale notes
+     */
+     get saleNotes$(): Observable<any[]>
+     {
+         return this._salesNotes.asObservable();
+     }
+
     formatErrors(error: HttpErrorResponse) {
         const messageError = error.error ? error.error : error;
         return throwError(messageError);
@@ -21,6 +31,9 @@ import { catchError, map } from 'rxjs/operators';
     getListSaleNote():  Observable<any> {
       const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/sales`;
       return this.http.get(url).pipe(
+        tap((response: any)=> {
+          this._salesNotes.next(response);
+        }), 
         catchError(error => {
           return this.formatErrors(error);
         })

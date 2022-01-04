@@ -21,11 +21,13 @@ import { IMaskModule } from 'angular-imask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit-sale-note.component';
+import { SaleNoteListComponent } from './list/list.component';
 
 @NgModule({
     declarations: [
         SaleNoteComponent,
         CreateEditSaleNoteComponent,
+        SaleNoteListComponent
     ],
     imports     : [
         RouterModule.forChild(saleNoteRoutes),
