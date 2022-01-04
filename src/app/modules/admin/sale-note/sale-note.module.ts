@@ -22,12 +22,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit-sale-note.component';
 import { SaleNoteListComponent } from './list/list.component';
+import { SaleNoteItemComponent } from './create-edit-sale-note/sale-note-item/sale-note-item.component';
+import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-note/summary-sale-note.component';
 
 @NgModule({
     declarations: [
         SaleNoteComponent,
         CreateEditSaleNoteComponent,
-        SaleNoteListComponent
+        SaleNoteListComponent,
+        SaleNoteItemComponent,
+        SummarySaleNoteComponent
     ],
     imports     : [
         RouterModule.forChild(saleNoteRoutes),

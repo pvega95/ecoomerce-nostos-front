@@ -1,12 +1,10 @@
 <div class="flex flex-col flex-auto min-w-0 p-8 sm:overflow-hidden">
     <div class="text-4xl mb-4">Venta Nueva</div>
-    <div class="relative flex-row flex-0" [formGroup]="selectedSaleNoteForm">
+    <div class="relative flex-row flex-0" [formGroup]="presenter.form">
         <div class="flex space-x-4">
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Cliente</mat-label
-                    >
+                    <mat-label>Cliente</mat-label>
                     <input
                         formControlName="client"
                         matInput
@@ -22,7 +20,7 @@
                     [listObj]="listObjCompanies"
                     [placeholder]="'empresa'"
                     [placeholderLabel]="'Buscar empresa'"
-                    [id]="selectedSaleNoteForm.get('company').value"
+                    [id]="presenter.form.get('company').value"
                     [noEntriesFoundLabel]="'empresa no encontrada'"
                     (objSelectedOut)="objCompanySelected($event)"
                 >
@@ -35,7 +33,7 @@
                     [listObj]="listObjDocuments"
                     [placeholder]="'documento'"
                     [placeholderLabel]="'Buscar documento'"
-                    [id]="selectedSaleNoteForm.get('document').value"
+                    [id]="presenter.form.get('document').value"
                     [noEntriesFoundLabel]="'documento no encontrado'"
                     (objSelectedOut)="objDocumentSelected($event)"
                 >
@@ -46,9 +44,7 @@
         <div class="flex space-x-4">
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Serie</mat-label
-                    >
+                    <mat-label>Serie</mat-label>
                     <input
                         formControlName="serie"
                         matInput
@@ -59,9 +55,7 @@
             </div>
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Numero de documento</mat-label
-                    >
+                    <mat-label>Numero de documento</mat-label>
                     <input
                         formControlName="documentNumber"
                         matInput
@@ -77,7 +71,7 @@
                     [listObj]="listObjPaymentDeadlines"
                     [placeholder]="'plazo de pago'"
                     [placeholderLabel]="'Buscar plazo de pago'"
-                    [id]="selectedSaleNoteForm.get('paymentdeadline').value"
+                    [id]="presenter.form.get('paymentDeadline').value"
                     [noEntriesFoundLabel]="'plazo de pago no encontrado'"
                     (objSelectedOut)="objPaymentDeadlineSelected($event)"
                 >
@@ -88,9 +82,7 @@
         <div class="flex space-x-4">
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Estado</mat-label
-                    >
+                    <mat-label>Estado</mat-label>
                     <input
                         formControlName="status"
                         matInput
@@ -102,9 +94,7 @@
 
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Estado</mat-label
-                    >
+                    <mat-label>Estado</mat-label>
                     <input
                         formControlName="reference"
                         matInput
@@ -116,9 +106,7 @@
 
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Nota</mat-label
-                    >
+                    <mat-label>Nota</mat-label>
                     <input
                         formControlName="note"
                         matInput
@@ -132,9 +120,7 @@
         <div *ngIf="salesNoteInput" class="flex space-x-4">
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Fecha de emisión</mat-label
-                    >
+                    <mat-label>Fecha de emisión</mat-label>
                     <input
                         formControlName="registryDate"
                         matInput
@@ -145,9 +131,7 @@
             </div>
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label
-                        >Fecha de modificación</mat-label
-                    >
+                    <mat-label>Fecha de modificación</mat-label>
                     <input
                         formControlName="updatedAt"
                         matInput
@@ -194,10 +178,7 @@
                         matSort
                         matSortDisableClear
                     >
-                        <div
-                            class="hidden md:block"
-                            [mat-sort-header]="'sku'"
-                        >
+                        <div class="hidden md:block" [mat-sort-header]="'sku'">
                             SKU
                         </div>
                         <div
@@ -216,178 +197,37 @@
                             class="hidden lg:block"
                             [mat-sort-header]="'netprice'"
                         >
-                            Precio neto (S/.)
-                        </div>
-                        <div
-                            class="hidden lg:block"
-                            [mat-sort-header]="'igvprice'"
-                        >
-                            Precio IGV (S/.)
+                            Precio (S/.)
                         </div>
                         <div
                             style="text-align: right"
                             class="hidden lg:block"
                             [mat-sort-header]="'totalprice'"
                         >
-                            <span>Precio total (S/.)</span>
+                            <span>Importe</span>
                         </div>
                         <div
                             style="text-align: center"
                             class="hidden lg:block"
                             [mat-sort-header]="'deleteitem'"
                         ></div>
-                        <!-- <div class="hidden sm:block">Detalles</div> -->
                     </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="salesNoteInput">
-                        <ng-container
-                            *ngFor="
-                                let voucher of salesNoteInput?.voucherDetail;
-                                trackBy: trackByFn
-                            "
-                        >
-                            <div
-                                class="
-                                    hightlightRow
-                                    inventory-grid-create-edit
-                                    grid
-                                    items-center
-                                    gap-4
-                                    py-3
-                                    px-6
-                                    md:px-8
-                                    border-b
-                                "
-                            >
-                                <div class="truncate">
-                                    {{ voucher.sku }}
-                                </div>
-                                <div class="truncate">
-                                    <span [matTooltip]="voucher.name">
-                                        {{ voucher.name }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="truncate pr-1"
-                                    style="text-align: right"
-                                >
-                                    {{ voucher.quantity }}
-                                </div>
-
-                                <div
-                                    class="truncate pr-5"
-                                    style="text-align: right"
-                                >
-                                    {{
-                                        voucher.brutoAmountNC
-                                            | number: "1.2-2"
-                                    }}
-                                </div>
-                                <div
-                                    class="truncate pr-5"
-                                    style="text-align: right"
-                                >
-                                    {{
-                                        voucher.igvAmountNC
-                                            | number: "1.2-2"
-                                    }}
-                                </div>
-
-                                <div
-                                    class="truncate pr-5"
-                                    style="text-align: right"
-                                >
-                                    {{
-                                        voucher.totalAmountNC
-                                            | number: "1.2-2"
-                                    }}
-                                </div>
-                                <div
-                                    class="truncate"
-                                    style="text-align: center"
-                                >
-                                    <button
-                                        class="
-                                            min-w-10 min-h-7
-                                            h-7
-                                            px-2
-                                            leading-6
-                                        "
-                                        mat-flat-button
-                                        matTooltip="Eliminar ítem"
-                                        (click)="deleteItem(voucher.sku)"
-                                    >
-                                        <mat-icon
-                                            class="icon-size-5 deleteIcon"
-                                            [svgIcon]="
-                                                'heroicons_solid:trash'
-                                            "
-                                        ></mat-icon>
-                                    </button>
-                                </div>
-                            </div>
-                        </ng-container>
+                    <ng-container>
+                        <app-sale-note-item
+                            *ngFor="let voucher of voucherControls; index as i"
+                            [index]="i"
+                            [vouchersLength]="voucherControls.length"
+                            [voucher]="voucher"
+                            (delete)="onDelete($event)"
+                        ></app-sale-note-item>
                     </ng-container>
                     <div
-                        *ngIf="salesNoteInput?.voucherDetail.length > 0"
+                        *ngIf="voucherControls.length > 0"
                         class="flex justify-end mt-4"
                     >
-                        <div class="borderRounded flex flex-col w-2/5">
-                            <div class="relative flex-row flex-0 mx-2 p-0">
-                                <div class="relative flex flex-0">
-                                    <div class="w-7/12">
-                                        <span>Precio neto total</span>
-                                    </div>
-                                    <div
-                                        class="w-5/12"
-                                        style="text-align: right"
-                                    >
-                                        <span
-                                            >S/.
-                                            {{
-                                                salesNoteInput?.brutoTotalNC ||
-                                                    0 | number: "1.2-2"
-                                            }}</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="relative flex flex-0">
-                                    <div class="w-7/12">
-                                        <span>Precio IGV total</span>
-                                    </div>
-                                    <div
-                                        class="w-5/12"
-                                        style="text-align: right"
-                                    >
-                                        <span
-                                            >S/.
-                                            {{
-                                                salesNoteInput?.igvTotalNC ||
-                                                    0 | number: "1.2-2"
-                                            }}</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="relative flex flex-0">
-                                    <div class="w-7/12">
-                                        <span>Precio venta total</span>
-                                    </div>
-                                    <div
-                                        class="w-5/12"
-                                        style="text-align: right"
-                                    >
-                                        <span
-                                            >S/.
-                                            {{
-                                                salesNoteInput?.salesTotalNC ||
-                                                    0 | number: "1.2-2"
-                                            }}</span
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                       <app-summary-sale-note
+                        [form]="presenter.form"
+                       ></app-summary-sale-note>
                     </div>
                     <div
                         *ngIf="salesNoteInput?.voucherDetail.length > 0"
@@ -395,17 +235,13 @@
                     >
                         <div class="flex flex-col w-2/5">
                             <div class="relative flex-row flex-0 mx-2 p-0">
-                                <div
-                                    class="relative flex flex-0 justify-end"
-                                >
+                                <div class="relative flex flex-0 justify-end">
                                     <div class="w-4/12">
                                         <button
                                             class="-ml-4"
                                             mat-button
                                             [color]="'warn'"
-                                            (click)="
-                                                cancelSelectedSaleNote()
-                                            "
+                                            (click)="cancelSelectedSaleNote()"
                                         >
                                             Cancelar
                                         </button>

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Product } from 'app/models/product';
 
 @Injectable()
 export class SaleNotePresenter {
@@ -24,9 +25,7 @@ export class SaleNotePresenter {
     createdAt: FormControl;
     updatedAt: FormControl;
 
-    constructor(
-        protected fb: FormBuilder
-    ) {
+    constructor(protected fb: FormBuilder) {
         this.createValidators();
         this.createForm();
     }
@@ -55,16 +54,48 @@ export class SaleNotePresenter {
         });
     }
 
-    public addVoucherDetail(item?: any): void {
-        const voucher = this.createImageForm();
-        if (item) {
-            voucher.patchValue(item);
+    public addVoucherDetail(product?: Product): void {
+        const existProduct = this.voucherDetail.controls.findIndex(
+            (x) => x.value.sku === product.sku
+        );
+        if (existProduct > -1) {
+            const quantity = this.voucherDetail
+                .at(existProduct)
+                .get('quantity');
+            quantity.setValue(quantity.value + 1);
+        } else {
+            const formProduct = this.createVoucherDetailForm();
+            formProduct.patchValue({
+                ...product,
+                quantity: 1,
+                brutoTotalNC: product.grossPrice,
+                igvAmountNC: product.igvPrice,
+                totalAmountNC: product.netoprice
+            });
+            this.voucherDetail.insert(0, formProduct);
         }
-        this.voucherDetail.insert(0, voucher);
     }
 
-    public createImageForm(): FormControl {
-        return new FormControl();
+    public createVoucherDetailForm(): FormGroup {
+        return this.fb.group({
+            _id: new FormControl(),
+            sku: new FormControl(),
+            name: new FormControl(),
+            quantity: new FormControl(),
+            igv: new FormControl(),
+            discount: new FormControl(),
+            unitaryAmountNC: new FormControl(),
+            brutoTotalNC: new FormControl(),
+            igvAmountNC: new FormControl(),
+            totalAmountNC: new FormControl(),
+        });
+    }
+
+    public addVoucherDetails(products: any) {
+        products.forEach((product) => {
+            this.addVoucherDetail(product);
+        });
+        this.voucherDetail.markAsPristine();
     }
 
     private createValidators(): void {
@@ -88,6 +119,4 @@ export class SaleNotePresenter {
         this.createdAt = new FormControl('');
         this.updatedAt = new FormControl('');
     }
-
-    
 }

@@ -1,0 +1,45 @@
+<ng-container>
+    <div class="flex flex-col w-80 p-6 bg-white	border rounded-lg border-gray-200">
+        <div class="relative flex-row flex-0 mx-2 p-0">
+            <div class="relative flex flex-0">
+                <div class="w-7/12">
+                    <span>Precio neto total</span>
+                </div>
+                <div class="w-5/12">
+                    <span
+                        >S/.
+                        {{
+                            subtotal | number: "1.2-2"
+                        }}</span
+                    >
+                </div>
+            </div>
+            <div class="relative flex flex-0">
+                <div class="w-7/12">
+                    <span>Precio IGV total</span>
+                </div>
+                <div class="w-5/12">
+                    <span
+                        >S/.
+                        {{
+                            igv | number: "1.2-2"
+                        }}</span
+                    >
+                </div>
+            </div>
+            <div class="relative flex flex-0">
+                <div class="w-7/12">
+                    <span>Precio venta total</span>
+                </div>
+                <div class="w-5/12">
+                    <span
+                        >S/.
+                        {{
+                            total | number: "1.2-2"
+                        }}</span
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>

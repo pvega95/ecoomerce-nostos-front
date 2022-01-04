@@ -5,7 +5,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { forkJoin } from 'rxjs';
 import { Select } from 'app/models/select';
@@ -23,31 +23,13 @@ import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
 import { Product } from 'app/models/product';
 import { VoucherDetail } from 'app/models/voucher-detail';
-import { environment } from '../../../../../environments/environment';
+import { SaleNotePresenter } from './create-edit-sale-note.presenter';
 
 @Component({
     selector: 'app-create-edit-sale-note',
     templateUrl: './create-edit-sale-note.component.html',
     styleUrls: ['./create-edit-sale-note.component.scss'],
-    styles: [
-        `
-            .inventory-grid-create-edit {
-                grid-template-columns: 48px auto 40px;
-
-                @screen sm {
-                    grid-template-columns: 48px auto 112px 72px;
-                }
-
-                @screen md {
-                    grid-template-columns: 6rem 13rem 4rem 7.55rem 7.2rem 7.55rem 3rem;
-                }
-
-                @screen lg {
-                    grid-template-columns: 6rem 13rem 4rem 7.55rem 7.2rem 7.55rem 3rem;
-                }
-            }
-        `,
-    ],
+    providers: [SaleNotePresenter],
 })
 export class CreateEditSaleNoteComponent implements OnInit {
     @Input() salesNoteInput: SaleNote = null;
@@ -77,9 +59,22 @@ export class CreateEditSaleNoteComponent implements OnInit {
         private paymentDeadlineService: PaymentDeadlineService,
         private saleNoteService: SaleNoteService,
         private productsService: ProductsService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        public presenter: SaleNotePresenter,
     ) {
-        this.initForm();
+        // this.initForm();
+    }
+
+    public get form() {
+        return this.presenter.form;
+    }
+
+    public get vouchers(): FormArray {
+        return this.form.get('voucherDetail') as FormArray;
+      }
+    
+      public get voucherControls(): FormGroup[] {
+        return this.vouchers.controls as FormGroup[];
     }
 
     ngOnInit(): void {
@@ -131,30 +126,30 @@ export class CreateEditSaleNoteComponent implements OnInit {
                         'this.salesNoteInput  value',
                         this.salesNoteInput
                     );
-                    this.selectedSaleNoteForm.patchValue({
-                        id: this.salesNoteInput?._id || '-1',
-                        client: this.salesNoteInput?.client.comercialName || '',
-                        company: this.salesNoteInput?.company || '',
-                        document: this.salesNoteInput?.document._id || '',
-                        serie: this.salesNoteInput?.serie || '',
-                        documentNumber:
-                            this.salesNoteInput?.documentNumber || '',
-                        paymentdeadline:
-                            this.salesNoteInput?.paymentDeadline._id || '',
-                        status: this.salesNoteInput?.status || '',
-                        reference: this.salesNoteInput?.reference || '',
-                        note: this.salesNoteInput?.note || '',
-                        registryDate: this.salesNoteInput
-                            ? this.fuseUtilsService.formatDateOut(
-                                  this.salesNoteInput.registryDate
-                              )
-                            : '',
-                        updatedAt: this.salesNoteInput
-                            ? this.fuseUtilsService.formatDateOut(
-                                  this.salesNoteInput.updatedAt
-                              )
-                            : '',
-                    });
+                    // this.selectedSaleNoteForm.patchValue({
+                    //     id: this.salesNoteInput?._id || '-1',
+                    //     client: this.salesNoteInput?.client.comercialName || '',
+                    //     company: this.salesNoteInput?.company || '',
+                    //     document: this.salesNoteInput?.document._id || '',
+                    //     serie: this.salesNoteInput?.serie || '',
+                    //     documentNumber:
+                    //         this.salesNoteInput?.documentNumber || '',
+                    //     paymentdeadline:
+                    //         this.salesNoteInput?.paymentDeadline._id || '',
+                    //     status: this.salesNoteInput?.status || '',
+                    //     reference: this.salesNoteInput?.reference || '',
+                    //     note: this.salesNoteInput?.note || '',
+                    //     registryDate: this.salesNoteInput
+                    //         ? this.fuseUtilsService.formatDateOut(
+                    //               this.salesNoteInput.registryDate
+                    //           )
+                    //         : '',
+                    //     updatedAt: this.salesNoteInput
+                    //         ? this.fuseUtilsService.formatDateOut(
+                    //               this.salesNoteInput.updatedAt
+                    //           )
+                    //         : '',
+                    // });
 
                     this.listObjDocuments =
                         FuseUtilsService.formatOptionsDocument(this.documents);
@@ -166,7 +161,7 @@ export class CreateEditSaleNoteComponent implements OnInit {
                         );
                     console.log(
                         'documento ',
-                        this.selectedSaleNoteForm.get('document').value,
+                        // this.selectedSaleNoteForm.get('document').value,
                         this.listObjDocuments
                     );
                     this.isLoading.emit(false);
@@ -264,31 +259,32 @@ export class CreateEditSaleNoteComponent implements OnInit {
             },
             disableClose: true,
         });
-        dialogRef.afterClosed().subscribe((productsAdded: Product[]) => {
-            let voucherDetailAdded: VoucherDetail[] = [];
-            if (productsAdded) {
-                console.log('productsAdded', productsAdded);
-                productsAdded.forEach((productAdded) => {
-                    this.salesNoteInput?.voucherDetail.push({
-                        id: productAdded.discount,
-                        sku: productAdded.sku,
-                        name: productAdded.name,
-                        quantity: 1,
-                        igv: environment.IGV * 100,
-                        unitaryAmountNC: 0,
-                        brutoAmountNC: productAdded.grossPrice,
-                        igvAmountNC: productAdded.igvPrice,
-                        totalAmountNC: productAdded.netoprice,
-                    });
-                    this.salesNoteInput.brutoTotalNC =
-                        this.salesNoteInput.brutoTotalNC +
-                        productAdded.grossPrice;
-                    this.salesNoteInput.igvTotalNC =
-                        this.salesNoteInput.igvTotalNC + productAdded.igvPrice;
-                    this.salesNoteInput.salesTotalNC =
-                        this.salesNoteInput.salesTotalNC +
-                        productAdded.netoprice;
-                });
+        dialogRef.afterClosed().subscribe((products: Product[]) => {
+            // let voucherDetailAdded: VoucherDetail[] = [];
+            if (products) {
+                console.log('products', products);
+                this.presenter.addVoucherDetails(products);
+                // productsAdded.forEach((productAdded) => {
+                //     this.salesNoteInput?.voucherDetail.push({
+                //         id: productAdded.discount,
+                //         sku: productAdded.sku,
+                //         name: productAdded.name,
+                //         quantity: 1,
+                //         igv: environment.IGV * 100,
+                //         unitaryAmountNC: 0,
+                //         brutoAmountNC: productAdded.grossPrice,
+                //         igvAmountNC: productAdded.igvPrice,
+                //         totalAmountNC: productAdded.netoprice,
+                //     });
+                //     this.salesNoteInput.brutoTotalNC =
+                //         this.salesNoteInput.brutoTotalNC +
+                //         productAdded.grossPrice;
+                //     this.salesNoteInput.igvTotalNC =
+                //         this.salesNoteInput.igvTotalNC + productAdded.igvPrice;
+                //     this.salesNoteInput.salesTotalNC =
+                //         this.salesNoteInput.salesTotalNC +
+                //         productAdded.netoprice;
+                // });
                 // this.salesNoteInput?.voucherDetail.push(voucherDetailAdded)
             }
         });
