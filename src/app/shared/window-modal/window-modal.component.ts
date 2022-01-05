@@ -40,7 +40,7 @@ export class WindowModalComponent implements OnInit {
   public productAvailableSearch: boolean = true;
   public totalAmount: number = 0;
   public disableRemoveProduct: boolean;
-  public displayedColumns: string[] = ['sku', 'name', 'netoprice','check'];
+  public displayedColumns: string[] = ['sku', 'name', 'listprice','check'];
   public dataSource: any;
 
   constructor(
@@ -90,7 +90,7 @@ export class WindowModalComponent implements OnInit {
            id: product._id,
            sku: product.sku,
            name: product.name,
-           netoprice: product.netoprice,
+           listprice: product.listprice,
            selected: this.verifyItemSelected(voucherDetail, product.sku)
           }
           listItemsTable.push(val);

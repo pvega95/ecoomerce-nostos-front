@@ -56,7 +56,7 @@ export class SaleNotePresenter {
 
     public addVoucherDetail(product?: Product): void {
         const existProduct = this.voucherDetail.controls.findIndex(
-            (x) => x.value.sku === product.sku
+            (x: FormControl) => x.value.sku === product.sku
         );
         if (existProduct > -1) {
             const quantity = this.voucherDetail
@@ -65,12 +65,20 @@ export class SaleNotePresenter {
             quantity.setValue(quantity.value + 1);
         } else {
             const formProduct = this.createVoucherDetailForm();
+            const quantity = 1;
+            const unitaryAmountNC = product.grossPrice;
+            const brutoAmountNC = unitaryAmountNC * quantity;
+            const discountAmountNC = brutoAmountNC * ( product.discount / 100 );
+            const salesAmountNC = brutoAmountNC - discountAmountNC;
+            const igvAmountNC = salesAmountNC * 0.18;
             formProduct.patchValue({
                 ...product,
-                quantity: 1,
-                brutoTotalNC: product.grossPrice,
-                igvAmountNC: product.igvPrice,
-                totalAmountNC: product.netoprice
+                quantity,
+                unitaryAmountNC,
+                brutoAmountNC,
+                discountAmountNC,
+                salesAmountNC,
+                igvAmountNC
             });
             this.voucherDetail.insert(0, formProduct);
         }
@@ -84,14 +92,21 @@ export class SaleNotePresenter {
             quantity: new FormControl(),
             igv: new FormControl(),
             discount: new FormControl(),
+            //VALOR UNITARIO X ITEM
             unitaryAmountNC: new FormControl(),
-            brutoTotalNC: new FormControl(),
+            //VALOR VENTA BRUTO
+            brutoAmountNC: new FormControl(),
+            //DESCUENTO X ITEM
+            discountAmountNC: new FormControl(),
+            //VALOR VENTA X ITEM
+            salesAmountNC: new FormControl(),
+            //IGV
             igvAmountNC: new FormControl(),
-            totalAmountNC: new FormControl(),
+            // totalAmountNC: new FormControl(),
         });
     }
 
-    public addVoucherDetails(products: any) {
+    public addVoucherDetails(products: any): void {
         products.forEach((product) => {
             this.addVoucherDetail(product);
         });

@@ -5,13 +5,15 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-summary-sale-note',
     templateUrl: './summary-sale-note.component.html',
-    styles: [``],
+    // styles: [``],
 })
 export class SummarySaleNoteComponent implements OnInit {
     @Input() form: FormGroup;
-    subtotal = 0;
-    igv = 0;
-    total = 0;
+    totalGrossNC: 0;
+    totalDiscountNC: 0;
+    totalOperationGravNC: 0;
+    totalOperationExonNC: 0;
+    totalIGV: 0;
     subscriptionProducts: Subscription;
     ngOnInit(): void {
         this.calculationTotals(this.products.getRawValue());
@@ -26,12 +28,9 @@ export class SummarySaleNoteComponent implements OnInit {
         return this.form.get('voucherDetail') as FormArray;
     }
 
-    calculationTotals(products): void {
-        this.subtotal = products.reduce(
-            (a, b) => a + b.quantity * b.totalAmountNC,
-            0
-        );
-        this.igv = 0;
-        this.total = this.subtotal + this.igv;
+    calculationTotals(products: any[]): void {
+        console.log(products);
+        this.totalGrossNC = products.reduce((a, b) => a + b.unitaryAmountNC * b.quantity , 0);
+        this.totalDiscountNC = products.reduce((a, b) => a + (b.unitaryAmountNC * b.quantity) * ( b.discount / 100 ) , 0);
     }
 }

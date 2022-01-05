@@ -262,30 +262,7 @@ export class CreateEditSaleNoteComponent implements OnInit {
         dialogRef.afterClosed().subscribe((products: Product[]) => {
             // let voucherDetailAdded: VoucherDetail[] = [];
             if (products) {
-                console.log('products', products);
                 this.presenter.addVoucherDetails(products);
-                // productsAdded.forEach((productAdded) => {
-                //     this.salesNoteInput?.voucherDetail.push({
-                //         id: productAdded.discount,
-                //         sku: productAdded.sku,
-                //         name: productAdded.name,
-                //         quantity: 1,
-                //         igv: environment.IGV * 100,
-                //         unitaryAmountNC: 0,
-                //         brutoAmountNC: productAdded.grossPrice,
-                //         igvAmountNC: productAdded.igvPrice,
-                //         totalAmountNC: productAdded.netoprice,
-                //     });
-                //     this.salesNoteInput.brutoTotalNC =
-                //         this.salesNoteInput.brutoTotalNC +
-                //         productAdded.grossPrice;
-                //     this.salesNoteInput.igvTotalNC =
-                //         this.salesNoteInput.igvTotalNC + productAdded.igvPrice;
-                //     this.salesNoteInput.salesTotalNC =
-                //         this.salesNoteInput.salesTotalNC +
-                //         productAdded.netoprice;
-                // });
-                // this.salesNoteInput?.voucherDetail.push(voucherDetailAdded)
             }
         });
     }

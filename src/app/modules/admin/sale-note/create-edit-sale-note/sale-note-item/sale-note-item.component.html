@@ -12,27 +12,39 @@
             border-b
         "
     >
-        <div class="truncate">
+        <div class="">
             {{ sku }}
         </div>
-        <div class="truncate">
+        <div class="">
             <span>
                 {{ name }}
             </span>
         </div>
 
-        <div class="truncate pr-1">
+        <div class=" pr-1">
             <input formControlName="quantity" type="number"/>
         </div>
 
-        <div class="truncate pr-5">
-            {{ netoprice | number: "1.2-2" }}
+        <div class=" pr-5">
+            {{ unitaryAmountNC | number: "1.2-2" }}
         </div>
 
-        <div class="truncate pr-5">
-            {{ total | number: "1.2-2" }}
+        <div class=" pr-5">
+            {{ brutoAmountNC | number: "1.2-2" }}
         </div>
-        <div class="truncate" style="text-align: center">
+
+        <div class=" pr-5">
+            {{ discountAmountNC | number: "1.2-2" }}
+        </div>
+
+        <div class=" pr-5">
+            {{ salesAmountNC | number: "1.2-2" }}
+        </div>
+
+        <div class=" pr-5">
+            {{ igvAmountNC | number: "1.2-2" }}
+        </div>
+        <div class="" style="text-align: center">
             <button
                 class="min-w-10 min-h-7 h-7 px-2 leading-6"
                 mat-flat-button
