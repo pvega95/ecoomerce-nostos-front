@@ -9,11 +9,12 @@ import { Subscription } from 'rxjs';
 })
 export class SummarySaleNoteComponent implements OnInit {
     @Input() form: FormGroup;
-    totalGrossNC: 0;
-    totalDiscountNC: 0;
-    totalOperationGravNC: 0;
-    totalOperationExonNC: 0;
-    totalIGV: 0;
+    totalGrossNC: number;
+    totalDiscountNC: number;
+    totalOperationGravNC: number;
+    totalOperationExonNC: number;
+    totalIGV: number;
+    totalAmountNC: number;
     subscriptionProducts: Subscription;
     ngOnInit(): void {
         this.calculationTotals(this.products.getRawValue());
@@ -32,5 +33,9 @@ export class SummarySaleNoteComponent implements OnInit {
         console.log(products);
         this.totalGrossNC = products.reduce((a, b) => a + b.unitaryAmountNC * b.quantity , 0);
         this.totalDiscountNC = products.reduce((a, b) => a + (b.unitaryAmountNC * b.quantity) * ( b.discount / 100 ) , 0);
+        this.totalOperationGravNC = products.reduce((a, b) => a + b.brutoAmountNC - b.discountAmountNC , 0);
+        this.totalOperationExonNC = 0;
+        this.totalIGV = products.reduce((a, b) => a + b.igvAmountNC, 0);
+        this.totalAmountNC = this.totalOperationGravNC + this.totalOperationExonNC + this.totalIGV;
     }
 }

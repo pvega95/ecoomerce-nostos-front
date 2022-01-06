@@ -6,6 +6,8 @@ export interface IVoucherDetail {
     igv: number;
     unitaryAmountNC: number;
     brutoAmountNC: number;
+    discountAmountNC: number;
+    salesAmountNC: number;
     igvAmountNC: number;
     totalAmountNC: number;
 }
@@ -18,6 +20,8 @@ export class VoucherDetail {
     igv: number;
     unitaryAmountNC: number;
     brutoAmountNC: number;
+    discountAmountNC: number;
+    salesAmountNC: number;
     igvAmountNC: number;
     totalAmountNC: number;
     constructor(voucherDetail: IVoucherDetail){
@@ -28,6 +32,8 @@ export class VoucherDetail {
         this.igv = voucherDetail.igv || null;
         this.unitaryAmountNC = voucherDetail.unitaryAmountNC || null;
         this.brutoAmountNC = voucherDetail.brutoAmountNC || null;
+        this.discountAmountNC = voucherDetail.discountAmountNC || null;
+        this.salesAmountNC = voucherDetail.salesAmountNC || null;
         this.igvAmountNC = voucherDetail.igvAmountNC || null;
         this.totalAmountNC = voucherDetail.totalAmountNC || null;
 

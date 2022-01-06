@@ -126,30 +126,6 @@ export class CreateEditSaleNoteComponent implements OnInit {
                         'this.salesNoteInput  value',
                         this.salesNoteInput
                     );
-                    // this.selectedSaleNoteForm.patchValue({
-                    //     id: this.salesNoteInput?._id || '-1',
-                    //     client: this.salesNoteInput?.client.comercialName || '',
-                    //     company: this.salesNoteInput?.company || '',
-                    //     document: this.salesNoteInput?.document._id || '',
-                    //     serie: this.salesNoteInput?.serie || '',
-                    //     documentNumber:
-                    //         this.salesNoteInput?.documentNumber || '',
-                    //     paymentdeadline:
-                    //         this.salesNoteInput?.paymentDeadline._id || '',
-                    //     status: this.salesNoteInput?.status || '',
-                    //     reference: this.salesNoteInput?.reference || '',
-                    //     note: this.salesNoteInput?.note || '',
-                    //     registryDate: this.salesNoteInput
-                    //         ? this.fuseUtilsService.formatDateOut(
-                    //               this.salesNoteInput.registryDate
-                    //           )
-                    //         : '',
-                    //     updatedAt: this.salesNoteInput
-                    //         ? this.fuseUtilsService.formatDateOut(
-                    //               this.salesNoteInput.updatedAt
-                    //           )
-                    //         : '',
-                    // });
 
                     this.listObjDocuments =
                         FuseUtilsService.formatOptionsDocument(this.documents);
@@ -291,4 +267,8 @@ export class CreateEditSaleNoteComponent implements OnInit {
     cancelSelectedSaleNote(): void {}
     createSaleNote(): void {}
     saveSelectedSaleNote(): void {}
+
+    quantityUpdated(product): void {
+        this.presenter.addVoucherDetail(product);
+    }
 }

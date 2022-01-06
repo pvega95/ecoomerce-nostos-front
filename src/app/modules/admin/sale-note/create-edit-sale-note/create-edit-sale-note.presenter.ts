@@ -54,15 +54,39 @@ export class SaleNotePresenter {
         });
     }
 
-    public addVoucherDetail(product?: Product): void {
+    public addVoucherDetail(product?: any): void {
         const existProduct = this.voucherDetail.controls.findIndex(
             (x: FormControl) => x.value.sku === product.sku
         );
         if (existProduct > -1) {
-            const quantity = this.voucherDetail
-                .at(existProduct)
-                .get('quantity');
-            quantity.setValue(quantity.value + 1);
+            // const quantity = this.voucherDetail
+            //     .at(existProduct)
+            //     .get('quantity');
+            // quantity.setValue(quantity.value + 1);
+            console.log('product', product);
+            const quantity = product.quantity;
+            const brutoAmountNC = quantity * product.unitaryAmountNC;
+            const discountAmountNC = brutoAmountNC * ( product.discount / 100 );
+            const salesAmountNC = brutoAmountNC - discountAmountNC;
+            const igvAmountNC = salesAmountNC * 0.18;
+            console.table({
+                quantity,
+                brutoAmountNC,
+                discountAmountNC,
+                salesAmountNC,
+                igvAmountNC
+            });
+            this.voucherDetail.at(existProduct).patchValue({
+                quantity,
+                brutoAmountNC,
+                discountAmountNC,
+                salesAmountNC,
+                igvAmountNC
+            }, {
+                onlySelf: true,
+                emitEvent: false
+              });
+
         } else {
             const formProduct = this.createVoucherDetailForm();
             const quantity = 1;
@@ -80,7 +104,7 @@ export class SaleNotePresenter {
                 salesAmountNC,
                 igvAmountNC
             });
-            this.voucherDetail.insert(0, formProduct);
+            this.voucherDetail.push(formProduct);
         }
     }
 

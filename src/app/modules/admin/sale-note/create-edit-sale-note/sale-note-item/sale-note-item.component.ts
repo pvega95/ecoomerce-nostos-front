@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -29,6 +29,7 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
     @Input() index: number;
     @Input() vouchersLength: number;
     @Input() voucher: FormGroup;
+    @Output() quantityUpdated: EventEmitter<any> = new EventEmitter();
     sku = '';
     name = '';
     quantity = 0;
@@ -42,6 +43,7 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
     ngOnInit(): void {
         this.setInitialData();
         this.subscription = this.voucher.valueChanges.subscribe((voucher) => {
+            this.quantityUpdated.emit(voucher);
             this.calculationTotals(voucher);
         });
     }
@@ -57,10 +59,10 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     calculationTotals(voucher): void {
-        this.brutoAmountNC = voucher.unitaryAmountNC * voucher.quantity;
-        this.discountAmountNC = this.brutoAmountNC * ( voucher.discount / 100 );
-        this.salesAmountNC = this.brutoAmountNC - this.discountAmountNC;
-        this.igvAmountNC = this.salesAmountNC * 0.18;
+        this.brutoAmountNC = this.voucher.get('brutoAmountNC').value;
+        this.discountAmountNC = this.voucher.get('discountAmountNC').value;
+        this.salesAmountNC = this.voucher.get('salesAmountNC').value;
+        this.igvAmountNC = this.voucher.get('igvAmountNC').value;
     }
 
     deleteItem(index: number): void {}

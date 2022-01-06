@@ -233,6 +233,7 @@
                             [vouchersLength]="voucherControls.length"
                             [voucher]="voucher"
                             (delete)="onDelete($event)"
+                            (quantityUpdated)="quantityUpdated($event)"
                         ></app-sale-note-item>
                     </ng-container>
                     <div
