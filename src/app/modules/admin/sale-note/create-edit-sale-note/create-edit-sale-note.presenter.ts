@@ -167,13 +167,20 @@ export class SaleNotePresenter {
         console.log(this.form.value);
     }
 
+    public updateSeriesForm(serie: string, correlative: string): void {
+        this.form.patchValue({
+            serie: serie,
+            documentNumber: correlative,
+        });
+    }
+
     private createValidators(): void {
         this._id = new FormControl('');
         this.client = new FormControl('');
         this.company = new FormControl('');
         this.document = new FormControl('');
-        this.serie = new FormControl('');
-        this.documentNumber = new FormControl('');
+        this.serie = new FormControl({value: '', disabled: true});
+        this.documentNumber = new FormControl({value: '', disabled: true});
         this.registryDate = new FormControl('');
         this.paymentDeadline = new FormControl('');
         this.paymentMethod = new FormControl('');

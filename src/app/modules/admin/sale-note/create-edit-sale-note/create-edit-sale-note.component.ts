@@ -123,7 +123,9 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             this.presenter.form.get('company').valueChanges,
             this.presenter.form.get('document').valueChanges,
         ]).subscribe((response)=> {
-            console.log(response);
+            const companyID = response[0];
+            const documentID = response[1];
+            this.getCorrelative(companyID,documentID);
         });
     }
 
@@ -136,8 +138,14 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
 
-    getCorrelative(): void {
-        return;
+    getCorrelative(companyID: string,documentID: string): void {
+        this.saleNoteService.getSerie(companyID,documentID)
+        .pipe(
+            map(response => response.data[0])
+        )
+        .subscribe(({series, currentCorrelative}) => {
+            this.presenter.updateSeriesForm(series,currentCorrelative);
+        });
     }
 
     getHeight(): string {
@@ -332,5 +340,9 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     quantityUpdated(product): void {
         this.presenter.addVoucherDetail(product);
         // this.presenter.updateSaleNoteTotals();
+    }
+
+    submitForm(): void {
+        console.log(this.presenter.form.value);
     }
 }
