@@ -14,7 +14,18 @@
                 </mat-form-field>
             </div>
             <div class="w-1/3">
-                <app-select-search
+                <mat-form-field class="min-w-full" [floatLabel]="'always'">
+                    <mat-label>Compañia</mat-label>
+                    <mat-select formControlName="company" placeholder="Seleccione compañia">
+                        <mat-option
+                            *ngFor="let company of companies"
+                            [value]="company._id"
+                        >
+                            {{ company.comercialName }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- <app-select-search
                     *ngIf="listObjCompanies.length > 0"
                     [labelTop]="'Empresa'"
                     [listObj]="listObjCompanies"
@@ -24,10 +35,21 @@
                     [noEntriesFoundLabel]="'empresa no encontrada'"
                     (objSelectedOut)="objCompanySelected($event)"
                 >
-                </app-select-search>
+                </app-select-search> -->
             </div>
             <div class="w-1/3">
-                <app-select-search
+                <mat-form-field class="min-w-full" [floatLabel]="'always'">
+                    <mat-label>Documento</mat-label>
+                    <mat-select formControlName="document" placeholder="Seleccione documento">
+                        <mat-option
+                            *ngFor="let document of documents"
+                            [value]="document._id"
+                        >
+                            {{ document.description }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- <app-select-search
                     *ngIf="listObjDocuments.length > 0"
                     [labelTop]="'Documento'"
                     [listObj]="listObjDocuments"
@@ -37,7 +59,7 @@
                     [noEntriesFoundLabel]="'documento no encontrado'"
                     (objSelectedOut)="objDocumentSelected($event)"
                 >
-                </app-select-search>
+                </app-select-search> -->
             </div>
         </div>
 
@@ -65,7 +87,18 @@
                 </mat-form-field>
             </div>
             <div class="w-1/3">
-                <app-select-search
+                <mat-form-field class="min-w-full" [floatLabel]="'always'">
+                    <mat-label>Plazo pago</mat-label>
+                    <mat-select formControlName="paymentDeadline" placeholder="Seleccione documento">
+                        <mat-option
+                            *ngFor="let paymentDeadline of paymentDeadlines"
+                            [value]="paymentDeadline._id"
+                        >
+                            {{ paymentDeadline.description }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- <app-select-search
                     *ngIf="listObjPaymentDeadlines.length > 0"
                     [labelTop]="'Plazo de pago'"
                     [listObj]="listObjPaymentDeadlines"
@@ -75,7 +108,7 @@
                     [noEntriesFoundLabel]="'plazo de pago no encontrado'"
                     (objSelectedOut)="objPaymentDeadlineSelected($event)"
                 >
-                </app-select-search>
+                </app-select-search> -->
             </div>
         </div>
 

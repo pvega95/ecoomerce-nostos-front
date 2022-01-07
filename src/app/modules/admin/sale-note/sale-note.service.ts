@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { SaleNote } from 'app/models/sale-note';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +13,7 @@ import { catchError, map, tap } from 'rxjs/operators';
   export class SaleNoteService {
     static readonly BASE_URL = `${environment.backendURL}`;
     static readonly confManagement = '/order-management';
-    private _salesNotes: BehaviorSubject<any[] | null> = new BehaviorSubject(null); 
+    private _salesNotes: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     constructor(private http: HttpClient) {}
 
     /**

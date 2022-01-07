@@ -30,7 +30,6 @@ export class SummarySaleNoteComponent implements OnInit {
     }
 
     calculationTotals(products: any[]): void {
-        console.log(products);
         this.totalGrossNC = products.reduce((a, b) => a + b.unitaryAmountNC * b.quantity , 0);
         this.totalDiscountNC = products.reduce((a, b) => a + (b.unitaryAmountNC * b.quantity) * ( b.discount / 100 ) , 0);
         this.totalOperationGravNC = products.reduce((a, b) => a + b.brutoAmountNC - b.discountAmountNC , 0);

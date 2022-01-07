@@ -20,6 +20,9 @@ export class SaleNotePresenter {
     dispatchStatus: FormControl;
     voucherDetail: FormArray;
     brutoTotalNC: FormControl;
+    discountTotalNC: FormControl;
+    gravTotalNC: FormControl;
+    exonTotalNC: FormControl;
     igvTotalNC: FormControl;
     salesTotalNC: FormControl;
     createdAt: FormControl;
@@ -47,6 +50,9 @@ export class SaleNotePresenter {
             dispatchStatus: this.dispatchStatus,
             voucherDetail: this.voucherDetail,
             brutoTotalNC: this.brutoTotalNC,
+            discountTotalNC: this.discountTotalNC,
+            gravTotalNC: this.gravTotalNC,
+            exonTotalNC: this.exonTotalNC,
             igvTotalNC: this.igvTotalNC,
             salesTotalNC: this.salesTotalNC,
             createdAt: this.createdAt,
@@ -59,40 +65,30 @@ export class SaleNotePresenter {
             (x: FormControl) => x.value.sku === product.sku
         );
         if (existProduct > -1) {
-            // const quantity = this.voucherDetail
-            //     .at(existProduct)
-            //     .get('quantity');
-            // quantity.setValue(quantity.value + 1);
-            console.log('product', product);
             const quantity = product.quantity;
             const brutoAmountNC = quantity * product.unitaryAmountNC;
-            const discountAmountNC = brutoAmountNC * ( product.discount / 100 );
+            const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
             const igvAmountNC = salesAmountNC * 0.18;
-            console.table({
-                quantity,
-                brutoAmountNC,
-                discountAmountNC,
-                salesAmountNC,
-                igvAmountNC
-            });
-            this.voucherDetail.at(existProduct).patchValue({
-                quantity,
-                brutoAmountNC,
-                discountAmountNC,
-                salesAmountNC,
-                igvAmountNC
-            }, {
-                onlySelf: true,
-                emitEvent: false
-              });
-
+            this.voucherDetail.at(existProduct).patchValue(
+                {
+                    quantity,
+                    brutoAmountNC,
+                    discountAmountNC,
+                    salesAmountNC,
+                    igvAmountNC,
+                },
+                {
+                    emitEvent: false,
+                }
+            );
+            this.updateSaleNoteTotals();
         } else {
             const formProduct = this.createVoucherDetailForm();
             const quantity = 1;
             const unitaryAmountNC = product.grossPrice;
             const brutoAmountNC = unitaryAmountNC * quantity;
-            const discountAmountNC = brutoAmountNC * ( product.discount / 100 );
+            const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
             const igvAmountNC = salesAmountNC * 0.18;
             formProduct.patchValue({
@@ -102,7 +98,7 @@ export class SaleNotePresenter {
                 brutoAmountNC,
                 discountAmountNC,
                 salesAmountNC,
-                igvAmountNC
+                igvAmountNC,
             });
             this.voucherDetail.push(formProduct);
         }
@@ -137,6 +133,40 @@ export class SaleNotePresenter {
         this.voucherDetail.markAsPristine();
     }
 
+    public updateSaleNoteTotals(): void {
+        const voucherDetail = this.form.get('voucherDetail').value;
+        const brutoTotalNC = voucherDetail.reduce(
+            (a, b) => a + b.unitaryAmountNC * b.quantity,
+            0
+        );
+        const discountTotalNC = voucherDetail.reduce(
+            (a, b) => a + b.unitaryAmountNC * b.quantity * (b.discount / 100),
+            0
+        );
+        const gravTotalNC = voucherDetail.reduce(
+            (a, b) => a + b.brutoAmountNC - b.discountAmountNC,
+            0
+        );
+        const exonTotalNC = 0;
+        const igvTotalNC = voucherDetail.reduce((a, b) => a + b.igvAmountNC, 0);
+        const salesTotalNC = gravTotalNC + exonTotalNC + igvTotalNC;
+        this.form.patchValue(
+            {
+                brutoTotalNC,
+                discountTotalNC,
+                gravTotalNC,
+                exonTotalNC,
+                igvTotalNC,
+                salesTotalNC
+            },
+            {
+                onlySelf: true,
+                emitEvent: false,
+            }
+        );
+        console.log(this.form.value);
+    }
+
     private createValidators(): void {
         this._id = new FormControl('');
         this.client = new FormControl('');
@@ -152,9 +182,12 @@ export class SaleNotePresenter {
         this.note = new FormControl('');
         this.dispatchStatus = new FormControl('');
         this.voucherDetail = new FormArray([]);
-        this.brutoTotalNC = new FormControl('');
-        this.igvTotalNC = new FormControl('');
-        this.salesTotalNC = new FormControl('');
+        this.brutoTotalNC = new FormControl(0);
+        this.discountTotalNC = new FormControl(0);
+        this.gravTotalNC = new FormControl(0);
+        this.exonTotalNC = new FormControl(0);
+        this.igvTotalNC = new FormControl(0);
+        this.salesTotalNC = new FormControl(0);
         this.createdAt = new FormControl('');
         this.updatedAt = new FormControl('');
     }
