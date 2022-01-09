@@ -8,6 +8,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { CompanyService } from '../setting/company/company.service';
 import { DocumentService } from '../setting/document/document.service';
 import { PaymentDeadlineService } from '../setting/payment-deadline/payment-deadline.service';
+import { PaymentMethodService } from '../setting/payment-method/payment-method.service';
 import { ProductsService } from '../setting/products/products.service';
 import { SaleNoteService } from './sale-note.service';
 
@@ -49,7 +50,8 @@ export class SaleNoteInitialDataResolver implements Resolve<any> {
         private companyService: CompanyService,
         private documentService: DocumentService,
         private paymentDeadlineService: PaymentDeadlineService,
-        private productsService: ProductsService
+        private productsService: ProductsService,
+        private paymentsMethod: PaymentMethodService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -71,7 +73,7 @@ export class SaleNoteInitialDataResolver implements Resolve<any> {
             this.companyService.getListCompany(),
             this.documentService.getListDocument(),
             this.paymentDeadlineService.getListPaymentDeadline(),
-            this.productsService.getListProducts(),
+            this.paymentsMethod.getListPaymentMethod(),
         ]);
     }
 }

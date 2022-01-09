@@ -71,7 +71,7 @@ export class SaleNoteListComponent implements OnInit {
         'salestotal',
         'actions',
     ];
-    
+
     public salesNotes: SaleNote[];
     public salesNotesFiltered: SaleNote[] = [];
     searchInputControl: FormControl = new FormControl();
@@ -87,17 +87,6 @@ export class SaleNoteListComponent implements OnInit {
     }
 
     loadListSaleNote(): void {
-        // this.isLoading = true;
-        // this.salesNotes = [];
-        // this.salesNotesFiltered = this.salesNotes;
-
-        // this.saleNoteService.getListSaleNote().subscribe((resp) => {
-        //     if (resp.ok) {
-        //         this.salesNotes = resp.data;
-        //         this.salesNotesFiltered = this.salesNotes;
-        //         this.isLoading = false;
-        //     }
-        // });
 
         // Get the courses
         this.saleNoteService.saleNotes$

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Product } from 'app/models/product';
 
 @Injectable()
@@ -157,7 +157,7 @@ export class SaleNotePresenter {
                 gravTotalNC,
                 exonTotalNC,
                 igvTotalNC,
-                salesTotalNC
+                salesTotalNC,
             },
             {
                 onlySelf: true,
@@ -176,19 +176,19 @@ export class SaleNotePresenter {
 
     private createValidators(): void {
         this._id = new FormControl('');
-        this.client = new FormControl('');
-        this.company = new FormControl('');
-        this.document = new FormControl('');
-        this.serie = new FormControl({value: '', disabled: true});
-        this.documentNumber = new FormControl({value: '', disabled: true});
+        this.client = new FormControl('', [Validators.required]);
+        this.company = new FormControl('', [Validators.required]);
+        this.document = new FormControl('', [Validators.required]);
+        this.serie = new FormControl({ value: '', disabled: true });
+        this.documentNumber = new FormControl({ value: '', disabled: true });
         this.registryDate = new FormControl('');
-        this.paymentDeadline = new FormControl('');
+        this.paymentDeadline = new FormControl('', [Validators.required]);
         this.paymentMethod = new FormControl('');
-        this.status = new FormControl('');
+        this.status = new FormControl('PENDIENTE');
         this.reference = new FormControl('');
         this.note = new FormControl('');
-        this.dispatchStatus = new FormControl('');
-        this.voucherDetail = new FormArray([]);
+        this.dispatchStatus = new FormControl('PENDIENTE');
+        this.voucherDetail = new FormArray([], [Validators.required]);
         this.brutoTotalNC = new FormControl(0);
         this.discountTotalNC = new FormControl(0);
         this.gravTotalNC = new FormControl(0);

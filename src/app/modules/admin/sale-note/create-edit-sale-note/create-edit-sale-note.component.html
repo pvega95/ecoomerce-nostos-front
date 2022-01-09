@@ -1,4 +1,4 @@
-<div class="flex flex-col flex-auto min-w-0 p-8 sm:overflow-hidden">
+<div class="flex flex-col flex-auto min-w-0 p-8 mb-16 sm:overflow-hidden">
     <div class="text-4xl mb-4">Venta Nueva</div>
     <div class="relative flex-row flex-0" [formGroup]="presenter.form">
         <div class="flex space-x-4">
@@ -25,17 +25,6 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <!-- <app-select-search
-                    *ngIf="listObjCompanies.length > 0"
-                    [labelTop]="'Empresa'"
-                    [listObj]="listObjCompanies"
-                    [placeholder]="'empresa'"
-                    [placeholderLabel]="'Buscar empresa'"
-                    [id]="presenter.form.get('company').value"
-                    [noEntriesFoundLabel]="'empresa no encontrada'"
-                    (objSelectedOut)="objCompanySelected($event)"
-                >
-                </app-select-search> -->
             </div>
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
@@ -49,17 +38,6 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <!-- <app-select-search
-                    *ngIf="listObjDocuments.length > 0"
-                    [labelTop]="'Documento'"
-                    [listObj]="listObjDocuments"
-                    [placeholder]="'documento'"
-                    [placeholderLabel]="'Buscar documento'"
-                    [id]="presenter.form.get('document').value"
-                    [noEntriesFoundLabel]="'documento no encontrado'"
-                    (objSelectedOut)="objDocumentSelected($event)"
-                >
-                </app-select-search> -->
             </div>
         </div>
 
@@ -98,30 +76,22 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <!-- <app-select-search
-                    *ngIf="listObjPaymentDeadlines.length > 0"
-                    [labelTop]="'Plazo de pago'"
-                    [listObj]="listObjPaymentDeadlines"
-                    [placeholder]="'plazo de pago'"
-                    [placeholderLabel]="'Buscar plazo de pago'"
-                    [id]="presenter.form.get('paymentDeadline').value"
-                    [noEntriesFoundLabel]="'plazo de pago no encontrado'"
-                    (objSelectedOut)="objPaymentDeadlineSelected($event)"
-                >
-                </app-select-search> -->
             </div>
         </div>
 
         <div class="flex space-x-4">
+
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
-                    <mat-label>Estado</mat-label>
-                    <input
-                        formControlName="status"
-                        matInput
-                        [autocomplete]="'off'"
-                        [placeholder]="'Seleccione estado'"
-                    />
+                    <mat-label>Plazo pago</mat-label>
+                    <mat-select formControlName="paymentMethod" placeholder="Seleccione documento">
+                        <mat-option
+                            *ngFor="let paymentMethod of paymentMethods"
+                            [value]="paymentMethod._id"
+                        >
+                            {{ paymentMethod.description }}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
 
@@ -184,11 +154,6 @@
         <div class="relative flex flex-0 ml-6 my-2">
             <button mat-flat-button [color]="'primary'" (click)="addItem()">
                 <span> Agregar item </span>
-            </button>
-        </div>
-        <div class="relative flex flex-0 ml-6 my-2">
-            <button mat-flat-button [color]="'primary'" (click)="submitForm()">
-                <span> Crear </span>
             </button>
         </div>
         <div class="relative flex flex-0">
@@ -354,4 +319,8 @@
             </ng-template>
         </div>
     </div>
+</div>
+<div class="fixed bottom-0 px-8 py-4 bg-white flex justify-end space-x-4 w-footer">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-flat-button [color]="'warn'" (click)="submitForm()" [disabled]="!form.valid">Crear</button>
 </div>

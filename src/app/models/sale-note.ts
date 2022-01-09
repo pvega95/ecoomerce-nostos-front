@@ -1,7 +1,7 @@
-import { Client } from "./client";
-import { PaymentDeadline } from "./payment-deadline";
-import { VoucherDetail } from "./voucher-detail";
-import { Document } from "./document";
+import { Client } from './client';
+import { PaymentDeadline } from './payment-deadline';
+import { VoucherDetail } from './voucher-detail';
+import { Document } from './document';
 
 export interface ISaleNote {
     _id?: string;
@@ -48,6 +48,7 @@ export class SaleNote {
     constructor(saleNote: ISaleNote){
         this._id  = saleNote._id || null;
         this.client = saleNote.client || null;
+        this.company = saleNote.company || null;
         this.document = saleNote.document || null;
         this.serie = saleNote.serie || null;
         this.documentNumber = saleNote.documentNumber || null;

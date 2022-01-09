@@ -87,7 +87,7 @@
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.client.comercialName }}
+                            {{ product.client }}
                         </span>
                     </td>
                 </ng-container>
@@ -136,7 +136,7 @@
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.salesTotalNC }}
+                            {{ product.salesTotalNC | number: "1.2-2" }}
                         </span>
                     </td>
                 </ng-container>

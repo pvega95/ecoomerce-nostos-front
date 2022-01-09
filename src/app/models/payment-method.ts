@@ -12,10 +12,10 @@ export class PaymentMethod {
     status?: boolean;
     createdAt?: string;
     updatedAt?: string;
-    constructor(PaymentMethod: IPaymentMethod){
-        this._id  = PaymentMethod._id || null;
-        this.description = PaymentMethod.description || null;
-        this.createdAt = PaymentMethod.createdAt || null;
-        this.updatedAt = PaymentMethod.updatedAt || null;
+    constructor(paymentMethod: IPaymentMethod){
+        this._id  = paymentMethod._id || null;
+        this.description = paymentMethod.description || null;
+        this.createdAt = paymentMethod.createdAt || null;
+        this.updatedAt = paymentMethod.updatedAt || null;
     }
 }
