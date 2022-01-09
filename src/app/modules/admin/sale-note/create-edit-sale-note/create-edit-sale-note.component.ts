@@ -26,10 +26,10 @@ import { Modal } from '../../../../enums/modal.enum';
 import { Product } from 'app/models/product';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNotePresenter } from './create-edit-sale-note.presenter';
-import { map, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { PaymentMethod } from 'app/models/payment-method';
 import { PaymentMethodService } from '../../setting/payment-method/payment-method.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-create-edit-sale-note',
@@ -43,6 +43,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
     public paymentMethods: PaymentMethod[];
+    public id: string;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
         private companyService: CompanyService,
@@ -53,7 +54,8 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         public presenter: SaleNotePresenter,
         private _changeDetectorRef: ChangeDetectorRef,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) {
         // this.initForm();
     }
@@ -71,6 +73,18 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.route.params.subscribe(({ id }) => {
+            if (id) {
+                this.id = id;
+                this.saleNoteService
+                    .getListSaleNoteById(id)
+                    .pipe(map((resp) => resp.data))
+                    .subscribe((saleNote) => {
+                        this.presenter.updateSaleNoteForm(saleNote[0]);
+                    });
+            }
+        });
+
         // Get the categories
         this.companyService.companies$
             .pipe(
@@ -95,38 +109,38 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                 this._changeDetectorRef.markForCheck();
             });
 
-            // Get the paymentDeadlines
+        // Get the paymentDeadlines
         this.paymentDeadlineService.paymentDeadlines$
-        .pipe(
-            map((resp: any) => resp.data),
-            takeUntil(this._unsubscribeAll)
-        )
-        .subscribe((paymentDeadlines: PaymentDeadline[]) => {
-            this.paymentDeadlines = paymentDeadlines;
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
+            .pipe(
+                map((resp: any) => resp.data),
+                takeUntil(this._unsubscribeAll)
+            )
+            .subscribe((paymentDeadlines: PaymentDeadline[]) => {
+                this.paymentDeadlines = paymentDeadlines;
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
 
         // Get the paymentMethod
         this.paymentMethodService.paymentMethods$
-        .pipe(
-            map((resp: any) => resp.data),
-            takeUntil(this._unsubscribeAll)
-        )
-        .subscribe((paymentMethods: PaymentMethod[]) => {
-            this.paymentMethods = paymentMethods;
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
+            .pipe(
+                map((resp: any) => resp.data),
+                takeUntil(this._unsubscribeAll)
+            )
+            .subscribe((paymentMethods: PaymentMethod[]) => {
+                this.paymentMethods = paymentMethods;
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
 
         // Set the theme and scheme based on the configuration
         combineLatest([
             this.presenter.form.get('company').valueChanges,
             this.presenter.form.get('document').valueChanges,
-        ]).subscribe((response)=> {
+        ]).subscribe((response) => {
             const companyID = response[0];
             const documentID = response[1];
-            this.getCorrelative(companyID,documentID);
+            this.getCorrelative(companyID, documentID);
         });
     }
 
@@ -139,14 +153,13 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
 
-    getCorrelative(companyID: string,documentID: string): void {
-        this.saleNoteService.getSerie(companyID,documentID)
-        .pipe(
-            map(response => response.data[0])
-        )
-        .subscribe(({series, currentCorrelative}) => {
-            this.presenter.updateSeriesForm(series,currentCorrelative);
-        });
+    getCorrelative(companyID: string, documentID: string): void {
+        this.saleNoteService
+            .getSerie(companyID, documentID)
+            .pipe(map((response) => response.data[0]))
+            .subscribe(({ series, currentCorrelative }) => {
+                this.presenter.updateSeriesForm(series, currentCorrelative);
+            });
     }
 
     addItem(): void {
@@ -169,7 +182,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
         });
     }
     deleteItem(sku: string): void {
-         console.log('voucherId', sku);
+        console.log('voucherId', sku);
     }
     cancelSelectedSaleNote(): void {}
     createSaleNote(): void {}
@@ -180,14 +193,21 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['salenote']);;
+        this.router.navigate(['salenote']);
     }
 
     submitForm(): void {
-        const saleNote = new SaleNote(this.form.getRawValue());
-        delete saleNote['_id'];
-        this.saleNoteService.createSaleNote(saleNote).subscribe((resp)=> {
-            this.router.navigate(['salenote']);;
-        });
+        if (this.id) {
+            const saleNote = new SaleNote(this.form.getRawValue());
+            this.saleNoteService.updateSaleNote(saleNote, this.id).subscribe((resp) => {
+                this.router.navigate(['salenote']);
+            });
+        } else {
+            const saleNote = new SaleNote(this.form.getRawValue());
+            delete saleNote['_id'];
+            this.saleNoteService.createSaleNote(saleNote).subscribe((resp) => {
+                this.router.navigate(['salenote']);
+            });
+        }
     }
 }

@@ -322,5 +322,5 @@
 </div>
 <div class="fixed bottom-0 px-8 py-4 bg-white flex justify-end space-x-4 w-footer">
     <button mat-stroked-button (click)="cancel()">Cancelar</button>
-    <button mat-flat-button [color]="'warn'" (click)="submitForm()" [disabled]="!form.valid">Crear</button>
+    <button mat-flat-button [color]="'warn'" (click)="submitForm()" [disabled]="!form.valid">{{ id ? 'Actualizar' : 'Crear' }}</button>
 </div>

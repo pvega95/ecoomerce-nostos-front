@@ -35,9 +35,14 @@ export class SaleNoteService {
             tap((response: any) => {
                 this._salesNotes.next(response);
             }),
-            catchError((error) => {
-                return this.formatErrors(error);
-            })
+            catchError((error) => this.formatErrors(error))
+        );
+    }
+
+    getListSaleNoteById(id: string): Observable<any> {
+        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+        return this.http.get(url).pipe(
+            catchError((error) => this.formatErrors(error))
         );
     }
 
@@ -48,37 +53,25 @@ export class SaleNoteService {
             .pipe(catchError((error: any) => this.formatErrors(error)));
     }
 
+    updateSaleNote(body: any, id: string): Observable<any> {
+        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+        return this.http
+            .put(url, body)
+            .pipe(catchError((error: any) => this.formatErrors(error)));
+    }
+
+    deleteSaleNote(id: string): Observable<any> {
+        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+        return this.http
+            .delete(url)
+            .pipe(catchError((error: any) => this.formatErrors(error)));
+    }
+
     getSerie(companyId: string, documentId: string): Observable<any> {
         const url = `${SaleNoteService.BASE_URL}/configuration-management/document-serial/${companyId}/${documentId}`;
         return this.http.get(url).pipe(
-            catchError((error) => {
-                return this.formatErrors(error);
-            })
+            catchError((error) => this.formatErrors(error))
         );
     }
 
-    /*     createSaleNote(body: any):  Observable<any> {
-      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial`;
-      return this.http.post(url, body).pipe(
-        catchError(error => {
-          return this.formatErrors(error);
-        })
-      );
-    } 
-    updateSaleNote(id: string, body: any):  Observable<any> {
-      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial/${id}`;
-      return this.http.put(url, body).pipe(
-        catchError(error => {
-          return this.formatErrors(error);
-        })
-      );
-    } 
-    deleteSaleNote(id: string):  Observable<any> {
-      const url = `${SaleNoteService.BASE_URL}${SaleNoteService.confManagement}/document-serial/${id}`;
-      return this.http.delete(url).pipe(
-        catchError(error => {
-          return this.formatErrors(error);
-        })
-      );
-    }  */
 }

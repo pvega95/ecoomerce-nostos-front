@@ -8,14 +8,14 @@ export const saleNoteRoutes: Route[] = [
     {
         path     : '',
         component: SaleNoteComponent,
-        resolve  : {
-            saleNotes : SaleNoteListResolver
-        },
         children : [
             {
                 path     : '',
                 pathMatch: 'full',
                 component: SaleNoteListComponent,
+                resolve  : {
+                    saleNotes : SaleNoteListResolver
+                },
             },
             {
                 path     : 'new',
@@ -27,6 +27,9 @@ export const saleNoteRoutes: Route[] = [
             {
                 path     : 'edit/:id',
                 component: CreateEditSaleNoteComponent,
+                resolve    : {
+                    saleNoteInitalData: SaleNoteInitialDataResolver,
+                },
             },
         ]
     }

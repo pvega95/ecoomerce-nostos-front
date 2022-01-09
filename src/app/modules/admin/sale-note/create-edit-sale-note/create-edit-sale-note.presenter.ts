@@ -104,6 +104,14 @@ export class SaleNotePresenter {
         }
     }
 
+    public updateVoucherDetail(product?: any): void {
+            const formProduct = this.createVoucherDetailForm();
+            formProduct.patchValue({
+                ...product,
+            });
+            this.voucherDetail.push(formProduct);
+    }
+
     public createVoucherDetailForm(): FormGroup {
         return this.fb.group({
             _id: new FormControl(),
@@ -164,7 +172,6 @@ export class SaleNotePresenter {
                 emitEvent: false,
             }
         );
-        console.log(this.form.value);
     }
 
     public updateSeriesForm(serie: string, correlative: string): void {
@@ -172,6 +179,18 @@ export class SaleNotePresenter {
             serie: serie,
             documentNumber: correlative,
         });
+    }
+
+    public updateSaleNoteForm(saleNote): void {
+        console.log(saleNote);
+        const voucherDetail = saleNote?.voucherDetail;
+        this.form.patchValue(saleNote);
+        if(voucherDetail && voucherDetail.length > 0){
+            voucherDetail.forEach((product) => {
+                this.updateVoucherDetail(product);
+            });
+            this.voucherDetail.markAsPristine();
+        }
     }
 
     private createValidators(): void {

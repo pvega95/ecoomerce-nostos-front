@@ -7,7 +7,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNote } from 'app/models/sale-note';
@@ -15,6 +15,8 @@ import { SaleNoteService } from '../sale-note.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 const createLabel = ' (Nueva)';
 const editLabel = ' (Editar)';
@@ -27,15 +29,15 @@ const editLabel = ' (Editar)';
     styles: [
         /* language=SCSS */
         `
-        :host ::ng-deep {
-            table {
-                &.mat-table {
-                    tbody {
-                        background-color: white;
+            :host ::ng-deep {
+                table {
+                    &.mat-table {
+                        tbody {
+                            background-color: white;
+                        }
                     }
                 }
             }
-        }
 
             .inventory-grid {
                 grid-template-columns: 48px auto 40px;
@@ -79,7 +81,9 @@ export class SaleNoteListComponent implements OnInit {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
         private saleNoteService: SaleNoteService,
-        private _changeDetectorRef: ChangeDetectorRef
+        private router: Router,
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _fuseConfirmationService: FuseConfirmationService,
     ) {}
 
     ngOnInit(): void {
@@ -87,12 +91,10 @@ export class SaleNoteListComponent implements OnInit {
     }
 
     loadListSaleNote(): void {
-
         // Get the courses
         this.saleNoteService.saleNotes$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp: any) => {
-                console.log(resp);
                 this.salesNotes = this.salesNotesFiltered = resp.data;
                 this.recentTransactionsDataSource.data = this.salesNotes;
                 // Mark for check
@@ -100,4 +102,32 @@ export class SaleNoteListComponent implements OnInit {
             });
     }
 
+    editSaleNote(id: string): void {
+        this.router.navigate([`/salenote/edit/${id}`]);
+    }
+
+    deleteSaleNote(id: string): void {
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'Eliminar Nota Venta',
+            message:
+                '¿Estás seguro(a) de eliminar esta nota venta? Esta acción no puede deshacerse!',
+            actions: {
+                confirm: {
+                    label: 'Eliminar',
+                },
+            },
+        });
+
+        // Subscribe to the confirmation dialog closed action
+        confirmation.afterClosed().subscribe((result) => {
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                this.saleNoteService.deleteSaleNote(id).subscribe((resp) => {
+                    if(resp.ok) {
+                        this.saleNoteService.getListSaleNote().pipe(take(1)).subscribe();
+                    }
+                });
+            }
+        });
+    }
 }
