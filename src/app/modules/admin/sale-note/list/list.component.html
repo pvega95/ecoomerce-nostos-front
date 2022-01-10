@@ -14,7 +14,7 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <ng-container *transloco="let t">
-            <div class="title mb-4">{{ t("products") }}</div>
+            <div class="text-4xl mb-4">Ventas</div>
         </ng-container>
         <div
             class="
@@ -33,12 +33,12 @@
                         matPrefix
                         [svgIcon]="'heroicons_outline:search'"
                     ></mat-icon>
-                    <mat-label>Nombre producto</mat-label>
+                    <mat-label>Cliente</mat-label>
                     <input
                         matInput
                         [formControl]="searchInputControl"
                         [autocomplete]="'off'"
-                        [placeholder]="'Buscar por nombre de producto'"
+                        [placeholder]="'Buscar por cliente'"
                     />
                 </mat-form-field>
                 <mat-form-field
@@ -49,12 +49,12 @@
                         matPrefix
                         [svgIcon]="'heroicons_outline:search'"
                     ></mat-icon>
-                    <mat-label>Código de producto</mat-label>
+                    <mat-label>Estado</mat-label>
                     <input
                         matInput
                         [formControl]="searchInputControl"
                         [autocomplete]="'off'"
-                        [placeholder]="'Filtrar por código'"
+                        [placeholder]="'Buscar por estado'"
                     />
                 </mat-form-field>
             </div>
@@ -62,18 +62,18 @@
                 class="ml-4"
                 mat-flat-button
                 [color]="'primary'"
-                (click)="agregarNuevoProducto()"
+                [routerLink]="['new']"
             >
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Agregar nuevo producto</span>
+                <span class="ml-2 mr-1">Agregar venta nueva</span>
             </button>
         </div>
     </div>
     <div class="overflow-x-auto mx-6">
         <ng-container
-            *ngIf="!isLoading; else loadingProducts"
+            *ngIf="!isLoading; else loadingSales"
         >
-        <ng-container *ngIf="products.length > 0; else noProducts">
+        <ng-container *ngIf="salesNotes?.length > 0; else noSales">
             <table
                 class="w-full bg-transparent"
                 mat-table
@@ -81,110 +81,62 @@
                 [dataSource]="recentTransactionsDataSource"
                 #recentTransactionsTable
             >
-                <ng-container matColumnDef="thumb">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let product">
-                        <img
-                            class="object-cover w-12 h-12"
-                            src="{{
-                                product.images.length > 0
-                                    ? product.images[0].imageURL
-                                    : ''
-                            }}"
-                            alt="img"
-                        />
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="sku">
+                <ng-container matColumnDef="client">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        SKU
+                        Cliente
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.sku }}
+                            {{ product.client }}
                         </span>
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="name">
+                <ng-container matColumnDef="document">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                        Documento
+                    </th>
+                    <td mat-cell *matCellDef="let product">
+                        <span class="pr-6 whitespace-nowrap">
+                            {{ product.document.abreviation }}
+                        </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="serie">
                     <th
                         class="w-60"
                         mat-header-cell
                         mat-sort-header
                         *matHeaderCellDef
                     >
-                        Nombre producto
+                        Serie
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6">
-                            {{ product.name }}
+                            {{ product.serie }}
                         </span>
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="description">
+                <ng-container matColumnDef="documentnumber">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Descripcion
+                        Numero documento
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.descriptions[0] }}
+                            {{ product.documentNumber }}
                         </span>
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="category">
+                <ng-container matColumnDef="salestotal">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Categoria
+                        Precio Venta Final
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.category?.name }}
-                        </span>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="brand">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Marca
-                    </th>
-                    <td mat-cell *matCellDef="let product">
-                        <span class="pr-6 whitespace-nowrap">
-                            {{ product.brand?.abreviation }}
-                        </span>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="unid">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Unidad
-                    </th>
-                    <td mat-cell *matCellDef="let product">
-                        <span class="pr-6 whitespace-nowrap">
-                            {{ product.unid?.abreviation }}
-                        </span>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="listprice">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Precio Lista
-                    </th>
-                    <td mat-cell *matCellDef="let product">
-                        <span class="pr-6 whitespace-nowrap">
-                            S/. {{ product.listprice }}
-                        </span>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="discount">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
-                        Descuento
-                    </th>
-                    <td mat-cell *matCellDef="let product">
-                        <span class="pr-6 whitespace-nowrap">
-                            {{ product.discount }} %
+                            {{ product.salesTotalNC | number: "1.2-2" }}
                         </span>
                     </td>
                 </ng-container>
@@ -199,7 +151,7 @@
                                 class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                 mat-flat-button
                                 matTooltip="Editar producto"
-                                (click)="editProduct(product._id)"
+                                (click)="editSaleNote(product._id)"
                             >
                                 <mat-icon
                                     class="icon-size-5 editIcon"
@@ -210,7 +162,7 @@
                                 class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                 mat-flat-button
                                 matTooltip="Eliminar producto"
-                                (click)="deleteProduct(product._id)"
+                                (click)="deleteSaleNote(product._id)"
                             >
                                 <mat-icon
                                     class="icon-size-5 deleteIcon"
@@ -238,10 +190,10 @@
             
         </ng-container>
 
-        <ng-template #noProducts>
+        <ng-template #noSales>
             <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">No hay productos!</div>
         </ng-template>
-        <ng-template #loadingProducts>
+        <ng-template #loadingSales>
             <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">Cargando lista de productos</div>
         </ng-template>
     </div>

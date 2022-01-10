@@ -1,7 +1,7 @@
-import { Client } from "./client";
-import { PaymentDeadline } from "./payment-deadline";
-import { VoucherDetail } from "./voucher-detail";
-import { Document } from "./document";
+import { Client } from './client';
+import { PaymentDeadline } from './payment-deadline';
+import { VoucherDetail } from './voucher-detail';
+import { Document } from './document';
 
 export interface ISaleNote {
     _id?: string;
@@ -17,8 +17,11 @@ export interface ISaleNote {
     reference: string;
     note: string;
     dispatchStatus: string;
-    voucherDetail: VoucherDetail;
+    voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
+    discountTotalNC: number;
+    gravTotalNC: number;
+    exonTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;
     createdAt: string;
@@ -39,8 +42,11 @@ export class SaleNote {
     reference: string;
     note: string;
     dispatchStatus: string;
-    voucherDetail: VoucherDetail;
+    voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
+    discountTotalNC: number;
+    gravTotalNC: number;
+    exonTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;
     createdAt: string;
@@ -48,9 +54,10 @@ export class SaleNote {
     constructor(saleNote: ISaleNote){
         this._id  = saleNote._id || null;
         this.client = saleNote.client || null;
+        this.company = saleNote.company || null;
         this.document = saleNote.document || null;
         this.serie = saleNote.serie || null;
-        this.documentNumber = saleNote.documentNumber || null;
+        this.documentNumber = saleNote.documentNumber || 0;
         this.registryDate = saleNote.registryDate || null;
         this.paymentDeadline = saleNote.paymentDeadline || null;
         this.paymentMethod = saleNote.paymentMethod || null;
@@ -58,10 +65,13 @@ export class SaleNote {
         this.reference = saleNote.reference || null;
         this.note = saleNote.note || null;
         this.dispatchStatus = saleNote.dispatchStatus || null;
-        this.voucherDetail = saleNote.voucherDetail || null;
-        this.brutoTotalNC = saleNote.brutoTotalNC || null;
-        this.igvTotalNC = saleNote.igvTotalNC || null;
-        this.salesTotalNC = saleNote.salesTotalNC || null;
+        this.voucherDetail = saleNote.voucherDetail || [];
+        this.brutoTotalNC = saleNote.brutoTotalNC || 0;
+        this.discountTotalNC = saleNote.discountTotalNC || 0;
+        this.gravTotalNC = saleNote.gravTotalNC || 0;
+        this.exonTotalNC = saleNote.exonTotalNC || 0;
+        this.igvTotalNC = saleNote.igvTotalNC || 0;
+        this.salesTotalNC = saleNote.salesTotalNC || 0;
         this.createdAt = saleNote.createdAt || null;
         this.updatedAt = saleNote.updatedAt || null;
     }

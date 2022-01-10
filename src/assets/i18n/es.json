@@ -23,5 +23,7 @@
     "documentseries": "Documento series",
     "paymentmethod": "Método de pago",
     "paymentdeadline": "Plazo de pago",
-    "typedocument": "Tipo de documento"
+    "typedocument": "Tipo de documento",
+    "brand": "Marca",
+    "unid": "Unidad"
 }

@@ -8,39 +8,29 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
-import { saleNoteRoutes } from 'app/modules/admin/sale-note/sale-note.routing';
-import { SaleNoteComponent } from './sale-note.component';
-import { TranslocoModule } from '@ngneat/transloco';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { MatInputModule } from '@angular/material/input';
-import { IMaskModule } from 'angular-imask';
-import { MatSelectModule } from '@angular/material/select';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit-sale-note.component';
-import { SaleNoteListComponent } from './list/list.component';
-import { SaleNoteItemComponent } from './create-edit-sale-note/sale-note-item/sale-note-item.component';
-import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-note/summary-sale-note.component';
+import { IMaskModule } from 'angular-imask';
+import { TranslocoModule } from '@ngneat/transloco';
+import { DatePipe } from '@angular/common';
+import { UnidComponent } from './unid.component';
+import { unidRoutes } from './unid.routing';
 
 @NgModule({
     declarations: [
-        SaleNoteComponent,
-        CreateEditSaleNoteComponent,
-        SaleNoteListComponent,
-        SaleNoteItemComponent,
-        SummarySaleNoteComponent
+        UnidComponent
     ],
     imports     : [
-        RouterModule.forChild(saleNoteRoutes),
-        MatFormFieldModule,
-        ScrollingModule,
-        IMaskModule,
-        MatProgressSpinnerModule,
-        MatSelectModule,
+        RouterModule.forChild(unidRoutes),
         MatInputModule,
+        MatProgressSpinnerModule,
+        IMaskModule,
+        MatFormFieldModule,
         TranslocoModule,
         MatButtonModule,
         MatButtonToggleModule,
@@ -53,8 +43,11 @@ import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-n
         MatTooltipModule,
         NgApexchartsModule,
         SharedModule
+    ],
+    providers: [
+        DatePipe
     ]
 })
-export class SaleNoteModule
+export class UnidModule
 {
 }

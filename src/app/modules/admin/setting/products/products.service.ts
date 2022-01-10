@@ -1,16 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ProductsService {
     static readonly BASE_URL = `${environment.backendURL}`;
-
+    private _products: BehaviorSubject<any[] | null> = new BehaviorSubject(
+        null
+    );
     constructor(private _http: HttpClient) {}
+
+    /**
+     * Getter for paymentDeadlines
+     */
+     get products$(): Observable<any[]>
+     {
+         return this._products.asObservable();
+     }
 
     crearProducto(body: any): Observable<any> {
         const query = `${ProductsService.BASE_URL}/product-management`;
@@ -25,9 +35,12 @@ export class ProductsService {
 
     getListProducts(): Observable<any> {
         const url = `${ProductsService.BASE_URL}/product-management`;
-        return this._http
-            .get(url)
-            .pipe(catchError((error) => this.formatErrors(error)));
+        return this._http.get(url).pipe(
+            tap((response: any) => {
+                this._products.next(response);
+            }),
+            catchError((error) => this.formatErrors(error))
+        );
     }
 
     consultarProducto(id: string): Observable<any> {
@@ -54,5 +67,4 @@ export class ProductsService {
         // const data = (await this._http.delete(url).toPromise()) as any;
         // return data;
     }
-
 }

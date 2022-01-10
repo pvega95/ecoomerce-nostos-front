@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 import { Product } from 'app/models/product';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { VoucherDetail } from 'app/models/voucher-detail';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 
@@ -27,6 +29,7 @@ export class WindowModalComponent implements OnInit {
   public listFiles: File[] = [];
   public orderForm: FormGroup;
   public products: Product[];
+  public productsAdded: Product[];
   public clients: any[];
   public addressClient: any[];
   public isLoading: boolean = true;
@@ -39,8 +42,9 @@ export class WindowModalComponent implements OnInit {
   public productAvailableSearch: boolean = true;
   public totalAmount: number = 0;
   public disableRemoveProduct: boolean;
-  public displayedColumns: string[] = ['sku', 'name', 'netoprice','check'];
-  public dataSource: any;
+  public displayedColumns: string[] = ['select','sku', 'name', 'listprice'];
+  public dataSource = new MatTableDataSource<any>([]);
+  public selection = new SelectionModel<any>(true, []);
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -57,6 +61,7 @@ export class WindowModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.disableRemoveProduct = true;
+    this.productsAdded = [];
     if (this.data.type === this.typeModal.newOrder) {
       this.loadData();
     }
@@ -65,39 +70,33 @@ export class WindowModalComponent implements OnInit {
     }
     this.initForm();
   }
-  itemSelected(val: MatCheckboxChange, itemId: string ){
-    console.log('check ', val.checked, itemId)
+  itemSelected(val: MatCheckboxChange, sku: string){
+    if (val.checked) {
+      this.products.forEach(product => {
+        if (product.sku === sku) {
+          this.productsAdded.push(product);
+        }
+      });
+    }else{
+      this.productsAdded = this.productsAdded.filter( product => product.sku !== sku);
+    }
   }
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
-      let listItemsTable: any[]=[];
-      let voucherDetail: VoucherDetail[] = (this.data.voucherDetail as VoucherDetail[]);
-      
       if (resp.ok) {
-        this.products = resp.data;
-        this.products.forEach(product=>{
-         const val =  {
-           id: product._id,
-           sku: product.sku,
-           name: product.name,
-           netoprice: product.netoprice,
-           selected: this.verifyItemSelected(voucherDetail, product._id)
-          }
-          listItemsTable.push(val);
-        });
-        this.dataSource = listItemsTable;
+        this.dataSource = new MatTableDataSource<any>(resp.data);
         this.isLoading = false;
       }
     });
   }
-  verifyItemSelected(voucherDetail: VoucherDetail[], productId: string): boolean{
-    console.log('voucherDetail modal', voucherDetail, productId)
+  verifyItemSelected(voucherDetail: VoucherDetail[], sku: string): boolean{
+    let exist: boolean = false;
     voucherDetail.forEach(voucher => {
-      if (voucher.id === productId) {
-        return true;
+      if (voucher.sku === sku) {
+        exist = true;
       }
     });
-    return false;
+    return exist;
   }
   async loadData(): Promise<void> {
     let resp1: any;
@@ -233,6 +232,9 @@ export class WindowModalComponent implements OnInit {
     this.productsForm.removeAt(this.productsForm.length - 1);
     this.verifyQuantityLot();
   }
+  addItem(): void{
+    this.dialogRef.close(this.selection.selected);
+  }
   verifyQuantityLot() {
     if (this.productsForm.length === 1) {
       this.disableRemoveProduct = true;
@@ -318,8 +320,8 @@ export class WindowModalComponent implements OnInit {
 
     idClient = this.orderForm.controls.clientSelected.value
     address = this.orderForm.controls.address.value
-    console.log('client', this.orderForm.controls.clientSelected.value)
-    console.log('products', this.productsForm.value)
+    //console.log('client', this.orderForm.controls.clientSelected.value)
+    //console.log('products', this.productsForm.value)
     this.productsForm.value.forEach(productForm => {
       // console.log(productForm.product.id, productForm.quantity)
       productsList.push({
@@ -351,8 +353,31 @@ export class WindowModalComponent implements OnInit {
     }
 
   }
-  /* clientSelected: new FormControl('', Validators.required),
-  products: new FormArray([]), */
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: any): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
 
 
 }
