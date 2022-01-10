@@ -83,29 +83,13 @@ export class WindowModalComponent implements OnInit {
   }
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
-      let listItemsTable: any[]=[];
-      let voucherDetail: VoucherDetail[] = (this.data.voucherDetail as VoucherDetail[]);
-      
       if (resp.ok) {
-        // this.products = resp.data;
-        // this.products.forEach(product=>{
-        //  const val =  {
-        //    id: product._id,
-        //    sku: product.sku,
-        //    name: product.name,
-        //    listprice: product.listprice,
-        //    grossPrice: product.grossPrice,
-        //    selected: this.verifyItemSelected(voucherDetail, product.sku)
-        //   }
-        //   listItemsTable.push(val);
-        // });
         this.dataSource = new MatTableDataSource<any>(resp.data);
         this.isLoading = false;
       }
     });
   }
   verifyItemSelected(voucherDetail: VoucherDetail[], sku: string): boolean{
-    //console.log('voucherDetail modal', voucherDetail, sku)
     let exist: boolean = false;
     voucherDetail.forEach(voucher => {
       if (voucher.sku === sku) {
