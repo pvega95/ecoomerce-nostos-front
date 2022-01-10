@@ -19,6 +19,9 @@ export interface ISaleNote {
     dispatchStatus: string;
     voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
+    discountTotalNC: number;
+    gravTotalNC: number;
+    exonTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;
     createdAt: string;
@@ -41,6 +44,9 @@ export class SaleNote {
     dispatchStatus: string;
     voucherDetail: VoucherDetail[];
     brutoTotalNC: number;
+    discountTotalNC: number;
+    gravTotalNC: number;
+    exonTotalNC: number;
     igvTotalNC: number;
     salesTotalNC: number;
     createdAt: string;
@@ -51,7 +57,7 @@ export class SaleNote {
         this.company = saleNote.company || null;
         this.document = saleNote.document || null;
         this.serie = saleNote.serie || null;
-        this.documentNumber = saleNote.documentNumber || null;
+        this.documentNumber = saleNote.documentNumber || 0;
         this.registryDate = saleNote.registryDate || null;
         this.paymentDeadline = saleNote.paymentDeadline || null;
         this.paymentMethod = saleNote.paymentMethod || null;
@@ -60,9 +66,12 @@ export class SaleNote {
         this.note = saleNote.note || null;
         this.dispatchStatus = saleNote.dispatchStatus || null;
         this.voucherDetail = saleNote.voucherDetail || [];
-        this.brutoTotalNC = saleNote.brutoTotalNC || null;
-        this.igvTotalNC = saleNote.igvTotalNC || null;
-        this.salesTotalNC = saleNote.salesTotalNC || null;
+        this.brutoTotalNC = saleNote.brutoTotalNC || 0;
+        this.discountTotalNC = saleNote.discountTotalNC || 0;
+        this.gravTotalNC = saleNote.gravTotalNC || 0;
+        this.exonTotalNC = saleNote.exonTotalNC || 0;
+        this.igvTotalNC = saleNote.igvTotalNC || 0;
+        this.salesTotalNC = saleNote.salesTotalNC || 0;
         this.createdAt = saleNote.createdAt || null;
         this.updatedAt = saleNote.updatedAt || null;
     }

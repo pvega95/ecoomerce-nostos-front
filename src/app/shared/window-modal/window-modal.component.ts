@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 import { Product } from 'app/models/product';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { VoucherDetail } from 'app/models/voucher-detail';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 
@@ -40,8 +42,9 @@ export class WindowModalComponent implements OnInit {
   public productAvailableSearch: boolean = true;
   public totalAmount: number = 0;
   public disableRemoveProduct: boolean;
-  public displayedColumns: string[] = ['sku', 'name', 'listprice','check'];
-  public dataSource: any;
+  public displayedColumns: string[] = ['select','sku', 'name', 'listprice'];
+  public dataSource = new MatTableDataSource<any>([]);
+  public selection = new SelectionModel<any>(true, []);
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -84,18 +87,19 @@ export class WindowModalComponent implements OnInit {
       let voucherDetail: VoucherDetail[] = (this.data.voucherDetail as VoucherDetail[]);
       
       if (resp.ok) {
-        this.products = resp.data;
-        this.products.forEach(product=>{
-         const val =  {
-           id: product._id,
-           sku: product.sku,
-           name: product.name,
-           listprice: product.listprice,
-           selected: this.verifyItemSelected(voucherDetail, product.sku)
-          }
-          listItemsTable.push(val);
-        });
-        this.dataSource = listItemsTable;
+        // this.products = resp.data;
+        // this.products.forEach(product=>{
+        //  const val =  {
+        //    id: product._id,
+        //    sku: product.sku,
+        //    name: product.name,
+        //    listprice: product.listprice,
+        //    grossPrice: product.grossPrice,
+        //    selected: this.verifyItemSelected(voucherDetail, product.sku)
+        //   }
+        //   listItemsTable.push(val);
+        // });
+        this.dataSource = new MatTableDataSource<any>(resp.data);
         this.isLoading = false;
       }
     });
@@ -245,8 +249,7 @@ export class WindowModalComponent implements OnInit {
     this.verifyQuantityLot();
   }
   addItem(): void{
-   // console.log(' this.productsAdded ',  this.productsAdded )
-    this.dialogRef.close(this.productsAdded);
+    this.dialogRef.close(this.selection.selected);
   }
   verifyQuantityLot() {
     if (this.productsForm.length === 1) {
@@ -366,8 +369,31 @@ export class WindowModalComponent implements OnInit {
     }
 
   }
-  /* clientSelected: new FormControl('', Validators.required),
-  products: new FormArray([]), */
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: any): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
 
 
 }

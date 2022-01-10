@@ -1,9 +1,12 @@
+import { IProduct } from "./product";
+
 export interface IVoucherDetail {
     id: string | number;
     sku: string;
     name: string;
     quantity: number;
     igv: number;
+    discount: number;
     unitaryAmountNC: number;
     brutoAmountNC: number;
     discountAmountNC: number;
@@ -18,6 +21,7 @@ export class VoucherDetail {
     name: string;
     quantity: number;
     igv: number;
+    discount: number;
     unitaryAmountNC: number;
     brutoAmountNC: number;
     discountAmountNC: number;
@@ -30,6 +34,7 @@ export class VoucherDetail {
         this.name = voucherDetail.name || null;
         this.quantity = voucherDetail.quantity || null;
         this.igv = voucherDetail.igv || null;
+        this.discount = voucherDetail.discount || null;
         this.unitaryAmountNC = voucherDetail.unitaryAmountNC || null;
         this.brutoAmountNC = voucherDetail.brutoAmountNC || null;
         this.discountAmountNC = voucherDetail.discountAmountNC || null;

@@ -189,7 +189,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     saveSelectedSaleNote(): void {}
 
     quantityUpdated(product): void {
-        this.presenter.addVoucherDetail(product);
+        this.presenter.updateVoucherDetail(product);
     }
 
     cancel(): void {

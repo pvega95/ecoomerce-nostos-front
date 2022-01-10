@@ -1,5 +1,15 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { VoucherDetail } from 'app/models/voucher-detail';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -42,27 +52,36 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnInit(): void {
         this.setInitialData();
-        this.subscription = this.voucher.valueChanges.subscribe((voucher) => {
-            this.quantityUpdated.emit(voucher);
-            this.calculationTotals(voucher);
-        });
+        this.subscription = this.voucher.valueChanges.subscribe(
+            (voucher: VoucherDetail) => {
+                this.quantityUpdated.emit(voucher);
+                this.calculationTotals(voucher);
+            }
+        );
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.voucher && changes.voucher.currentValue !== changes.voucher.previousValue) {
+        if (
+            changes.voucher &&
+            changes.voucher.currentValue !== changes.voucher.previousValue
+        ) {
             this.calculationTotals(this.voucher.getRawValue());
         }
-      }
+    }
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
 
-    calculationTotals(voucher): void {
-        this.brutoAmountNC = this.voucher.get('brutoAmountNC').value;
-        this.discountAmountNC = this.voucher.get('discountAmountNC').value;
-        this.salesAmountNC = this.voucher.get('salesAmountNC').value;
-        this.igvAmountNC = this.voucher.get('igvAmountNC').value;
+    calculationTotals(voucher: VoucherDetail): void {
+        // this.brutoAmountNC = this.voucher.get('brutoAmountNC').value;
+        // this.discountAmountNC = this.voucher.get('discountAmountNC').value;
+        // this.salesAmountNC = this.voucher.get('salesAmountNC').value;
+        // this.igvAmountNC = this.voucher.get('igvAmountNC').value;
+         this.brutoAmountNC = voucher.quantity * voucher.unitaryAmountNC;
+         this.discountAmountNC = this.brutoAmountNC * (voucher.discount / 100);
+         this.salesAmountNC = this.brutoAmountNC - this.discountAmountNC;
+         this.igvAmountNC = this.salesAmountNC * 0.18;
     }
 
     deleteItem(index: number): void {}
@@ -77,5 +96,4 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
         this.salesAmountNC = this.voucher.get('salesAmountNC').value;
         this.igvAmountNC = this.voucher.get('igvAmountNC').value;
     }
-
 }

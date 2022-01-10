@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators,
+} from '@angular/forms';
 import { Product } from 'app/models/product';
+import { SaleNote } from 'app/models/sale-note';
+import { VoucherDetail } from 'app/models/voucher-detail';
 
 @Injectable()
 export class SaleNotePresenter {
@@ -60,13 +68,17 @@ export class SaleNotePresenter {
         });
     }
 
-    public addVoucherDetail(product?: any): void {
+    public addVoucherDetail(product: Product): void {
         const existProduct = this.voucherDetail.controls.findIndex(
             (x: FormControl) => x.value.sku === product.sku
         );
         if (existProduct > -1) {
-            const quantity = product.quantity;
-            const brutoAmountNC = quantity * product.unitaryAmountNC;
+            const quantityControl = this.voucherDetail
+                .at(existProduct)
+                .get('quantity');
+            const quantity = quantityControl.value + 1;
+            const unitaryAmountNC = product.grossPrice;
+            const brutoAmountNC = quantity * unitaryAmountNC;
             const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
             const igvAmountNC = salesAmountNC * 0.18;
@@ -77,9 +89,6 @@ export class SaleNotePresenter {
                     discountAmountNC,
                     salesAmountNC,
                     igvAmountNC,
-                },
-                {
-                    emitEvent: false,
                 }
             );
             this.updateSaleNoteTotals();
@@ -104,12 +113,42 @@ export class SaleNotePresenter {
         }
     }
 
-    public updateVoucherDetail(product?: any): void {
+    public updateVoucherDetail(voucherDetail: VoucherDetail): void {
+        const existProduct = this.voucherDetail.controls.findIndex(
+            (x: FormControl) => x.value.sku === voucherDetail.sku
+        );
+        if (existProduct > -1) {
+            const quantity = voucherDetail.quantity;
+            const unitaryAmountNC = voucherDetail.unitaryAmountNC;
+            const brutoAmountNC = quantity * unitaryAmountNC;
+            const discountAmountNC =
+                brutoAmountNC * (voucherDetail.discount / 100);
+            const salesAmountNC = brutoAmountNC - discountAmountNC;
+            const igvAmountNC = salesAmountNC * 0.18;
+            this.voucherDetail.at(existProduct).patchValue(
+                {
+                    quantity,
+                    brutoAmountNC,
+                    discountAmountNC,
+                    salesAmountNC,
+                    igvAmountNC,
+                },
+                {
+                    emitEvent: false,
+                }
+            );
+        } else {
             const formProduct = this.createVoucherDetailForm();
-            formProduct.patchValue({
-                ...product,
-            });
+            formProduct.patchValue(
+                {
+                    ...voucherDetail,
+                },
+                {
+                    emitEvent: false,
+                }
+            );
             this.voucherDetail.push(formProduct);
+        }
     }
 
     public createVoucherDetailForm(): FormGroup {
@@ -177,15 +216,14 @@ export class SaleNotePresenter {
     public updateSeriesForm(serie: string, correlative: string): void {
         this.form.patchValue({
             serie: serie,
-            documentNumber: correlative,
+            documentNumber: correlative + 1,
         });
     }
 
-    public updateSaleNoteForm(saleNote): void {
-        console.log(saleNote);
+    public updateSaleNoteForm(saleNote: SaleNote): void {
         const voucherDetail = saleNote?.voucherDetail;
         this.form.patchValue(saleNote);
-        if(voucherDetail && voucherDetail.length > 0){
+        if (voucherDetail && voucherDetail.length > 0) {
             voucherDetail.forEach((product) => {
                 this.updateVoucherDetail(product);
             });

@@ -33,6 +33,7 @@ export class SummarySaleNoteComponent implements OnInit {
         this.totalGrossNC = products.reduce((a, b) => a + b.unitaryAmountNC * b.quantity , 0);
         this.totalDiscountNC = products.reduce((a, b) => a + (b.unitaryAmountNC * b.quantity) * ( b.discount / 100 ) , 0);
         this.totalOperationGravNC = products.reduce((a, b) => a + b.brutoAmountNC - b.discountAmountNC , 0);
+        // this.totalOperationGravNC = this.totalGrossNC - this.totalDiscountNC;
         this.totalOperationExonNC = 0;
         this.totalIGV = products.reduce((a, b) => a + b.igvAmountNC, 0);
         this.totalAmountNC = this.totalOperationGravNC + this.totalOperationExonNC + this.totalIGV;
