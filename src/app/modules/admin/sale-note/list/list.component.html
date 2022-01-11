@@ -161,12 +161,23 @@
                             <button
                                 class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                 mat-flat-button
-                                matTooltip="Eliminar producto"
+                                matTooltip="Eliminar nota venta"
                                 (click)="deleteSaleNote(product._id)"
                             >
                                 <mat-icon
                                     class="icon-size-5 deleteIcon"
                                     [svgIcon]="'heroicons_solid:trash'"
+                                ></mat-icon>
+                            </button>
+                            <button
+                                class="min-w-10 min-h-7 h-7 px-2 leading-6"
+                                mat-flat-button
+                                matTooltip="Imprimir nota venta"
+                                (click)="printSaleNote(product._id)"
+                            >
+                                <mat-icon
+                                    class="icon-size-5"
+                                    [svgIcon]="'heroicons_solid:printer'"
                                 ></mat-icon>
                             </button>
                         </span>

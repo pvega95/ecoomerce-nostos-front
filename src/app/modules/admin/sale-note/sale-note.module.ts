@@ -24,6 +24,8 @@ import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit
 import { SaleNoteListComponent } from './list/list.component';
 import { SaleNoteItemComponent } from './create-edit-sale-note/sale-note-item/sale-note-item.component';
 import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-note/summary-sale-note.component';
+import { CommonModule } from '@angular/common';
+import { InvoiceComponent } from './invoice/invoice.component';
 
 @NgModule({
     declarations: [
@@ -31,7 +33,8 @@ import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-n
         CreateEditSaleNoteComponent,
         SaleNoteListComponent,
         SaleNoteItemComponent,
-        SummarySaleNoteComponent
+        SummarySaleNoteComponent,
+        InvoiceComponent
     ],
     imports     : [
         RouterModule.forChild(saleNoteRoutes),

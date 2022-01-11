@@ -4,12 +4,10 @@ import {
     Component,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNote } from 'app/models/sale-note';
 import { SaleNoteService } from '../sale-note.service';
 import { MatSort } from '@angular/material/sort';
@@ -17,14 +15,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-
-const createLabel = ' (Nueva)';
-const editLabel = ' (Editar)';
-
 @Component({
     selector: 'sale-note-list',
     templateUrl: './list.component.html',
-    // encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     styles: [
         /* language=SCSS */
@@ -129,5 +122,9 @@ export class SaleNoteListComponent implements OnInit {
                 });
             }
         });
+    }
+
+    printSaleNote(id: string): void {
+        this.router.navigate([`/salenote/print/${id}`]);
     }
 }
