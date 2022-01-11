@@ -54,6 +54,12 @@ const editLabel = ' (Editar)';
                     grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
                 }
             }
+            .editIcon:hover{
+                color: blue !important;
+            }
+            .deleteIcon:hover{
+                color: red !important;
+            }
         `,
     ],
 })

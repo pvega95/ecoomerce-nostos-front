@@ -9,6 +9,7 @@ import {
 import { Product } from 'app/models/product';
 import { SaleNote } from 'app/models/sale-note';
 import { VoucherDetail } from 'app/models/voucher-detail';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable()
 export class SaleNotePresenter {
@@ -81,7 +82,7 @@ export class SaleNotePresenter {
             const brutoAmountNC = quantity * unitaryAmountNC;
             const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
-            const igvAmountNC = salesAmountNC * 0.18;
+            const igvAmountNC = salesAmountNC * environment.IGV;
             this.voucherDetail.at(existProduct).patchValue(
                 {
                     quantity,

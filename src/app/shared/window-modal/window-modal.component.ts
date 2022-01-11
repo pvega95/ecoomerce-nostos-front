@@ -15,6 +15,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
+import { CommonService } from '../services/common.service';
 
 
 
@@ -84,6 +85,12 @@ export class WindowModalComponent implements OnInit {
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
       if (resp.ok) {
+        
+        resp.data = resp.data.map( x =>{ 
+          x.selected = this.verifyItemSelected( this.data.voucherDetail, x.sku);
+          return x;
+        });
+        console.log('resp.data',this.data.voucherDetail,  resp.data)
         this.dataSource = new MatTableDataSource<any>(resp.data);
         this.isLoading = false;
       }
