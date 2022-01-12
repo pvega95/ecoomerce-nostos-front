@@ -24,49 +24,62 @@
                 sm:items-end sm:justify-between
             "
         >
-            <div class="products__actions flex gap-6">
-                <mat-form-field
-                    class="fuse-mat-dense fuse-mat-no-subscript min-w-90"
-                    [floatLabel]="'always'"
-                >
-                    <mat-icon
-                        matPrefix
-                        [svgIcon]="'heroicons_outline:search'"
-                    ></mat-icon>
-                    <mat-label>Cliente</mat-label>
-                    <input
-                        matInput
-                        [formControl]="searchInputControl"
-                        [autocomplete]="'off'"
-                        [placeholder]="'Buscar por cliente'"
-                    />
-                </mat-form-field>
-                <mat-form-field
-                    class="fuse-mat-dense fuse-mat-no-subscript min-w-90"
-                    [floatLabel]="'always'"
-                >
-                    <mat-icon
-                        matPrefix
-                        [svgIcon]="'heroicons_outline:search'"
-                    ></mat-icon>
-                    <mat-label>Estado</mat-label>
-                    <input
-                        matInput
-                        [formControl]="searchInputControl"
-                        [autocomplete]="'off'"
-                        [placeholder]="'Buscar por estado'"
-                    />
-                </mat-form-field>
+            <div class="relative flex-row flex-0 mx-3 w-full">
+                <div class="relative flex items-center flex-0 ">
+                    <div class=" w-4/12">
+                        <mat-form-field
+                        class="pr-2 fuse-mat-dense fuse-mat-no-subscript"
+                        style="width: 100%;"
+                        [floatLabel]="'always'"
+                    >
+                        <mat-icon
+                            matPrefix
+                            [svgIcon]="'heroicons_outline:search'"
+                        ></mat-icon>
+                        <mat-label>Cliente</mat-label>
+                        <input
+                            matInput
+                            [formControl]="searchInputControlClient"
+                            [autocomplete]="'off'"
+                            [placeholder]="'Buscar por cliente'"
+                        />
+                    </mat-form-field>
+                    </div>
+                    <div class=" w-4/12">
+                        <mat-form-field
+                        class="pr-2 fuse-mat-dense fuse-mat-no-subscript "
+                        style="width: 100%;"
+                        [floatLabel]="'always'"
+                            >
+                        <mat-icon
+                            matPrefix
+                            [svgIcon]="'heroicons_outline:search'"
+                        ></mat-icon>
+                        <mat-label>Estado</mat-label>
+                        <input
+                            matInput
+                            [formControl]="searchInputControlStatus"
+                            [autocomplete]="'off'"
+                            [placeholder]="'Buscar por estado'"
+                        />
+                    </mat-form-field>
+                    </div>
+                    <div class=" w-4/12 mt-4">
+                        <button
+                            class="ml-4"
+                            mat-flat-button
+                            [color]="'primary'"
+                            [routerLink]="['new']"
+                        >
+                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        <span class="ml-2 mr-1">Agregar venta nueva</span>
+                    </button>
+                    </div>
+                </div>
+
+ 
             </div>
-            <button
-                class="ml-4"
-                mat-flat-button
-                [color]="'primary'"
-                [routerLink]="['new']"
-            >
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Agregar venta nueva</span>
-            </button>
+
         </div>
     </div>
     <div class="overflow-x-auto mx-6">
@@ -86,7 +99,7 @@
                         Cliente
                     </th>
                     <td mat-cell *matCellDef="let product">
-                        <span class="pr-6 whitespace-nowrap">
+                        <span [matTooltip]="product.client" class="pr-6 whitespace-nowrap">
                             {{ product.client }}
                         </span>
                     </td>
@@ -105,7 +118,7 @@
 
                 <ng-container matColumnDef="serie">
                     <th
-                        class="w-60"
+                    
                         mat-header-cell
                         mat-sort-header
                         *matHeaderCellDef
@@ -123,7 +136,7 @@
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>
                         Numero documento
                     </th>
-                    <td mat-cell *matCellDef="let product">
+                    <td mat-cell *matCellDef="let product" style="text-align: right;">
                         <span class="pr-6 whitespace-nowrap">
                             {{ product.documentNumber }}
                         </span>
@@ -131,10 +144,10 @@
                 </ng-container>
 
                 <ng-container matColumnDef="salestotal">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef class="header-align-center">
                         Precio Venta Final
                     </th>
-                    <td mat-cell *matCellDef="let product">
+                    <td mat-cell *matCellDef="let product" >
                         <span class="pr-6 whitespace-nowrap">
                             {{ product.salesTotalNC | number: "1.2-2" }}
                         </span>

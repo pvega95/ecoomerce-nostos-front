@@ -71,6 +71,11 @@ export class WindowModalComponent implements OnInit {
     }
     this.initForm();
   }
+
+  applyFilterItem(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
   itemSelected(val: MatCheckboxChange, sku: string){
     if (val.checked) {
       this.products.forEach(product => {
@@ -90,7 +95,7 @@ export class WindowModalComponent implements OnInit {
           x.selected = this.verifyItemSelected( this.data.voucherDetail, x.sku);
           return x;
         });
-        console.log('resp.data',this.data.voucherDetail,  resp.data)
+    //    console.log('resp.data',this.data.voucherDetail,  resp.data)
         this.dataSource = new MatTableDataSource<any>(resp.data);
         this.isLoading = false;
       }
@@ -101,6 +106,7 @@ export class WindowModalComponent implements OnInit {
     voucherDetail.forEach(voucher => {
       if (voucher.sku === sku) {
         exist = true;
+        this.selection.toggle(voucher);
       }
     });
     return exist;
@@ -365,6 +371,7 @@ export class WindowModalComponent implements OnInit {
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
+    console.log('numSelected, numRows', numSelected, numRows)
     return numSelected === numRows;
   }
 

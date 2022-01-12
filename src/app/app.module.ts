@@ -11,7 +11,9 @@ import { appConfig } from 'app/core/config/app.config';
 import { mockApiServices } from 'app/mock-api';
 import { LayoutModule } from 'app/layout/layout.module';
 import { AppComponent } from 'app/app.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { appRoutes } from 'app/app.routing';
+import { LoadingServicesInterceptor } from './interceptor/loading-services.interceptor';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy       : PreloadAllModules,
@@ -40,6 +42,9 @@ const routerConfig: ExtraOptions = {
 
         // 3rd party modules that require global configuration via forRoot
         MarkdownModule.forRoot({})
+    ],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: LoadingServicesInterceptor, multi: true },
     ],
     bootstrap   : [
         AppComponent

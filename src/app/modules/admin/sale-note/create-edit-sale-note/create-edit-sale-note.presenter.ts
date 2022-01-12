@@ -6,6 +6,7 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
+import { FuseUtilsService } from '@fuse/services/utils/utils.service';
 import { Product } from 'app/models/product';
 import { SaleNote } from 'app/models/sale-note';
 import { VoucherDetail } from 'app/models/voucher-detail';
@@ -37,7 +38,10 @@ export class SaleNotePresenter {
     createdAt: FormControl;
     updatedAt: FormControl;
 
-    constructor(protected fb: FormBuilder) {
+    constructor(
+        protected fb: FormBuilder, 
+        private fuseUtilsService: FuseUtilsService
+        ) {
         this.createValidators();
         this.createForm();
     }
@@ -67,6 +71,8 @@ export class SaleNotePresenter {
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
         });
+        this.form.controls.createdAt.disable();
+        this.form.controls.updatedAt.disable();
     }
 
     public addVoucherDetail(product: Product): void {
@@ -77,8 +83,9 @@ export class SaleNotePresenter {
             const quantityControl = this.voucherDetail
                 .at(existProduct)
                 .get('quantity');
-            const quantity = quantityControl.value + 1;
+            const quantity = quantityControl.value ;
             const unitaryAmountNC = product.grossPrice;
+            const sku = product.sku;
             const brutoAmountNC = quantity * unitaryAmountNC;
             const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
@@ -86,6 +93,7 @@ export class SaleNotePresenter {
             this.voucherDetail.at(existProduct).patchValue(
                 {
                     quantity,
+                    sku,
                     brutoAmountNC,
                     discountAmountNC,
                     salesAmountNC,
@@ -97,12 +105,14 @@ export class SaleNotePresenter {
             const formProduct = this.createVoucherDetailForm();
             const quantity = 1;
             const unitaryAmountNC = product.grossPrice;
+            const sku = product.sku;
             const brutoAmountNC = unitaryAmountNC * quantity;
             const discountAmountNC = brutoAmountNC * (product.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
-            const igvAmountNC = salesAmountNC * 0.18;
+            const igvAmountNC = salesAmountNC * environment.IGV;
             formProduct.patchValue({
                 ...product,
+                sku,
                 quantity,
                 unitaryAmountNC,
                 brutoAmountNC,
@@ -125,7 +135,7 @@ export class SaleNotePresenter {
             const discountAmountNC =
                 brutoAmountNC * (voucherDetail.discount / 100);
             const salesAmountNC = brutoAmountNC - discountAmountNC;
-            const igvAmountNC = salesAmountNC * 0.18;
+            const igvAmountNC = salesAmountNC * environment.IGV;
             this.voucherDetail.at(existProduct).patchValue(
                 {
                     quantity,
@@ -223,6 +233,8 @@ export class SaleNotePresenter {
 
     public updateSaleNoteForm(saleNote: SaleNote): void {
         const voucherDetail = saleNote?.voucherDetail;
+        saleNote.createdAt = this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(saleNote.createdAt));
+        saleNote.updatedAt = this.fuseUtilsService.formatDate(this.fuseUtilsService.stringToDate(saleNote.updatedAt));
         this.form.patchValue(saleNote);
         if (voucherDetail && voucherDetail.length > 0) {
             voucherDetail.forEach((product) => {
@@ -255,5 +267,7 @@ export class SaleNotePresenter {
         this.salesTotalNC = new FormControl(0);
         this.createdAt = new FormControl('');
         this.updatedAt = new FormControl('');
+
+        
     }
 }

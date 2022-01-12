@@ -38,12 +38,13 @@ import { ActivatedRoute, Router } from '@angular/router';
     providers: [SaleNotePresenter],
 })
 export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
-    @Input() salesNoteInput: SaleNote = null;
+   // @Input() salesNoteInput: SaleNote = null;
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
     public paymentMethods: PaymentMethod[];
     public id: string;
+    public salesNoteInput: SaleNote;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
         private companyService: CompanyService,
@@ -80,12 +81,13 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                     .getListSaleNoteById(id)
                     .pipe(map((resp) => resp.data))
                     .subscribe((saleNote) => {
+                        this.salesNoteInput = saleNote[0];
                         this.presenter.updateSaleNoteForm(saleNote[0]);
                     });
             }
         });
 
-        // Get the categories
+        // Get the companies
         this.companyService.companies$
             .pipe(
                 map((resp: any) => resp.data),
@@ -168,9 +170,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             height: '30rem',
             data: {
                 type: Modal.newItem,
-                voucherDetail: this.salesNoteInput
-                    ? this.salesNoteInput.voucherDetail
-                    : [],
+                voucherDetail: this.presenter.voucherDetail.getRawValue(),
             },
             disableClose: true,
         });
@@ -181,12 +181,11 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             }
         });
     }
-    deleteItem(sku: string): void {
-        console.log('voucherId', sku);
+    onDelete(sku: string): void {
+        const index = this.voucherControls.findIndex(x => x.getRawValue().sku === sku);
+        this.voucherControls.splice(index, 1);
+        this.vouchers.patchValue(this.voucherControls); // actualiza lista de voucher en caso de nueva o editar venta
     }
-    cancelSelectedSaleNote(): void {}
-    createSaleNote(): void {}
-    saveSelectedSaleNote(): void {}
 
     quantityUpdated(product): void {
         this.presenter.updateVoucherDetail(product);

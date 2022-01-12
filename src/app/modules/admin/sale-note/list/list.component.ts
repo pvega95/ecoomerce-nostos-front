@@ -38,6 +38,37 @@ const editLabel = ' (Editar)';
                     }
                 }
             }
+            .mat-column-client {
+                width: 25% !important;
+              }
+            .mat-column-document {
+                width: 15% !important;
+             }
+            .mat-column-serie {
+                width: 10% !important;
+              }
+            .mat-column-documentnumber {
+                width: 16% !important;
+            }
+            .mat-column-salestotal {
+                width: 18% !important;
+                text-align: right !important;
+            }
+            .mat-column-actions {
+                width: 16% !important;
+            }
+            .header-align-right{
+                ::ng-deep .mat-sort-header-container {
+                    display:flex;
+                    justify-content:end;
+                  }
+              }
+            .header-align-center{
+                ::ng-deep .mat-sort-header-container {
+                    display:flex;
+                    justify-content:center;
+                  }
+              }
 
             .inventory-grid {
                 grid-template-columns: 48px auto 40px;
@@ -47,13 +78,15 @@ const editLabel = ' (Editar)';
                 }
 
                 @screen md {
-                    grid-template-columns: 48px 112px auto 112px 72px;
+                    grid-template-columns: 5rem 112px auto 3rem 72px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
+                    grid-template-columns: 5rem 112px auto 3rem 96px 96px 72px;
                 }
             }
+  
+
             .editIcon:hover{
                 color: blue !important;
             }
@@ -81,8 +114,8 @@ export class SaleNoteListComponent implements OnInit {
     ];
 
     public salesNotes: SaleNote[];
-    public salesNotesFiltered: SaleNote[] = [];
-    searchInputControl: FormControl = new FormControl();
+    searchInputControlClient: FormControl = new FormControl();
+    searchInputControlStatus: FormControl = new FormControl();
     isLoading: boolean;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
@@ -94,6 +127,23 @@ export class SaleNoteListComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadListSaleNote();
+        this.searchInputControlClient.valueChanges
+        .pipe(
+            takeUntil(this._unsubscribeAll),
+            debounceTime(300),
+            switchMap((queryInput) => {
+                this.isLoading = true;
+                const query = (queryInput as string).toLowerCase();
+              return this.recentTransactionsDataSource.data = this.salesNotes.filter((salesNote)=>{
+                    return (salesNote.client as string).toLowerCase().match(query) 
+               });
+            }),
+            map(() => {
+                this.isLoading = false;
+            })
+        )
+        .subscribe(); 
+
     }
 
     loadListSaleNote(): void {
@@ -101,7 +151,7 @@ export class SaleNoteListComponent implements OnInit {
         this.saleNoteService.saleNotes$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp: any) => {
-                this.salesNotes = this.salesNotesFiltered = resp.data;
+                this.salesNotes = resp.data;
                 this.recentTransactionsDataSource.data = this.salesNotes;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

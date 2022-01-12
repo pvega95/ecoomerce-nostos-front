@@ -1,5 +1,5 @@
 <div class="flex flex-col flex-auto min-w-0 p-8 mb-16 sm:overflow-hidden">
-    <div class="text-4xl font-extrabold mb-4">Venta Nueva</div>
+    <div class="text-4xl font-extrabold mb-4">{{ id ? 'Editar Venta' : 'Venta Nueva' }} </div>
     <div class="relative flex-row flex-0" [formGroup]="presenter.form">
         <div class="flex space-x-4">
             <div class="w-1/3">
@@ -125,7 +125,7 @@
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
                     <mat-label>Fecha de emisión</mat-label>
                     <input
-                        formControlName="registryDate"
+                        formControlName="createdAt"
                         matInput
                         [autocomplete]="'off'"
                         [placeholder]="'Seleccione fecha'"
@@ -235,7 +235,7 @@
                             [index]="i"
                             [vouchersLength]="voucherControls.length"
                             [voucher]="voucher"
-                            (delete)="onDelete($event)"
+                            (deleteItemBySku)= "onDelete($event)"
                             (quantityUpdated)="quantityUpdated($event)"
                         ></app-sale-note-item>
                     </ng-container>
@@ -251,54 +251,6 @@
                         *ngIf="salesNoteInput?.voucherDetail.length > 0"
                         class="flex justify-end mt-4"
                     >
-                        <div class="flex flex-col w-2/5">
-                            <div class="relative flex-row flex-0 mx-2 p-0">
-                                <div class="relative flex flex-0 justify-end">
-                                    <div class="w-4/12">
-                                        <button
-                                            class="-ml-4"
-                                            mat-button
-                                            [color]="'warn'"
-                                            (click)="cancelSelectedSaleNote()"
-                                        >
-                                            Cancelar
-                                        </button>
-                                    </div>
-                                    <div class="w-4/12">
-                                        <button
-                                            *ngIf="salesNoteInput"
-                                            mat-flat-button
-                                            [color]="'primary'"
-                                            (click)="saveSelectedSaleNote()"
-                                        >
-                                            <span *ngIf="isLoading">
-                                                Guardar
-                                            </span>
-                                            <mat-progress-spinner
-                                                *ngIf="!isLoading"
-                                                [diameter]="22"
-                                                [mode]="'indeterminate'"
-                                            ></mat-progress-spinner>
-                                        </button>
-                                        <button
-                                            *ngIf="!salesNoteInput"
-                                            mat-flat-button
-                                            [color]="'primary'"
-                                            (click)="createSaleNote()"
-                                        >
-                                            <span *ngIf="isLoading">
-                                                Registrar nueva
-                                            </span>
-                                            <mat-progress-spinner
-                                                *ngIf="!isLoading"
-                                                [diameter]="22"
-                                                [mode]="'indeterminate'"
-                                            ></mat-progress-spinner>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </ng-container>
