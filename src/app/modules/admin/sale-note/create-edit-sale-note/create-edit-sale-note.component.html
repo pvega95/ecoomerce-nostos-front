@@ -9,7 +9,7 @@
                         formControlName="client"
                         matInput
                         [autocomplete]="'off'"
-                        [placeholder]="'Ingrese descripcion'"
+                        [placeholder]="'Ingrese nombre cliente'"
                     />
                 </mat-form-field>
             </div>
@@ -67,7 +67,7 @@
             <div class="w-1/3">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
                     <mat-label>Plazo pago</mat-label>
-                    <mat-select formControlName="paymentDeadline" placeholder="Seleccione documento">
+                    <mat-select formControlName="paymentDeadline" placeholder="Seleccione plazo pago">
                         <mat-option
                             *ngFor="let paymentDeadline of paymentDeadlines"
                             [value]="paymentDeadline._id"
@@ -120,19 +120,19 @@
             </div>
         </div>
 
-        <div *ngIf="salesNoteInput" class="flex space-x-4">
-            <div class="w-1/3">
+        <div *ngIf="id" class="flex">
+            <div class="w-1/3 pr-2.5">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
                     <mat-label>Fecha de emisión</mat-label>
                     <input
-                        formControlName="registryDate"
+                        formControlName="createdAt"
                         matInput
                         [autocomplete]="'off'"
                         [placeholder]="'Seleccione fecha'"
                     />
                 </mat-form-field>
             </div>
-            <div class="w-1/3">
+            <div class="w-1/3 pl-1.5">
                 <mat-form-field class="min-w-full" [floatLabel]="'always'">
                     <mat-label>Fecha de modificación</mat-label>
                     <input
@@ -235,7 +235,7 @@
                             [index]="i"
                             [vouchersLength]="voucherControls.length"
                             [voucher]="voucher"
-                            (delete)="onDelete($event)"
+                            (saleNoteDeleted)="onDelete($event)"
                             (quantityUpdated)="quantityUpdated($event)"
                         ></app-sale-note-item>
                     </ng-container>

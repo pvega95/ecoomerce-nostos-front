@@ -40,6 +40,7 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
     @Input() vouchersLength: number;
     @Input() voucher: FormGroup;
     @Output() quantityUpdated: EventEmitter<any> = new EventEmitter();
+    @Output() saleNoteDeleted: EventEmitter<number> = new EventEmitter();
     sku = '';
     name = '';
     quantity = 0;
@@ -83,8 +84,6 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
          this.salesAmountNC = this.brutoAmountNC - this.discountAmountNC;
          this.igvAmountNC = this.salesAmountNC * 0.18;
     }
-
-    deleteItem(index: number): void {}
 
     private setInitialData(): void {
         this.sku = this.voucher.get('sku').value;

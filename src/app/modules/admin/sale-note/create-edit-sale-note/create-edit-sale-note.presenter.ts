@@ -231,6 +231,10 @@ export class SaleNotePresenter {
         }
     }
 
+    public removeVoucherDetail(index: number ): void {
+        this.voucherDetail.removeAt(index);
+    }
+
     private createValidators(): void {
         this._id = new FormControl('');
         this.client = new FormControl('', [Validators.required]);

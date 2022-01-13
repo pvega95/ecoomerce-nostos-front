@@ -181,9 +181,11 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             }
         });
     }
-    deleteItem(sku: string): void {
-        console.log('voucherId', sku);
+
+    onDelete(index: number): void {
+        this.presenter.removeVoucherDetail(index);
     }
+
     cancelSelectedSaleNote(): void {}
     createSaleNote(): void {}
     saveSelectedSaleNote(): void {}

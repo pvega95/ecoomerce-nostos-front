@@ -6,7 +6,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { take, takeUntil } from 'rxjs/operators';
+import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SaleNote } from 'app/models/sale-note';
 import { SaleNoteService } from '../sale-note.service';
@@ -66,9 +66,9 @@ export class SaleNoteListComponent implements OnInit {
         'salestotal',
         'actions',
     ];
-
     public salesNotes: SaleNote[];
     public salesNotesFiltered: SaleNote[] = [];
+    searchInputControlClient: FormControl = new FormControl();
     searchInputControl: FormControl = new FormControl();
     isLoading: boolean;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -76,11 +76,30 @@ export class SaleNoteListComponent implements OnInit {
         private saleNoteService: SaleNoteService,
         private router: Router,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _fuseConfirmationService: FuseConfirmationService,
+        private _fuseConfirmationService: FuseConfirmationService
     ) {}
 
     ngOnInit(): void {
         this.loadListSaleNote();
+        this.searchInputControlClient.valueChanges
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(300),
+                switchMap((queryInput: string) => {
+                    this.isLoading = true;
+                    const query = (queryInput as string).toLowerCase();
+                    return (this.recentTransactionsDataSource.data =
+                        this.salesNotes.filter((salesNote) => {
+                            return (salesNote.client as string)
+                                .toLowerCase()
+                                .match(query);
+                        }));
+                }),
+                map(() => {
+                    this.isLoading = false;
+                })
+            )
+            .subscribe();
     }
 
     loadListSaleNote(): void {
@@ -116,8 +135,11 @@ export class SaleNoteListComponent implements OnInit {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 this.saleNoteService.deleteSaleNote(id).subscribe((resp) => {
-                    if(resp.ok) {
-                        this.saleNoteService.getListSaleNote().pipe(take(1)).subscribe();
+                    if (resp.ok) {
+                        this.saleNoteService
+                            .getListSaleNote()
+                            .pipe(take(1))
+                            .subscribe();
                     }
                 });
             }

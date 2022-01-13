@@ -5,7 +5,7 @@ import { Document } from './document';
 
 export interface ISaleNote {
     _id?: string;
-    client: Client;
+    client: string;
     company: string;
     document: Document;
     serie: string;
@@ -30,7 +30,7 @@ export interface ISaleNote {
 
 export class SaleNote {
     _id?: string;
-    client: Client;
+    client: string;
     company: string;
     document: Document;
     serie: string;
