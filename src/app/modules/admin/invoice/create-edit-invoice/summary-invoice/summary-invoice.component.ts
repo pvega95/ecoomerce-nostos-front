@@ -3,11 +3,11 @@ import { FormArray, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-summary-sale-note',
-    templateUrl: './summary-sale-note.component.html',
+    selector: 'app-summary-invoice',
+    templateUrl: './summary-invoice.component.html',
     // styles: [``],
 })
-export class SummarySaleNoteComponent implements OnInit {
+export class SummaryInvoiceComponent implements OnInit {
     @Input() form: FormGroup;
     totalGrossNC: number;
     totalDiscountNC: number;

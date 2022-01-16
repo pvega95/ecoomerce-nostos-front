@@ -9,17 +9,16 @@ import { CompanyService } from '../setting/company/company.service';
 import { DocumentService } from '../setting/document/document.service';
 import { PaymentDeadlineService } from '../setting/payment-deadline/payment-deadline.service';
 import { PaymentMethodService } from '../setting/payment-method/payment-method.service';
-import { ProductsService } from '../setting/products/products.service';
-import { SaleNoteService } from './sale-note.service';
+import { InvoiceService } from './invoice.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class SaleNoteListResolver implements Resolve<any> {
+export class InvoiceListResolver implements Resolve<any> {
     /**
      * Constructor
      */
-    constructor(private _saleNoteService: SaleNoteService) {}
+    constructor(private _invoiceService: InvoiceService) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -35,14 +34,14 @@ export class SaleNoteListResolver implements Resolve<any> {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<any[]> {
-        return this._saleNoteService.getListSaleNote();
+        return this._invoiceService.getListInvoice();
     }
 }
 
 @Injectable({
     providedIn: 'root',
 })
-export class SaleNoteInitialDataResolver implements Resolve<any> {
+export class InvoiceInitialDataResolver implements Resolve<any> {
     /**
      * Constructor
      */
@@ -50,7 +49,6 @@ export class SaleNoteInitialDataResolver implements Resolve<any> {
         private companyService: CompanyService,
         private documentService: DocumentService,
         private paymentDeadlineService: PaymentDeadlineService,
-        private productsService: ProductsService,
         private paymentsMethod: PaymentMethodService
     ) {}
 

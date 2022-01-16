@@ -14,7 +14,7 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <ng-container *transloco="let t">
-            <div class="text-4xl mb-4">Ventas</div>
+            <div class="text-4xl mb-4">Facturacion</div>
         </ng-container>
         <div
             class="
@@ -65,7 +65,7 @@
                 [routerLink]="['new']"
             >
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Agregar venta nueva</span>
+                <span class="ml-2 mr-1">Agregar factura</span>
             </button>
         </div>
     </div>
@@ -87,7 +87,7 @@
                     </th>
                     <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
-                            {{ product.client }}
+                            {{ product.client.comercialName }}
                         </span>
                     </td>
                 </ng-container>

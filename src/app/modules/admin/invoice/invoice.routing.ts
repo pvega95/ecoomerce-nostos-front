@@ -1,40 +1,40 @@
 import { Route } from '@angular/router';
-import { SaleNoteComponent } from 'app/modules/admin/sale-note/sale-note.component';
-import { CreateEditSaleNoteComponent } from './create-edit-invoice/create-edit-sale-note.component';
-import { InvoiceComponent } from './printable/invoice.component';
-import { SaleNoteListComponent } from './list/list.component';
-import { SaleNoteInitialDataResolver, SaleNoteListResolver } from './sale-note.resolvers';
+import { InvoiceListComponent } from './list/list.component';
+import { CreateEditInvoiceComponent } from './create-edit-invoice/create-edit-invoice.component';
+import { InvoiceInitialDataResolver, InvoiceListResolver } from './invoice.resolvers';
+import { InvoicePrintableComponent } from './printable/printable.component';
+import { InvoiceComponent } from './invoice.component';
 
-export const saleNoteRoutes: Route[] = [
+export const invoiceRoutes: Route[] = [
     {
         path     : '',
-        component: SaleNoteComponent,
+        component: InvoiceComponent,
         children : [
             {
                 path     : '',
                 pathMatch: 'full',
-                component: SaleNoteListComponent,
+                component: InvoiceListComponent,
                 resolve  : {
-                    saleNotes : SaleNoteListResolver
+                    saleNotes : InvoiceListResolver
                 },
             },
             {
                 path     : 'new',
-                component: CreateEditSaleNoteComponent,
+                component: CreateEditInvoiceComponent,
                 resolve    : {
-                    saleNoteInitalData: SaleNoteInitialDataResolver,
+                    saleNoteInitalData: InvoiceInitialDataResolver,
                 },
             },
             {
                 path     : 'edit/:id',
-                component: CreateEditSaleNoteComponent,
+                component: CreateEditInvoiceComponent,
                 resolve    : {
-                    saleNoteInitalData: SaleNoteInitialDataResolver,
+                    saleNoteInitalData: InvoiceInitialDataResolver,
                 },
             },
             {
                 path     : 'print/:id',
-                component: InvoiceComponent
+                component: InvoicePrintableComponent
             },
         ]
     }

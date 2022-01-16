@@ -1,13 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-sale-note',
-  templateUrl: './sale-note.component.html',
-  styleUrls: ['./sale-note.component.scss'],
+    selector: 'app-invoice',
+    templateUrl: './invoice.component.html',
+    styleUrls: ['./invoice.component.scss'],
 })
-export class SaleNoteComponent implements OnInit {
-  ngOnInit(): void {
-    
-  }
-  
+export class InvoiceComponent implements OnInit {
+    ngOnInit(): void {}
 }

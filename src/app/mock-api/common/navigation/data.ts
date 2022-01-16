@@ -24,6 +24,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/salenote'
     },
     {
+        id   : 'invoice.id',
+        title: 'invoice',
+        type : 'basic',
+        icon : 'heroicons_outline:document-text',
+        link : '/invoice'
+    },
+    {
         id      : 'setting.id.0',
         title   : 'setting',
         icon    : 'heroicons_outline:cog',

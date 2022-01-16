@@ -1,5 +1,3 @@
-import { IProduct } from "./product";
-
 export interface IVoucherDetail {
     id: string | number;
     sku: string;

@@ -4,15 +4,14 @@ import { environment } from '../../../../environments/environment';
 
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { SaleNote } from 'app/models/sale-note';
 
 @Injectable({
     providedIn: 'root',
 })
-export class SaleNoteService {
+export class InvoiceService {
     static readonly BASE_URL = `${environment.backendURL}`;
     static readonly orderManagement = '/order-management';
-    private _salesNotes: BehaviorSubject<any[] | null> = new BehaviorSubject(
+    private _invoices: BehaviorSubject<any[] | null> = new BehaviorSubject(
         null
     );
     constructor(private http: HttpClient) {}
@@ -21,7 +20,7 @@ export class SaleNoteService {
      * Getter for sale notes
      */
     get saleNotes$(): Observable<any[]> {
-        return this._salesNotes.asObservable();
+        return this._invoices.asObservable();
     }
 
     formatErrors(error: HttpErrorResponse) {
@@ -29,46 +28,46 @@ export class SaleNoteService {
         return throwError(messageError);
     }
 
-    getListSaleNote(): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales`;
+    getListInvoice(): Observable<any> {
+        const url = `${InvoiceService.BASE_URL}${InvoiceService.orderManagement}/invoice`;
         return this.http.get(url).pipe(
             tap((response: any) => {
-                this._salesNotes.next(response);
+                this._invoices.next(response);
             }),
             catchError((error) => this.formatErrors(error))
         );
     }
 
-    getListSaleNoteById(id: string): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+    getListInvoiceById(id: string): Observable<any> {
+        const url = `${InvoiceService.BASE_URL}${InvoiceService.orderManagement}/invoice/${id}`;
         return this.http.get(url).pipe(
             catchError((error) => this.formatErrors(error))
         );
     }
 
-    createSaleNote(body: any): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales`;
+    createInvoice(body: any): Observable<any> {
+        const url = `${InvoiceService.BASE_URL}${InvoiceService.orderManagement}/invoice`;
         return this.http
             .post(url, body)
             .pipe(catchError((error: any) => this.formatErrors(error)));
     }
 
-    updateSaleNote(body: any, id: string): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+    updateInvoice(body: any, id: string): Observable<any> {
+        const url = `${InvoiceService.BASE_URL}${InvoiceService.orderManagement}/invoice/${id}`;
         return this.http
             .put(url, body)
             .pipe(catchError((error: any) => this.formatErrors(error)));
     }
 
-    deleteSaleNote(id: string): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}${SaleNoteService.orderManagement}/sales/${id}`;
+    deleteInvoice(id: string): Observable<any> {
+        const url = `${InvoiceService.BASE_URL}${InvoiceService.orderManagement}/invoice/${id}`;
         return this.http
             .delete(url)
             .pipe(catchError((error: any) => this.formatErrors(error)));
     }
 
     getSerie(companyId: string, documentId: string): Observable<any> {
-        const url = `${SaleNoteService.BASE_URL}/configuration-management/document-serial/${companyId}/${documentId}`;
+        const url = `${InvoiceService.BASE_URL}/configuration-management/document-serial/${companyId}/${documentId}`;
         return this.http.get(url).pipe(
             catchError((error) => this.formatErrors(error))
         );

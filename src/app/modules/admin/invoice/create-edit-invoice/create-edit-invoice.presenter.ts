@@ -11,7 +11,7 @@ import { SaleNote } from 'app/models/sale-note';
 import { VoucherDetail } from 'app/models/voucher-detail';
 
 @Injectable()
-export class SaleNotePresenter {
+export class InvoicePresenter {
     form: FormGroup;
     _id: FormControl;
     client: FormControl;
