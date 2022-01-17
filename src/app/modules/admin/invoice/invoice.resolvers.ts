@@ -9,6 +9,7 @@ import { CompanyService } from '../setting/company/company.service';
 import { DocumentService } from '../setting/document/document.service';
 import { PaymentDeadlineService } from '../setting/payment-deadline/payment-deadline.service';
 import { PaymentMethodService } from '../setting/payment-method/payment-method.service';
+import { TypeDocumentService } from '../setting/type-document/type-document.service';
 import { InvoiceService } from './invoice.service';
 
 @Injectable({
@@ -49,7 +50,8 @@ export class InvoiceInitialDataResolver implements Resolve<any> {
         private companyService: CompanyService,
         private documentService: DocumentService,
         private paymentDeadlineService: PaymentDeadlineService,
-        private paymentsMethod: PaymentMethodService
+        private paymentsMethod: PaymentMethodService,
+        private typeDocumentService: TypeDocumentService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -72,6 +74,7 @@ export class InvoiceInitialDataResolver implements Resolve<any> {
             this.documentService.getListDocument(),
             this.paymentDeadlineService.getListPaymentDeadline(),
             this.paymentsMethod.getListPaymentMethod(),
+            this.typeDocumentService.getTypeListDocument()
         ]);
     }
 }
