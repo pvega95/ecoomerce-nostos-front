@@ -11,8 +11,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SharedModule } from 'app/shared/shared.module';
-import { saleNoteRoutes } from 'app/modules/admin/sale-note/sale-note.routing';
-import { SaleNoteComponent } from './sale-note.component';
 import { TranslocoModule } from '@ngneat/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -20,24 +18,27 @@ import { MatInputModule } from '@angular/material/input';
 import { IMaskModule } from 'angular-imask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CreateEditSaleNoteComponent } from './create-edit-sale-note/create-edit-sale-note.component';
-import { SaleNoteListComponent } from './list/list.component';
-import { SaleNoteItemComponent } from './create-edit-sale-note/sale-note-item/sale-note-item.component';
-import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-note/summary-sale-note.component';
-import { CommonModule } from '@angular/common';
-import { InvoiceComponent } from './invoice/invoice.component';
+import { InvoiceComponent } from './invoice.component';
+import { InvoicePrintableComponent } from './printable/printable.component';
+import { InvoiceItemComponent } from './create-edit-invoice/item-invoice/item-invoice.component';
+import { InvoiceListComponent } from './list/list.component';
+import { CreateEditInvoiceComponent } from './create-edit-invoice/create-edit-invoice.component';
+import { SummaryInvoiceComponent } from './create-edit-invoice/summary-invoice/summary-invoice.component';
+import { invoiceRoutes } from './invoice.routing';
+
+
 
 @NgModule({
     declarations: [
-        SaleNoteComponent,
-        CreateEditSaleNoteComponent,
-        SaleNoteListComponent,
-        SaleNoteItemComponent,
-        SummarySaleNoteComponent,
-        InvoiceComponent
+        InvoiceComponent,
+        InvoicePrintableComponent,
+        InvoiceListComponent,
+        CreateEditInvoiceComponent,
+        SummaryInvoiceComponent,
+        InvoiceItemComponent
     ],
     imports     : [
-        RouterModule.forChild(saleNoteRoutes),
+        RouterModule.forChild(invoiceRoutes),
         MatFormFieldModule,
         ScrollingModule,
         IMaskModule,
@@ -58,6 +59,6 @@ import { InvoiceComponent } from './invoice/invoice.component';
         SharedModule
     ]
 })
-export class SaleNoteModule
+export class InvoiceModule
 {
 }

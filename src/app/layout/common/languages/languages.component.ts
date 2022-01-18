@@ -163,6 +163,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     navComponent.refresh();
                 });
         }
+
         const idSaleNote = this._fuseNavigationService.getItem('salenote.id', navigation);
         if ( idSaleNote )
         {
@@ -176,6 +177,21 @@ export class LanguagesComponent implements OnInit, OnDestroy
                     navComponent.refresh();
                 });
         }
+
+        const idInvoice = this._fuseNavigationService.getItem('invoice.id', navigation);
+        if ( idInvoice )
+        {
+            this._translocoService.selectTranslate('invoice').pipe(take(1))
+                .subscribe((translation) => {
+
+                    // Set the title
+                    idInvoice.title = translation;
+
+                    // Refresh the navigation component
+                    navComponent.refresh();
+                });
+        }
+
         const idSettingItem = this._fuseNavigationService.getItem('setting.id.0', navigation);
         if ( idSettingItem )
         {
