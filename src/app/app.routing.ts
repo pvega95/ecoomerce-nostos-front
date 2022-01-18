@@ -86,6 +86,9 @@ export const appRoutes: Route[] = [
             {path: 'salenote', children: [
                 {path: '', loadChildren: () => import('app/modules/admin/sale-note/sale-note.module').then(m => m.SaleNoteModule)}
             ]},
+            {path: 'invoice', children: [
+                {path: '', loadChildren: () => import('app/modules/admin/invoice/invoice.module').then(m => m.InvoiceModule)}
+            ]},
             {path: 'setting', children: [
                 {path: 'products', loadChildren: () => import('app/modules/admin/setting/products/products.module').then(m => m.ProductsModule)},
                 {path: 'clients', loadChildren: () => import('app/modules/admin/setting/clients/clients.module').then(m => m.ClientsModule)},

@@ -11,10 +11,10 @@ import {
 import { FormGroup } from '@angular/forms';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { Subscription } from 'rxjs';
-import { environment } from '../../../../../../environments/environment';
+
 @Component({
-    selector: 'app-sale-note-item',
-    templateUrl: './sale-note-item.component.html',
+    selector: 'app-item-invoice',
+    templateUrl: './item-invoice.component.html',
     styles: [
         `
             .inventory-grid-create-edit {
@@ -32,21 +32,15 @@ import { environment } from '../../../../../../environments/environment';
                     grid-template-columns: repeat(9, 1fr);
                 }
             }
-            .editIcon:hover{
-                color: blue !important;
-            }
-            .deleteIcon:hover{
-                color: red !important;
-            }
         `,
     ],
 })
-export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
+export class InvoiceItemComponent implements OnInit, OnChanges, OnDestroy {
     @Input() index: number;
     @Input() vouchersLength: number;
     @Input() voucher: FormGroup;
     @Output() quantityUpdated: EventEmitter<any> = new EventEmitter();
-    @Output() saleNoteDeleted: EventEmitter<number> = new EventEmitter();
+    @Output() invoiceDeleted: EventEmitter<number> = new EventEmitter();
     sku = '';
     name = '';
     quantity = 0;
@@ -81,14 +75,10 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     calculationTotals(voucher: VoucherDetail): void {
-        // this.brutoAmountNC = this.voucher.get('brutoAmountNC').value;
-        // this.discountAmountNC = this.voucher.get('discountAmountNC').value;
-        // this.salesAmountNC = this.voucher.get('salesAmountNC').value;
-        // this.igvAmountNC = this.voucher.get('igvAmountNC').value;
          this.brutoAmountNC = voucher.quantity * voucher.unitaryAmountNC;
          this.discountAmountNC = this.brutoAmountNC * (voucher.discount / 100);
          this.salesAmountNC = this.brutoAmountNC - this.discountAmountNC;
-         this.igvAmountNC = this.salesAmountNC * environment.IGV;
+         this.igvAmountNC = this.salesAmountNC * 0.18;
     }
 
     private setInitialData(): void {

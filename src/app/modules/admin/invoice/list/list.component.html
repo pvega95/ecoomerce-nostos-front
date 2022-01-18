@@ -14,7 +14,7 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <ng-container *transloco="let t">
-            <div class="text-4xl font-extrabold mb-4">Ventas</div>
+            <div class="text-4xl mb-4">Facturacion</div>
         </ng-container>
         <div
             class="
@@ -58,7 +58,15 @@
                     />
                 </mat-form-field>
             </div>
-
+            <button
+                class="ml-4"
+                mat-flat-button
+                [color]="'primary'"
+                [routerLink]="['new']"
+            >
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Agregar factura</span>
+            </button>
         </div>
     </div>
     <div class="overflow-x-auto mx-6">
@@ -78,8 +86,8 @@
                         Cliente
                     </th>
                     <td mat-cell *matCellDef="let product">
-                        <span [matTooltip]="product.client" class="pr-6 whitespace-nowrap">
-                            {{ product.client }}
+                        <span class="pr-6 whitespace-nowrap">
+                            {{ product.client.comercialName }}
                         </span>
                     </td>
                 </ng-container>
@@ -97,7 +105,7 @@
 
                 <ng-container matColumnDef="serie">
                     <th
-                    
+                        class="w-60"
                         mat-header-cell
                         mat-sort-header
                         *matHeaderCellDef
@@ -115,7 +123,7 @@
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>
                         Numero documento
                     </th>
-                    <td mat-cell *matCellDef="let product" style="text-align: right;">
+                    <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
                             {{ product.documentNumber }}
                         </span>
@@ -123,10 +131,10 @@
                 </ng-container>
 
                 <ng-container matColumnDef="salestotal">
-                    <th mat-header-cell mat-sort-header *matHeaderCellDef class="header-align-center">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
                         Precio Venta Final
                     </th>
-                    <td mat-cell *matCellDef="let product" >
+                    <td mat-cell *matCellDef="let product">
                         <span class="pr-6 whitespace-nowrap">
                             {{ product.salesTotalNC | number: "1.2-2" }}
                         </span>

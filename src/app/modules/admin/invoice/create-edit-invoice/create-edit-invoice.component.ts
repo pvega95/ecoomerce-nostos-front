@@ -1,16 +1,12 @@
 import {
     Component,
     Input,
-    EventEmitter,
     OnInit,
-    Output,
     OnDestroy,
     ChangeDetectorRef,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { FormArray, FormGroup } from '@angular/forms';
 import { combineLatest, Subject } from 'rxjs';
-import { Select } from 'app/models/select';
 import { Company } from '../../../../models/company';
 import { Document } from '../../../../models/document';
 import { PaymentDeadline } from '../../../../models/payment-deadline';
@@ -20,40 +16,37 @@ import { PaymentDeadlineService } from '../../setting/payment-deadline/payment-d
 import { SaleNote } from 'app/models/sale-note';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SaleNoteService } from '../sale-note.service';
-import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
 import { Product } from 'app/models/product';
-import { VoucherDetail } from 'app/models/voucher-detail';
-import { SaleNotePresenter } from './create-edit-sale-note.presenter';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { PaymentMethod } from 'app/models/payment-method';
 import { PaymentMethodService } from '../../setting/payment-method/payment-method.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { InvoiceService } from '../invoice.service';
+import { InvoicePresenter } from './create-edit-invoice.presenter';
 
 @Component({
-    selector: 'app-create-edit-sale-note',
-    templateUrl: './create-edit-sale-note.component.html',
-    styleUrls: ['./create-edit-sale-note.component.scss'],
-    providers: [SaleNotePresenter],
+    selector: 'app-create-edit-invoice',
+    templateUrl: './create-edit-invoice.component.html',
+    styleUrls: ['./create-edit-invoice.component.scss'],
+    providers: [InvoicePresenter],
 })
-export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
-   // @Input() salesNoteInput: SaleNote = null;
+export class CreateEditInvoiceComponent implements OnInit, OnDestroy {
+    @Input() salesNoteInput: SaleNote = null;
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
     public paymentMethods: PaymentMethod[];
     public id: string;
-    public salesNoteInput: SaleNote;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
         private companyService: CompanyService,
         private documentService: DocumentService,
         private paymentDeadlineService: PaymentDeadlineService,
         private paymentMethodService: PaymentMethodService,
-        private saleNoteService: SaleNoteService,
+        private invoiceService: InvoiceService,
         public dialog: MatDialog,
-        public presenter: SaleNotePresenter,
+        public presenter: InvoicePresenter,
         private _changeDetectorRef: ChangeDetectorRef,
         private router: Router,
         private route: ActivatedRoute
@@ -77,17 +70,16 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
         this.route.params.subscribe(({ id }) => {
             if (id) {
                 this.id = id;
-                this.saleNoteService
-                    .getListSaleNoteById(id)
+                this.invoiceService
+                    .getListInvoiceById(id)
                     .pipe(map((resp) => resp.data))
                     .subscribe((saleNote) => {
-                        this.salesNoteInput = saleNote[0];
                         this.presenter.updateSaleNoteForm(saleNote[0]);
                     });
             }
         });
 
-        // Get the companies
+        // Get the categories
         this.companyService.companies$
             .pipe(
                 map((resp: any) => resp.data),
@@ -156,7 +148,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     getCorrelative(companyID: string, documentID: string): void {
-        this.saleNoteService
+        this.invoiceService
             .getSerie(companyID, documentID)
             .pipe(map((response) => response.data[0]))
             .subscribe(({ series, currentCorrelative }) => {
@@ -170,7 +162,9 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             height: '30rem',
             data: {
                 type: Modal.newItem,
-                voucherDetail: this.presenter.voucherDetail.getRawValue(),
+                voucherDetail: this.salesNoteInput
+                    ? this.salesNoteInput.voucherDetail
+                    : [],
             },
             disableClose: true,
         });
@@ -195,19 +189,19 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['salenote']);
+        this.router.navigate(['invoice']);
     }
 
     submitForm(): void {
         if (this.id) {
             const saleNote = new SaleNote(this.form.getRawValue());
-            this.saleNoteService.updateSaleNote(saleNote, this.id).subscribe((resp) => {
+            this.invoiceService.updateInvoice(saleNote, this.id).subscribe((resp) => {
                 this.router.navigate(['salenote']);
             });
         } else {
             const saleNote = new SaleNote(this.form.getRawValue());
             delete saleNote['_id'];
-            this.saleNoteService.createSaleNote(saleNote).subscribe((resp) => {
+            this.invoiceService.createInvoice(saleNote).subscribe((resp) => {
                 this.router.navigate(['salenote']);
             });
         }

@@ -9,14 +9,14 @@ import { FormControl } from '@angular/forms';
 import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SaleNote } from 'app/models/sale-note';
-import { SaleNoteService } from '../sale-note.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { InvoiceService } from '../invoice.service';
 @Component({
-    selector: 'sale-note-list',
+    selector: 'invoice-list',
     templateUrl: './list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styles: [
@@ -31,37 +31,6 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                     }
                 }
             }
-            .mat-column-client {
-                width: 25% !important;
-              }
-            .mat-column-document {
-                width: 15% !important;
-             }
-            .mat-column-serie {
-                width: 10% !important;
-              }
-            .mat-column-documentnumber {
-                width: 16% !important;
-            }
-            .mat-column-salestotal {
-                width: 18% !important;
-                text-align: right !important;
-            }
-            .mat-column-actions {
-                width: 16% !important;
-            }
-            .header-align-right{
-                ::ng-deep .mat-sort-header-container {
-                    display:flex;
-                    justify-content:end;
-                  }
-              }
-            .header-align-center{
-                ::ng-deep .mat-sort-header-container {
-                    display:flex;
-                    justify-content:center;
-                  }
-              }
 
             .inventory-grid {
                 grid-template-columns: 48px auto 40px;
@@ -71,25 +40,17 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                 }
 
                 @screen md {
-                    grid-template-columns: 5rem 112px auto 3rem 72px;
+                    grid-template-columns: 48px 112px auto 112px 72px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 5rem 112px auto 3rem 96px 96px 72px;
+                    grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
                 }
-            }
-  
-
-            .editIcon:hover{
-                color: blue !important;
-            }
-            .deleteIcon:hover{
-                color: red !important;
             }
         `,
     ],
 })
-export class SaleNoteListComponent implements OnInit {
+export class InvoiceListComponent implements OnInit {
     @ViewChild('recentTransactionsTable', { read: MatSort })
     recentTransactionsTableMatSort: MatSort;
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
@@ -112,7 +73,7 @@ export class SaleNoteListComponent implements OnInit {
     isLoading: boolean;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
-        private saleNoteService: SaleNoteService,
+        private invoiceService: InvoiceService,
         private router: Router,
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService
@@ -143,10 +104,10 @@ export class SaleNoteListComponent implements OnInit {
 
     loadListSaleNote(): void {
         // Get the courses
-        this.saleNoteService.saleNotes$
+        this.invoiceService.saleNotes$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp: any) => {
-                this.salesNotes = resp.data;
+                this.salesNotes = this.salesNotesFiltered = resp.data;
                 this.recentTransactionsDataSource.data = this.salesNotes;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -173,10 +134,10 @@ export class SaleNoteListComponent implements OnInit {
         confirmation.afterClosed().subscribe((result) => {
             // If the confirm button pressed...
             if (result === 'confirmed') {
-                this.saleNoteService.deleteSaleNote(id).subscribe((resp) => {
+                this.invoiceService.deleteInvoice(id).subscribe((resp) => {
                     if (resp.ok) {
-                        this.saleNoteService
-                            .getListSaleNote()
+                        this.invoiceService
+                            .getListInvoice()
                             .pipe(take(1))
                             .subscribe();
                     }
