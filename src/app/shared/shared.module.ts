@@ -18,8 +18,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { StatusComponent } from './status/status.component';
 
-const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
+const COMPONENTS = [WindowModalComponent, SelectSearchComponent, StatusComponent]
 
 @NgModule({
     imports: [
@@ -50,6 +51,7 @@ const COMPONENTS = [WindowModalComponent, SelectSearchComponent]
     ],
     declarations: [
       ...COMPONENTS,
+      
       
     ]
 })

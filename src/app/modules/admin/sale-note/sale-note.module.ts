@@ -26,6 +26,9 @@ import { SaleNoteItemComponent } from './create-edit-sale-note/sale-note-item/sa
 import { SummarySaleNoteComponent } from './create-edit-sale-note/summary-sale-note/summary-sale-note.component';
 import { CommonModule } from '@angular/common';
 import { InvoiceComponent } from './invoice/invoice.component';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { PaginatorIntl } from 'app/shared/services/paginator-intl.service';
 
 @NgModule({
     declarations: [
@@ -42,6 +45,7 @@ import { InvoiceComponent } from './invoice/invoice.component';
         ScrollingModule,
         IMaskModule,
         MatProgressSpinnerModule,
+        MatPaginatorModule,
         MatSelectModule,
         MatInputModule,
         TranslocoModule,
@@ -56,6 +60,10 @@ import { InvoiceComponent } from './invoice/invoice.component';
         MatTooltipModule,
         NgApexchartsModule,
         SharedModule
+    ],
+    providers :[
+        {provide: MAT_DATE_LOCALE, useValue: 'es-ES'},
+        {provide: MatPaginatorIntl, useClass: PaginatorIntl},
     ]
 })
 export class SaleNoteModule

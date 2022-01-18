@@ -23,6 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SaleNoteService } from '../sale-note.service';
 import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
+import { Status, getStatusStyle } from '../../../../enums/status.enum';
 import { Product } from 'app/models/product';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNotePresenter } from './create-edit-sale-note.presenter';
@@ -42,6 +43,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
+    public statusList: any[] = [];
     public paymentMethods: PaymentMethod[];
     public id: string;
     public salesNoteInput: SaleNote;
@@ -122,6 +124,10 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+        // Get status list
+        this.statusList.push(getStatusStyle(Status.pendiente)); 
+        this.statusList.push(getStatusStyle(Status.pagado));
+        this.statusList.push(getStatusStyle(Status.anulado));
 
         // Get the paymentMethod
         this.paymentMethodService.paymentMethods$

@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -10,7 +11,7 @@ import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SaleNote } from 'app/models/sale-note';
 import { SaleNoteService } from '../sale-note.service';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -32,7 +33,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                 }
             }
             .mat-column-client {
-                width: 25% !important;
+                width: 20% !important;
               }
             .mat-column-document {
                 width: 15% !important;
@@ -41,19 +42,22 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                 width: 10% !important;
               }
             .mat-column-documentnumber {
-                width: 16% !important;
+                width: 15% !important;
             }
             .mat-column-salestotal {
                 width: 18% !important;
                 text-align: right !important;
             }
+            .mat-column-status {
+                width: 8% !important;
+            }
             .mat-column-actions {
-                width: 16% !important;
+                width: 14% !important;
             }
             .header-align-right{
                 ::ng-deep .mat-sort-header-container {
                     display:flex;
-                    justify-content:end;
+                    justify-content: flex-end;
                   }
               }
             .header-align-center{
@@ -78,18 +82,19 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                     grid-template-columns: 5rem 112px auto 3rem 96px 96px 72px;
                 }
             }
-  
-
             .editIcon:hover{
                 color: blue !important;
             }
             .deleteIcon:hover{
                 color: red !important;
             }
+            .printIcon:hover{
+                color: green !important;
+            }
         `,
     ],
 })
-export class SaleNoteListComponent implements OnInit {
+export class SaleNoteListComponent implements OnInit, AfterViewInit {
     @ViewChild('recentTransactionsTable', { read: MatSort })
     recentTransactionsTableMatSort: MatSort;
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
@@ -103,6 +108,7 @@ export class SaleNoteListComponent implements OnInit {
         'serie',
         'documentnumber',
         'salestotal',
+        'status',
         'actions',
     ];
     public salesNotes: SaleNote[];
@@ -117,6 +123,10 @@ export class SaleNoteListComponent implements OnInit {
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService
     ) {}
+
+    ngAfterViewInit() {
+        this.recentTransactionsDataSource.sort = this._sort;
+      }
 
     ngOnInit(): void {
         this.loadListSaleNote();
