@@ -1,5 +1,3 @@
-
-    <span class="px-2 py-2" [ngStyle]="{'background-color': objStyleStatus.bgColor, 'color': objStyleStatus.textColor, 'border-radius': '1.25rem', 'font-size': '0.7rem'}">
-        {{objStyleStatus.label}} 
-    </span>
-
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="getClass()">
+  {{ estado }} 
+</span>

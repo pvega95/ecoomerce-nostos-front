@@ -8,7 +8,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { OrdersService } from './order.service';
 import { FuseUtilsService } from '../../../../@fuse/services/utils/utils.service';
-import { StatusOrder } from '../../../enums/status.enum';
+// import { StatusOrder } from '../../../enums/status.enum';
 import { WindowModalComponent } from '../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Modal } from '../../../enums/modal.enum';
@@ -107,26 +107,6 @@ export class OrderComponent implements OnInit {
     }
    }
 
-
-   loadColorState(status: any): string{
-    let styleColor: string = '';
-    switch (status) {
-      case StatusOrder.Creado:{
-        styleColor = 'colorStadoCreado';
-        break;
-      }
-      case StatusOrder.Cancelado:{
-        styleColor = 'colorStadoCancelado';
-        break;
-      }
-        
-      default:
-        break;
-    }
-
-
-    return styleColor;
-   }
    addNewOrder(): void {
     const dialogRef = this.dialog.open(WindowModalComponent, {
       width: '42rem',

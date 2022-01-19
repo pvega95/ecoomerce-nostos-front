@@ -46,7 +46,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
             }
             .mat-column-salestotal {
                 width: 18% !important;
-                text-align: right !important;
+                text-align: center !important;
             }
             .mat-column-status {
                 width: 8% !important;

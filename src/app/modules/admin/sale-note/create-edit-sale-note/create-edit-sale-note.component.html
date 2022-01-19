@@ -70,9 +70,9 @@
                     <mat-select formControlName="status" placeholder="Seleccione estado">
                         <mat-option
                             *ngFor="let status of statusList"
-                            [value]="status._id"
+                            [value]="status"
                         >
-                            {{ status.label }}
+                            {{ status }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

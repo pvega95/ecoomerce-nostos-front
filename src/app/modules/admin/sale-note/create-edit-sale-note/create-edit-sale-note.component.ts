@@ -1,16 +1,11 @@
 import {
     Component,
-    Input,
-    EventEmitter,
     OnInit,
-    Output,
     OnDestroy,
     ChangeDetectorRef,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { FormArray, FormGroup } from '@angular/forms';
 import { combineLatest, Subject } from 'rxjs';
-import { Select } from 'app/models/select';
 import { Company } from '../../../../models/company';
 import { Document } from '../../../../models/document';
 import { PaymentDeadline } from '../../../../models/payment-deadline';
@@ -21,13 +16,11 @@ import { SaleNote } from 'app/models/sale-note';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { SaleNoteService } from '../sale-note.service';
-import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
-import { Status, getStatusStyle } from '../../../../enums/status.enum';
+import { STATUS_ORDER } from '../../../../enums/status.enum';
 import { Product } from 'app/models/product';
-import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNotePresenter } from './create-edit-sale-note.presenter';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { PaymentMethod } from 'app/models/payment-method';
 import { PaymentMethodService } from '../../setting/payment-method/payment-method.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -43,7 +36,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
-    public statusList: any[] = [];
+    public statusList: string[] = STATUS_ORDER;
     public paymentMethods: PaymentMethod[];
     public id: string;
     public salesNoteInput: SaleNote;
@@ -124,10 +117,6 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-        // Get status list
-        this.statusList.push(getStatusStyle(Status.pendiente)); 
-        this.statusList.push(getStatusStyle(Status.pagado));
-        this.statusList.push(getStatusStyle(Status.anulado));
 
         // Get the paymentMethod
         this.paymentMethodService.paymentMethods$

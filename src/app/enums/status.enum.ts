@@ -1,27 +1,21 @@
-export enum StatusOrder {
-    Creado = 'CREADO',
-    Cancelado = 'ANULADO'
-  }
-export enum Status {
-  pendiente,
-  pagado ,
-  anulado
-}
+export const STATUS_ORDER = ['PENDIENTE', 'PAGADO', 'ANULADO'];
+
+export const STATUS_STYLES = {
+    PENDIENTE: {
+        textColor: 'text-red-800',
+        bgColor: 'bg-red-100',
+    },
+    PAGADO: {
+        textColor: 'text-green-800',
+        bgColor: 'bg-green-100',
+    },
+    ANULADO: {
+        textColor: 'text-white-800',
+        bgColor: 'bg-gray-100',
+    },
+};
+
 export interface StatusModel {
-  label: string;
-  textColor: string;
-  bgColor: string;
-}
-export function getStatusStyle(status: Status){
-  switch (status) {
-    case Status.pendiente: {
-      return {_id: 1, label: 'PENDIENTE', textColor: 'white', bgColor: 'red'}
-    }
-    case Status.pagado: {
-      return {_id: 2, label: 'PAGADO', textColor: 'white', bgColor: 'green'}
-    }
-    case Status.anulado: {
-      return {_id: 3, label: 'ANULADO', textColor: 'white', bgColor: 'gray'}
-    }
-  }
+    textColor: string;
+    bgColor: string;
 }
