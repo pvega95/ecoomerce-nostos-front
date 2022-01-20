@@ -20,6 +20,7 @@
             class="
                 flex flex-col
                 sm:flex-row
+                sm:items-center
                 flex-0
                 sm:items-end sm:justify-between
             "
@@ -42,31 +43,30 @@
                     />
                 </mat-form-field>
                 <mat-form-field
-                    class="fuse-mat-dense fuse-mat-no-subscript min-w-90"
+                    class="min-w-90"
                     [floatLabel]="'always'"
                 >
-                    <mat-icon
-                        matPrefix
-                        [svgIcon]="'heroicons_outline:search'"
-                    ></mat-icon>
                     <mat-label>Estado</mat-label>
-                    <input
-                        matInput
-                        [formControl]="searchInputControl"
-                        [autocomplete]="'off'"
-                        [placeholder]="'Buscar por estado'"
-                    />
+                    <mat-select [formControl]="status" placeholder="Seleccione estado" (selectionChange)="statusChange($event)">
+                        <mat-option value="TODO">TODO</mat-option>
+                        <mat-option
+                            *ngFor="let status of statusList"
+                            [value]="status"
+                        >
+                            {{ status }}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
             <button
-            class="ml-4"
-            mat-flat-button
-            [color]="'primary'"
-            [routerLink]="['new']"
-        >
+                class="ml-4"
+                mat-flat-button
+                [color]="'primary'"
+                [routerLink]="['new']"
+            >
             <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-            <span class="ml-2 mr-1">Agregar Venta</span>
-        </button>
+                <span class="ml-2 mr-1">Agregar Venta</span>
+            </button>
         </div>
     </div>
     <div class="overflow-x-auto mx-6">

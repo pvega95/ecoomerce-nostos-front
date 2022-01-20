@@ -11,11 +11,15 @@ import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SaleNote } from 'app/models/sale-note';
 import { SaleNoteService } from '../sale-note.service';
+import { STATUS_ORDER } from '../../../../enums/status.enum';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { MatSelectChange } from '@angular/material/select';
+
+const all = 'TODO';
 @Component({
     selector: 'sale-note-list',
     templateUrl: './list.component.html',
@@ -113,7 +117,9 @@ export class SaleNoteListComponent implements OnInit, AfterViewInit {
     ];
     public salesNotes: SaleNote[];
     public salesNotesFiltered: SaleNote[] = [];
+    public statusList: string[] = STATUS_ORDER;
     searchInputControlClient: FormControl = new FormControl();
+    status: FormControl = new FormControl(all);
     searchInputControl: FormControl = new FormControl();
     isLoading: boolean;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -141,7 +147,7 @@ export class SaleNoteListComponent implements OnInit, AfterViewInit {
                         this.salesNotes.filter((salesNote) => {
                             return (salesNote.client as string)
                                 .toLowerCase()
-                                .match(query);
+                                .match(query) &&  (this.status.value === all || this.status.value === salesNote.status) ;
                         }));
                 }),
                 map(() => {
@@ -149,6 +155,18 @@ export class SaleNoteListComponent implements OnInit, AfterViewInit {
                 })
             )
             .subscribe();
+    }
+
+    statusChange(select: MatSelectChange): void{
+        console.log('value', select.value, this.salesNotes)
+        if (select.value != all) {
+            this.recentTransactionsDataSource.data = this.salesNotes.filter((salesNote) => {
+                return (salesNote.status as string).match(select.value);
+            });
+         }else{
+            this.recentTransactionsDataSource.data = this.salesNotes;
+         }
+
     }
 
     loadListSaleNote(): void {

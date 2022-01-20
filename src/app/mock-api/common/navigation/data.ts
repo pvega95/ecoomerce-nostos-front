@@ -9,13 +9,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chart-pie',
         link : '/dashboards/analytics'
     },
-    {
+/*     {
         id   : 'order.id',
         title: 'order',
         type : 'basic',
         icon : 'heroicons_outline:clipboard-list',
         link : '/order'
-    },
+    }, */
     {
         id   : 'salenote.id',
         title: 'salenote',
