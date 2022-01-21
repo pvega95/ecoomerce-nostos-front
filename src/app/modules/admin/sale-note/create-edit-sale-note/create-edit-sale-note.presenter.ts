@@ -39,7 +39,7 @@ export class SaleNotePresenter {
     updatedAt: FormControl;
 
     constructor(
-        protected fb: FormBuilder, 
+        protected fb: FormBuilder,
         private fuseUtilsService: FuseUtilsService
         ) {
         this.createValidators();
@@ -271,7 +271,5 @@ export class SaleNotePresenter {
         this.salesTotalNC = new FormControl(0);
         this.createdAt = new FormControl('');
         this.updatedAt = new FormControl('');
-
-        
     }
 }

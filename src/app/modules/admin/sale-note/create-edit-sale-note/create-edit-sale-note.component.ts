@@ -1,9 +1,4 @@
-import {
-    Component,
-    OnInit,
-    OnDestroy,
-    ChangeDetectorRef,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { combineLatest, Subject } from 'rxjs';
 import { Company } from '../../../../models/company';
@@ -32,7 +27,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     providers: [SaleNotePresenter],
 })
 export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
-   // @Input() salesNoteInput: SaleNote = null;
+    // @Input() salesNoteInput: SaleNote = null;
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
@@ -78,6 +73,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                     .subscribe((saleNote) => {
                         this.salesNoteInput = saleNote[0];
                         this.presenter.updateSaleNoteForm(saleNote[0]);
+                        this.presenter.document.disable();
                     });
             }
         });
@@ -151,6 +147,9 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     getCorrelative(companyID: string, documentID: string): void {
+        if (this.id) {
+            return;
+        }
         this.saleNoteService
             .getSerie(companyID, documentID)
             .pipe(map((response) => response.data[0]))
@@ -196,9 +195,11 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     submitForm(): void {
         if (this.id) {
             const saleNote = new SaleNote(this.form.getRawValue());
-            this.saleNoteService.updateSaleNote(saleNote, this.id).subscribe((resp) => {
-                this.router.navigate(['salenote']);
-            });
+            this.saleNoteService
+                .updateSaleNote(saleNote, this.id)
+                .subscribe((resp) => {
+                    this.router.navigate(['salenote']);
+                });
         } else {
             const saleNote = new SaleNote(this.form.getRawValue());
             delete saleNote['_id'];
