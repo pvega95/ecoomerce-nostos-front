@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { StatusComponent } from './status/status.component';
 
 const COMPONENTS = [WindowModalComponent, SelectSearchComponent, StatusComponent]
@@ -28,6 +29,7 @@ const COMPONENTS = [WindowModalComponent, SelectSearchComponent, StatusComponent
         MatSelectModule,
         MatTooltipModule,
         MatFormFieldModule,
+        MatPaginatorModule,
         MatCheckboxModule,
         MatInputModule,
         MatTableModule,

@@ -244,17 +244,17 @@
                                             <ng-container matColumnDef="select">
                                                 <th mat-header-cell *matHeaderCellDef>
                                                   <mat-checkbox (change)="$event ? masterToggle() : null"
-                                                                [checked]="selection.hasValue() && isAllSelected()"
-                                                                [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                                                [aria-label]="checkboxLabel()">
+                                                                [checked]="hasValue() && isAllSelected()"
+                                                                [indeterminate]="hasValue() && !isAllSelected()"
+                                                                >
                                                   </mat-checkbox>
                                                 </th>
                                                 <td mat-cell *matCellDef="let element" [ngClass]="{'itemSelected': element.selected === true}">
                                                   <mat-checkbox (click)="$event.stopPropagation()"
-                                                                (change)="$event ? selection.toggle(element) : null"
-                                                                [checked]="selection.isSelected(element)"
+                                                                (change)="$event ? toggleItem(element) : null"
+                                                                [checked]="element.selected || element.checked"
                                                                 [disabled]="element.selected"
-                                                                [aria-label]="checkboxLabel(element)">
+                                                                >
                                                   </mat-checkbox>
                                                 </td>
                                               </ng-container>
@@ -290,7 +290,7 @@
                                             </ng-container> -->
                                        
                                             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
                                         </table>
 
                                     </div>
@@ -303,6 +303,9 @@
                             </div>
 
                         <!-- </cdk-virtual-scroll-viewport> -->
+                    </div>
+                    <div class="relative flex flex-0 " >
+                        <mat-paginator class="flex justify-end " [length]="dataSource?.data.length" [pageSizeOptions]="[10, 50, 100]" aria-label="Select page of GitHub search results"></mat-paginator> 
                     </div>
                     <div class="relative flex flex-0 justify-center">
                         <button class="  mx-3"
