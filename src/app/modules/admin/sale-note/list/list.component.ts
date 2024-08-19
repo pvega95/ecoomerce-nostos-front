@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -10,11 +11,15 @@ import { debounceTime, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SaleNote } from 'app/models/sale-note';
 import { SaleNoteService } from '../sale-note.service';
-import { MatSort } from '@angular/material/sort';
+import { STATUS_ORDER } from '../../../../enums/status.enum';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { MatSelectChange } from '@angular/material/select';
+
+const all = 'TODO';
 @Component({
     selector: 'sale-note-list',
     templateUrl: './list.component.html',
@@ -31,6 +36,40 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                     }
                 }
             }
+            .mat-column-client {
+                width: 20% !important;
+              }
+            .mat-column-document {
+                width: 15% !important;
+             }
+            .mat-column-serie {
+                width: 10% !important;
+              }
+            .mat-column-documentnumber {
+                width: 15% !important;
+            }
+            .mat-column-salestotal {
+                width: 18% !important;
+                text-align: center !important;
+            }
+            .mat-column-status {
+                width: 8% !important;
+            }
+            .mat-column-actions {
+                width: 14% !important;
+            }
+            .header-align-right{
+                ::ng-deep .mat-sort-header-container {
+                    display:flex;
+                    justify-content: flex-end;
+                  }
+              }
+            .header-align-center{
+                ::ng-deep .mat-sort-header-container {
+                    display:flex;
+                    justify-content:center;
+                  }
+              }
 
             .inventory-grid {
                 grid-template-columns: 48px auto 40px;
@@ -40,17 +79,26 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
                 }
 
                 @screen md {
-                    grid-template-columns: 48px 112px auto 112px 72px;
+                    grid-template-columns: 5rem 112px auto 3rem 72px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
+                    grid-template-columns: 5rem 112px auto 3rem 96px 96px 72px;
                 }
+            }
+            .editIcon:hover{
+                color: blue !important;
+            }
+            .deleteIcon:hover{
+                color: red !important;
+            }
+            .printIcon:hover{
+                color: green !important;
             }
         `,
     ],
 })
-export class SaleNoteListComponent implements OnInit {
+export class SaleNoteListComponent implements OnInit, AfterViewInit {
     @ViewChild('recentTransactionsTable', { read: MatSort })
     recentTransactionsTableMatSort: MatSort;
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
@@ -64,11 +112,14 @@ export class SaleNoteListComponent implements OnInit {
         'serie',
         'documentnumber',
         'salestotal',
+        'status',
         'actions',
     ];
     public salesNotes: SaleNote[];
     public salesNotesFiltered: SaleNote[] = [];
+    public statusList: string[] = STATUS_ORDER;
     searchInputControlClient: FormControl = new FormControl();
+    status: FormControl = new FormControl(all);
     searchInputControl: FormControl = new FormControl();
     isLoading: boolean;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -78,6 +129,10 @@ export class SaleNoteListComponent implements OnInit {
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService
     ) {}
+
+    ngAfterViewInit() {
+        this.recentTransactionsDataSource.sort = this._sort;
+      }
 
     ngOnInit(): void {
         this.loadListSaleNote();
@@ -92,7 +147,7 @@ export class SaleNoteListComponent implements OnInit {
                         this.salesNotes.filter((salesNote) => {
                             return (salesNote.client as string)
                                 .toLowerCase()
-                                .match(query);
+                                .match(query) &&  (this.status.value === all || this.status.value === salesNote.status) ;
                         }));
                 }),
                 map(() => {
@@ -102,12 +157,25 @@ export class SaleNoteListComponent implements OnInit {
             .subscribe();
     }
 
+    statusChange(select: MatSelectChange): void{
+        console.log('value', select.value, this.salesNotes)
+        if (select.value != all) {
+            this.recentTransactionsDataSource.data = this.salesNotes.filter((salesNote) => {
+                return (salesNote.status as string).match(select.value);
+            });
+         }else{
+            this.recentTransactionsDataSource.data = this.salesNotes;
+         }
+
+    }
+
     loadListSaleNote(): void {
         // Get the courses
         this.saleNoteService.saleNotes$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp: any) => {
-                this.salesNotes = this.salesNotesFiltered = resp.data;
+                this.salesNotes = resp?.data[0]?.docs || [];
+                console.log('salesNotes', this.salesNotes)
                 this.recentTransactionsDataSource.data = this.salesNotes;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

@@ -11,7 +11,7 @@ import {
 import { FormGroup } from '@angular/forms';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { Subscription } from 'rxjs';
-
+import { environment } from '../../../../../../environments/environment';
 @Component({
     selector: 'app-sale-note-item',
     templateUrl: './sale-note-item.component.html',
@@ -31,6 +31,12 @@ import { Subscription } from 'rxjs';
                 @screen lg {
                     grid-template-columns: repeat(9, 1fr);
                 }
+            }
+            .editIcon:hover{
+                color: blue !important;
+            }
+            .deleteIcon:hover{
+                color: red !important;
             }
         `,
     ],
@@ -82,7 +88,7 @@ export class SaleNoteItemComponent implements OnInit, OnChanges, OnDestroy {
          this.brutoAmountNC = voucher.quantity * voucher.unitaryAmountNC;
          this.discountAmountNC = this.brutoAmountNC * (voucher.discount / 100);
          this.salesAmountNC = this.brutoAmountNC - this.discountAmountNC;
-         this.igvAmountNC = this.salesAmountNC * 0.18;
+         this.igvAmountNC = this.salesAmountNC * environment.IGV;
     }
 
     private setInitialData(): void {

@@ -1,16 +1,6 @@
-import {
-    Component,
-    Input,
-    EventEmitter,
-    OnInit,
-    Output,
-    OnDestroy,
-    ChangeDetectorRef,
-} from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FuseUtilsService } from '@fuse/services/utils/utils.service';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { FormArray, FormGroup } from '@angular/forms';
 import { combineLatest, Subject } from 'rxjs';
-import { Select } from 'app/models/select';
 import { Company } from '../../../../models/company';
 import { Document } from '../../../../models/document';
 import { PaymentDeadline } from '../../../../models/payment-deadline';
@@ -21,12 +11,11 @@ import { SaleNote } from 'app/models/sale-note';
 import { WindowModalComponent } from '../../../../shared/window-modal/window-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { SaleNoteService } from '../sale-note.service';
-import { ProductsService } from '../../setting/products/products.service';
 import { Modal } from '../../../../enums/modal.enum';
+import { STATUS_ORDER } from '../../../../enums/status.enum';
 import { Product } from 'app/models/product';
-import { VoucherDetail } from 'app/models/voucher-detail';
 import { SaleNotePresenter } from './create-edit-sale-note.presenter';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { PaymentMethod } from 'app/models/payment-method';
 import { PaymentMethodService } from '../../setting/payment-method/payment-method.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -38,12 +27,14 @@ import { ActivatedRoute, Router } from '@angular/router';
     providers: [SaleNotePresenter],
 })
 export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
-    @Input() salesNoteInput: SaleNote = null;
+    // @Input() salesNoteInput: SaleNote = null;
     public companies: Company[];
     public documents: Document[];
     public paymentDeadlines: PaymentDeadline[];
+    public statusList: string[] = STATUS_ORDER;
     public paymentMethods: PaymentMethod[];
     public id: string;
+    public salesNoteInput: SaleNote;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     constructor(
         private companyService: CompanyService,
@@ -80,12 +71,14 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
                     .getListSaleNoteById(id)
                     .pipe(map((resp) => resp.data))
                     .subscribe((saleNote) => {
+                        this.salesNoteInput = saleNote[0];
                         this.presenter.updateSaleNoteForm(saleNote[0]);
+                        this.presenter.document.disable();
                     });
             }
         });
 
-        // Get the categories
+        // Get the companies
         this.companyService.companies$
             .pipe(
                 map((resp: any) => resp.data),
@@ -154,6 +147,9 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     }
 
     getCorrelative(companyID: string, documentID: string): void {
+        if (this.id) {
+            return;
+        }
         this.saleNoteService
             .getSerie(companyID, documentID)
             .pipe(map((response) => response.data[0]))
@@ -168,9 +164,7 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
             height: '30rem',
             data: {
                 type: Modal.newItem,
-                voucherDetail: this.salesNoteInput
-                    ? this.salesNoteInput.voucherDetail
-                    : [],
+                voucherDetail: this.presenter.voucherDetail.getRawValue(),
             },
             disableClose: true,
         });
@@ -201,9 +195,11 @@ export class CreateEditSaleNoteComponent implements OnInit, OnDestroy {
     submitForm(): void {
         if (this.id) {
             const saleNote = new SaleNote(this.form.getRawValue());
-            this.saleNoteService.updateSaleNote(saleNote, this.id).subscribe((resp) => {
-                this.router.navigate(['salenote']);
-            });
+            this.saleNoteService
+                .updateSaleNote(saleNote, this.id)
+                .subscribe((resp) => {
+                    this.router.navigate(['salenote']);
+                });
         } else {
             const saleNote = new SaleNote(this.form.getRawValue());
             delete saleNote['_id'];

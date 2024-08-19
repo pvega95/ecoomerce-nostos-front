@@ -121,7 +121,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.productsService.getListProducts().subscribe((resp) => {
             if (resp.ok) {
                 // Get the products
-                this.products = resp.data;
+                this.products = resp?.data[0]?.docs || [];
                 this.productsFiltered = this.products;
                 this.isLoading = false;
                 this.recentTransactionsDataSource.data = this.products;

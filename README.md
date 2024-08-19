@@ -35,3 +35,7 @@ http://angular-material.fusetheme.com/dashboards/project?v12.0.0=
 
 ## componentes
 utiliza angular material
+## menu de navegacion
+src/app/mock-api/common/navigation/data
+## lenguaje
+src/app/layout/common/languages/languages.component.ts

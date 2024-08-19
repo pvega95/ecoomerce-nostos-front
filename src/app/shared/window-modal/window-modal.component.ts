@@ -15,6 +15,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { VoucherDetail } from 'app/models/voucher-detail';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
+import { CommonService } from '../services/common.service';
 
 
 
@@ -44,7 +45,8 @@ export class WindowModalComponent implements OnInit {
   public disableRemoveProduct: boolean;
   public displayedColumns: string[] = ['select','sku', 'name', 'listprice'];
   public dataSource = new MatTableDataSource<any>([]);
-  public selection = new SelectionModel<any>(true, []);
+  //public selection = new SelectionModel<any>(true, []);
+  public selection: any[] =[];
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -70,6 +72,11 @@ export class WindowModalComponent implements OnInit {
     }
     this.initForm();
   }
+
+  applyFilterItem(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
   itemSelected(val: MatCheckboxChange, sku: string){
     if (val.checked) {
       this.products.forEach(product => {
@@ -84,20 +91,34 @@ export class WindowModalComponent implements OnInit {
   loadItems(){
     this.productsService.getListProducts().subscribe(resp=>{
       if (resp.ok) {
+        
+        resp.data = resp.data.map( x =>{ 
+          const {selected, checked} = this.verifyItemSelected( this.data.voucherDetail, x.sku);
+           x.selected = selected;
+           x.checked = checked;
+          return x;
+        });
+    //    console.log('resp.data',this.data.voucherDetail,  resp.data)
         this.dataSource = new MatTableDataSource<any>(resp.data);
+      
         this.isLoading = false;
       }
     });
   }
-  verifyItemSelected(voucherDetail: VoucherDetail[], sku: string): boolean{
-    let exist: boolean = false;
+  verifyItemSelected(voucherDetail: VoucherDetail[], sku: string): {selected: boolean, checked: boolean} {
+    let selected: boolean = false;
+    let checked: boolean = false;
     voucherDetail.forEach(voucher => {
       if (voucher.sku === sku) {
-        exist = true;
+        selected = true;
+        checked = true;
+        this.selection.push(voucher);
+        //console.log('this.selection.', voucher, this.selection)
       }
     });
-    return exist;
+    return {selected, checked};
   }
+
   async loadData(): Promise<void> {
     let resp1: any;
     let resp2: any;
@@ -233,7 +254,7 @@ export class WindowModalComponent implements OnInit {
     this.verifyQuantityLot();
   }
   addItem(): void{
-    this.dialogRef.close(this.selection.selected);
+    this.dialogRef.close(this.selection);
   }
   verifyQuantityLot() {
     if (this.productsForm.length === 1) {
@@ -356,28 +377,56 @@ export class WindowModalComponent implements OnInit {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
+    const numSelected = this.selection.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
-
+  hasValue(){
+    if(this.selection.length > 0){
+      return true;
+    }else{
+      return false;
+    }
+  }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
     if (this.isAllSelected()) {
-      this.selection.clear();
+    //  this.selection.clear();
+   // console.log('this.dataSource.data', this.dataSource.data)
+    this.dataSource.data.forEach(element => {
+      if (!element.selected && element.checked) {
+        element.checked = false;
+      } 
+    }); 
+    this.selection = [];
       return;
     }
-
-    this.selection.select(...this.dataSource.data);
+    this.dataSource.data.forEach(element => {
+      if (!element.selected && !element.checked) {
+        element.checked = true;
+      } 
+    }); 
+    this.selection.push(...this.dataSource.data);
+  }
+  toggleItem(product: Product){
+    const index =  this.selection.findIndex(obj=> obj.sku ==  product.sku);
+   // console.log('product', product, index)
+    if (index !== -1) {
+      this.selection.splice(index, 1);// quita elemento de lista
+    } else {
+      this.selection.push(product);//agrega elemento de lista
+    }
+    const index2 = this.dataSource.data.findIndex(obj=> obj.sku ==  product.sku);
+      this.dataSource.data[index2].checked = !this.dataSource.data[index2].checked // desmarca elemento de lista
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: any): string {
+/*   checkboxLabel(row?: any): string {
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
+  } */
 
 
 }
