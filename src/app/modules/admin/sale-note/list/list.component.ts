@@ -174,7 +174,8 @@ export class SaleNoteListComponent implements OnInit, AfterViewInit {
         this.saleNoteService.saleNotes$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp: any) => {
-                this.salesNotes = resp.data;
+                this.salesNotes = resp?.data[0]?.docs || [];
+                console.log('salesNotes', this.salesNotes)
                 this.recentTransactionsDataSource.data = this.salesNotes;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
